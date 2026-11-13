@@ -98,3 +98,55 @@ before calling the project an exact feature replica.
 - Items 6 and 8 remain open: universal translation, remaining encodings/formats,
   moving entities, all-version game fixtures and native Windows/macOS/game checks.
   Item 7 still needs specialized models, exact game effects and full-world display.
+
+## 0.6 progress — 2026-11-13
+
+- Native `.construction` v0 now reads/writes sparse masks, offsets, typed Java/
+  Bedrock palettes, block NBT and extra layers. An isolated Amulet-Core reader
+  opens FacetEdit exports, and FacetEdit opens both reference-resaved files and
+  an independently created reference fixture. Construction does not require a
+  universal registry when storing native edition/version data.
+- Versioned material controls use primary metadata for Java 1.21.4 (1,095 block
+  definitions) and Bedrock 1.21.50 (1,239 definitions). Typed properties, Java
+  defaults, search and richer replace matching work through the desktop.
+- Independent cross-edition rules now cover 723 Java initial block types.
+  An external check of 2,867 supported state vectors matches Amulet's native
+  translation results after documented fluid/layer normalization. The other
+  372 initial types, unsupported state combinations and cross-edition block NBT
+  are still gaps; these counts are not a claim of complete state coverage.
+- Clipboard preflight and template-world conversion are implemented. Native
+  reference readers reopen both conversion directions, negative chunks and
+  waterlogged directional blocks. Context includes stair corners, paired doors
+  and leaf distance. Source/template hashes, staged edits, bounded diagnostics,
+  cancellation, prepared-chunk integrity and exclusive output publication are
+  checked. Source players/maps/POI/structure metadata are not migrated.
+- Saved-world discovery and configurable navigation now have working interfaces
+  and tests. Streaming Bedrock journal serialization reduces temporary output
+  memory; the database adapter itself still materializes logical records.
+
+## Reference scope and remaining acceptance matrix
+
+The interface target is the stable **0.10.67** tag. The available checkout is
+0.10.68b1; its changes from that tag affect About text and macOS packaging, not
+the audited edit/conversion tools. Translation interoperability uses the separate
+Amulet-Core 1.9.41 / PyMCTranslate 1.2.53 oracle. Neither source nor translation
+tables are application dependencies.
+
+| Reference workflow | FacetEdit state | Work still required |
+| --- | --- | --- |
+| Open/discover worlds and choose dimension | Implemented with bounded scan | Remaining supported storage versions, larger-world memory |
+| Box/multiple selections, Fill, Replace, Clone | Implemented with undo | Remove practical size limits only after memory/performance testing |
+| Waterlog and Set Biome | Implemented for documented layouts | Complete versioned states/biome translations |
+| Paste transforms, filters and preview | Implemented for documented state families | Remaining directional/NBT semantics and large selections |
+| Import/export structures | Native Construction, Java NBT, Bedrock mcstructure, Sponge v2/v3, Alpha schematic | Remaining payload semantics, moving entities and version migrations |
+| Chunk delete/prune/create/import | Implemented for documented layouts | Remaining encodings and version conversion |
+| Original save, undo and recovery | Implemented with retained backups | Game/native-platform/filesystem verification |
+| World converter | Partial; two version profiles and explicit template policy | All block/state/biome/NBT mappings, remaining versions and payloads |
+| Operation extensions | Independent documented Python API | Broader equivalent capabilities; existing wx/NumPy/Amulet plugins require their dependencies |
+| Resource display and navigation | Original local model renderer, bounded terrain, configurable controls | Broader streaming, specialized models, Bedrock resource geometry and parity review |
+
+Dedicated terrain generation, a standalone relighting engine and dedicated
+player/entity editors are broader possible product features, not established
+stock-editor acceptance items from this audit. Preserving/converting payloads
+that Amulet actually supports remains required. Native OS/game checks and the
+version matrix stay open regardless of how many synthetic tests pass.

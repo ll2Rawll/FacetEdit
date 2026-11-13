@@ -333,25 +333,59 @@ def load_database(path):
     return {key: value for key, (_, value) in records.items() if value is not None}
 
 
-def write_database(path, values):
+class LogWriter:
+    """Bounded LevelDB journal output with fragment alignment across batches."""
+    def __init__(self, handle):
+        self.handle = handle
+        self.position = 0
+
+    def write(self, data):
+        self.handle.write(data)
+        self.position += len(data)
+
+    def record(self, data):
+        offset, first = 0, True
+        while first or offset < len(data):
+            available = BLOCK_SIZE - self.position % BLOCK_SIZE
+            if available < 7:
+                self.write(b'\0'*available)
+                available = BLOCK_SIZE
+            size = min(len(data)-offset, available-7)
+            last = offset+size == len(data)
+            kind = (1 if last else 2) if first else (4 if last else 3)
+            payload = data[offset:offset+size]
+            self.write(struct.pack('<IHB', masked_crc(bytes([kind])+payload), size, kind))
+            self.write(payload)
+            offset += size
+            first = False
+
+
+def write_database(path, values, cancelled=lambda: False):
     path = Path(path)
     path.mkdir(parents=True, exist_ok=True)
     if any(path.iterdir()):
         raise FileExistsError("Database snapshot destination must be empty")
     sequence = 1
     batch = []
-    records = []
-    for key, value in sorted(values.items()):
-        batch.append(b"\x01" + blob(key) + blob(value))
-        if len(batch) >= 512:
-            records.append(struct.pack("<QI", sequence, len(batch)) + b"".join(batch))
+    batch_bytes = 0
+    with (path / '000002.log').open('wb') as output:
+        writer = LogWriter(output)
+        for key in sorted(values):
+            if cancelled():
+                raise InterruptedError('Database output cancelled')
+            value = values[key]
+            encoded = b'\x01'+blob(key)+blob(value)
+            batch.append(encoded)
+            batch_bytes += len(encoded)
+            if len(batch) >= 512 or batch_bytes >= 1024*1024:
+                writer.record(struct.pack('<QI', sequence, len(batch))+b''.join(batch))
+                sequence += len(batch)
+                batch.clear()
+                batch_bytes = 0
+        if batch:
+            writer.record(struct.pack('<QI', sequence, len(batch))+b''.join(batch))
             sequence += len(batch)
-            batch.clear()
-    if batch:
-        records.append(struct.pack("<QI", sequence, len(batch)) + b"".join(batch))
-        sequence += len(batch)
     manifest = (varint(1) + blob(b"leveldb.BytewiseComparator") + varint(2) + varint(2)
                 + varint(3) + varint(3) + varint(4) + varint(sequence - 1) + varint(9) + varint(0))
-    (path / "000002.log").write_bytes(write_log(records))
     (path / "MANIFEST-000001").write_bytes(write_log([manifest]))
     (path / "CURRENT").write_text("MANIFEST-000001\n", encoding="ascii")

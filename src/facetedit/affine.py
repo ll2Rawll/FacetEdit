@@ -127,4 +127,4 @@ def transform_clipboard(clipboard,rotation=(0,0,0),scale=(1,1,1),rotate_states=T
         blocks[position]=state(clipboard.blocks[source])
         if source in clipboard.extra_blocks:extras[position]=tuple(state(b) for b in clipboard.extra_blocks[source])
         if source in clipboard.entities:entities[position]=transform.entity(clipboard.entities[source],position,rotate_states)
-    return Clipboard(transform.size,blocks,clipboard.edition,transform.offset(clipboard.offset),entities,clipboard.data_version,extras)
+    return Clipboard(transform.size,blocks,clipboard.edition,transform.offset(clipboard.offset),entities,clipboard.data_version,extras,clipboard.game_version)

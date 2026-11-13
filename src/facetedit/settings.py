@@ -6,6 +6,7 @@ from pathlib import Path
 import sys
 
 from .structures import atomic_write
+from .navigation import validate_navigation
 
 
 def config_path():
@@ -23,6 +24,8 @@ class Settings:
         self.path = Path(path) if path else config_path()
         self.data = {"version": 1, "recent": [], "radius": 12, "grid": True, "theme": "midnight", "glass": True,"autosave":True,"autosave_seconds":30}
         self.data.update(resource_packs=[],resources_enabled=True,renderer='auto',animate_textures=False)
+        self.data.update(world_roots=[])
+        self.data['navigation']=validate_navigation({})
         self.warning = None
         try:
             source = self.path
@@ -33,6 +36,8 @@ class Settings:
             raw = json.loads(source.read_text("utf-8"))
             if raw.get("version") == 1:
                 self.data["recent"] = [p for p in raw.get("recent", []) if isinstance(p, str)][:12]
+                roots=raw.get('world_roots',[])
+                if isinstance(roots,list):self.data['world_roots']=list(dict.fromkeys(p for p in roots if isinstance(p,str) and len(p)<4096))[:32]
                 radius = raw.get("radius")
                 if type(radius) is int and 6 <= radius <= 18:
                     self.data["radius"] = radius
@@ -41,6 +46,8 @@ class Settings:
                 if type(raw.get("glass")) is bool:
                     self.data["glass"] = raw["glass"]
                 if type(raw.get('autosave')) is bool:self.data['autosave'] = raw['autosave']
+                try:self.data['navigation']=validate_navigation(raw.get('navigation',{}))
+                except (ValueError,TypeError,AttributeError):pass
                 packs=raw.get('resource_packs',[])
                 if isinstance(packs,list):self.data['resource_packs']=list(dict.fromkeys(p for p in packs if isinstance(p,str) and len(p)<4096))[:16]
                 for key in ('resources_enabled','animate_textures'):

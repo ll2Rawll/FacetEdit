@@ -18,8 +18,12 @@ from .operation_ui import OperationsUI
 from .save_ui import WorldSaveUI
 from .transform_ui import TransformUI
 from .resource_ui import ResourceUI
+from .material_ui import MaterialsUI
+from .conversion_ui import ConversionUI
+from .library_ui import LibraryUI
+from .navigation_ui import NavigationUI
 
-class FacetEditApp(ResourceUI,TransformUI,WorldSaveUI,OperationsUI,EditorManagers,StudioLayout,tk.Tk):
+class FacetEditApp(NavigationUI,LibraryUI,ConversionUI,MaterialsUI,ResourceUI,TransformUI,WorldSaveUI,OperationsUI,EditorManagers,StudioLayout,tk.Tk):
     def __init__(self,settings_path=None):
         super().__init__()
         global FONT
@@ -75,6 +79,7 @@ class FacetEditApp(ResourceUI,TransformUI,WorldSaveUI,OperationsUI,EditorManager
         file.add_separator()
         file.add_command(label='Save original world…',accelerator='Ctrl+S',command=self.save_original)
         file.add_command(label="Save edited copy…", command=self.save_copy)
+        file.add_command(label="Convert world…",command=self.convert_world_dialog)
         file.add_command(label="Save FacetEdit project…", accelerator="Ctrl+Shift+S", command=self.save_project_dialog)
         file.add_command(label="Import structure…", command=self.import_dialog)
         file.add_command(label="Export selection as structure…", command=self.export_dialog)
@@ -94,6 +99,7 @@ class FacetEditApp(ResourceUI,TransformUI,WorldSaveUI,OperationsUI,EditorManager
         edit.add_command(label='Layered fill…',command=self.layer_dialog)
         edit.add_command(label='Custom operations…',command=self.operations_dialog)
         edit.add_command(label='Transform and preview paste…',command=self.transform_dialog)
+        edit.add_command(label='Translate clipboard…',command=self.translate_clipboard_dialog)
         for text,fn in (("Clone / repeat…",self.clone_dialog),("Nudge selection…",self.nudge_dialog),("Set biome…",self.biome_dialog),("Inspect block NBT…",self.nbt_dialog)):
             edit.add_command(label=text,command=fn)
         menu.add_cascade(label="Edit", menu=edit)
@@ -102,6 +108,7 @@ class FacetEditApp(ResourceUI,TransformUI,WorldSaveUI,OperationsUI,EditorManager
         view.add_command(label="Reset camera", command=lambda: self.viewport.reset())
         view.add_command(label="Go to coordinates…", command=self.goto_dialog)
         view.add_command(label='Resource packs and graphics…',command=self.resources_dialog)
+        view.add_command(label='Navigation and controls…',command=self.navigation_dialog)
         view.add_command(label="Preferences…", command=self.preferences)
         menu.add_cascade(label="View", menu=view)
         help_menu = tk.Menu(menu, tearoff=False)
@@ -233,7 +240,7 @@ class FacetEditApp(ResourceUI,TransformUI,WorldSaveUI,OperationsUI,EditorManager
             self.refresh()
 
     def fill(self):
-        self.run_action(lambda: self.document.fill(Block.parse(self.block_var.get())), lambda n: f"Filled {n:,} blocks · Undo is available")
+        self.run_action(lambda: self.document.fill(self.material_block()), lambda n: f"Filled {n:,} blocks · Undo is available")
 
     def delete(self):
         self.run_action(self.document.delete, lambda n: f"Deleted {n:,} blocks · Undo is available")
@@ -276,14 +283,18 @@ class FacetEditApp(ResourceUI,TransformUI,WorldSaveUI,OperationsUI,EditorManager
         return dialog, content
 
     def replace_dialog(self):
-        dialog, content = self._dialog("Replace blocks")
-        label(content, "Replace this exact block and its states:", 10, color=MUTED).pack(anchor="w")
+        dialog, content = self._dialog("Replace blocks",480,315)
+        label(content, "Match blocks inside the selection:", 10, color=MUTED).pack(anchor="w")
         value = tk.StringVar(value="minecraft:stone")
         entry = ttk.Entry(content, textvariable=value)
         entry.pack(fill="x", pady=10)
         entry.focus_set()
+        modes={'Exact block and states':'exact','Block name, any states':'name','Name and specified states':'subset','Name pattern (* / ?) and specified states':'pattern'}
+        mode=tk.StringVar(value=next(iter(modes)))
+        ttk.Combobox(content,textvariable=mode,values=list(modes),state='readonly').pack(fill='x',pady=(0,10))
         def replace():
-            result = self.run_action(lambda: self.document.fill(Block.parse(self.block_var.get()), replace=Block.parse(value.get())), lambda n: f"Replaced {n:,} blocks")
+            from .matching import BlockMatcher
+            result = self.run_action(lambda: self.document.fill(self.material_block(), replace=BlockMatcher.parse(value.get(),modes[mode.get()])), lambda n: f"Replaced {n:,} blocks")
             if result is not None:
                 dialog.destroy()
         Pill(content, "Replace selection", replace, True, 176).pack(anchor="e", pady=8)
@@ -331,11 +342,7 @@ class FacetEditApp(ResourceUI,TransformUI,WorldSaveUI,OperationsUI,EditorManager
             self.status_var.set("Willow Bay · Editable sample · No Minecraft world is open")
 
     def open_dialog(self):
-        if self.busy:
-            return
-        path = filedialog.askdirectory(title="Open a Minecraft world folder", parent=self, mustexist=True)
-        if path:
-            self.open_path(path)
+        self.world_library()
 
     def open_path(self, path):
         if not Path(path).exists():
@@ -402,13 +409,15 @@ class FacetEditApp(ResourceUI,TransformUI,WorldSaveUI,OperationsUI,EditorManager
         if self.busy:
             return
         bedrock = self.document.world.edition.startswith("Bedrock")
-        path = filedialog.askopenfilename(title="Import structure", filetypes=[("Bedrock structure", "*.mcstructure")] if bedrock else [("Java structure", "*.nbt"),("Sponge schematic","*.schem"),("Legacy schematic","*.schematic")], parent=self)
+        path = filedialog.askopenfilename(title="Import structure", filetypes=[("Construction", "*.construction"),("Java structure", "*.nbt"),("Sponge schematic","*.schem"),("Legacy schematic","*.schematic"),("Bedrock structure", "*.mcstructure")], parent=self)
         if path:
             def imported():
                 from .schematic import load_schematic
                 from .legacy_schematic import load_legacy_schematic
+                from .construction import load_construction
                 version=getattr(self.document.world,'version',4189)
-                self.document.clipboard = import_mcstructure(path) if bedrock else load_legacy_schematic(path,version if version<1451 else None) if Path(path).suffix.lower()=='.schematic' else load_schematic(path) if Path(path).suffix.lower()==".schem" else import_structure(path)
+                suffix=Path(path).suffix.lower()
+                self.document.clipboard = load_construction(path) if suffix=='.construction' else import_mcstructure(path) if suffix=='.mcstructure' else load_legacy_schematic(path,version if version<1451 else None) if suffix=='.schematic' else load_schematic(path) if suffix=='.schem' else import_structure(path)
                 return len(self.document.clipboard.blocks)
             self.run_action(imported, lambda n: f"Imported {n:,} blocks · Select a destination and paste")
 
@@ -422,11 +431,13 @@ class FacetEditApp(ResourceUI,TransformUI,WorldSaveUI,OperationsUI,EditorManager
             self.show_error(exc)
             return
         legacy=getattr(self.document.world,'version',4189)<1451
-        path = filedialog.asksaveasfilename(title="Export selection as structure", defaultextension=".mcstructure" if bedrock else '.schematic' if legacy else ".nbt", filetypes=[("Bedrock structure", "*.mcstructure")] if bedrock else [("Legacy schematic","*.schematic")] if legacy else [("Java structure", "*.nbt"),("Sponge schematic","*.schem")], parent=self)
+        formats=([("Bedrock structure", "*.mcstructure")] if bedrock else [("Legacy schematic","*.schematic")] if legacy else [("Java structure", "*.nbt"),("Sponge schematic","*.schem")])+[("Construction","*.construction")]
+        path = filedialog.asksaveasfilename(title="Export selection as structure", defaultextension=".mcstructure" if bedrock else '.schematic' if legacy else ".nbt", filetypes=formats, parent=self)
         if path:
             from .schematic import save_schematic
             from .legacy_schematic import save_legacy_schematic
-            writer = save_legacy_schematic if Path(path).suffix.lower()=='.schematic' else save_schematic if Path(path).suffix.lower()==".schem" else export_structure
+            from .construction import save_construction
+            writer = save_construction if Path(path).suffix.lower()=='.construction' else save_legacy_schematic if Path(path).suffix.lower()=='.schematic' else save_schematic if Path(path).suffix.lower()==".schem" else export_structure
             self.run_action(lambda: writer(self.document.clipboard, path), lambda _: "Block structure saved · " + path)
 
     def worker(self, function, completed, message):
@@ -493,7 +504,7 @@ class FacetEditApp(ResourceUI,TransformUI,WorldSaveUI,OperationsUI,EditorManager
         Pill(content, "Go to location", go, True, 150).pack(anchor="e")
 
     def preferences(self):
-        dialog, content = self._dialog("Make yourself at home",450,505)
+        dialog, content = self._dialog("Make yourself at home",450,550)
         label(content,"MIDNIGHT GLASS  ·  DEFAULT DARK",9,True,BLUE).pack(anchor="w",pady=(0,10))
         label(content, "Display radius · smaller uses less CPU", 10, color=MUTED).pack(anchor="w")
         radius = tk.IntVar(value=self.viewport.radius)
@@ -522,6 +533,7 @@ class FacetEditApp(ResourceUI,TransformUI,WorldSaveUI,OperationsUI,EditorManager
                 self.show_error(exc)
         Pill(content, "Save preferences", apply, True, 170).pack(anchor="e", pady=14)
         Pill(content,'Resource packs and graphics',lambda:(dialog.destroy(),self.resources_dialog()),width=290,height=32).pack(anchor='w')
+        Pill(content,'Navigation and controls',lambda:(dialog.destroy(),self.navigation_dialog()),width=290,height=32).pack(anchor='w',pady=(8,0))
 
     def command_palette(self):
         dialog, content = self._dialog("What would you like to do?",520,445)
@@ -535,6 +547,8 @@ class FacetEditApp(ResourceUI,TransformUI,WorldSaveUI,OperationsUI,EditorManager
         commands += [('Manage selection regions',self.regions_dialog),('Manage chunks',self.chunks_dialog),('Restore recovery workspace',self.recovery_dialog),('Switch orbit / flight camera',self.toggle_camera),('Layered fill',self.layer_dialog),('Custom operations',self.operations_dialog),('Save original world',self.save_original),('Recover world save',self.world_recovery_dialog)]
         commands.append(('Transform and preview paste',self.transform_dialog))
         commands.append(('Resource packs and graphics',self.resources_dialog))
+        commands.extend([('Find material and block states',self.material_dialog),('Translate clipboard',self.translate_clipboard_dialog),('Convert world',self.convert_world_dialog)])
+        commands.append(('Navigation and controls',self.navigation_dialog))
         matches = []
         def search(*_):
             matches[:] = [(name, fn) for name, fn in commands if query.get().lower() in name.lower()]
@@ -555,33 +569,6 @@ class FacetEditApp(ResourceUI,TransformUI,WorldSaveUI,OperationsUI,EditorManager
         dialog.bind("<Return>", invoke)
         entry.bind("<Down>", lambda _: options.focus_set())
         search()
-        entry.focus_set()
-
-    def material_dialog(self):
-        dialog,content = self._dialog("Find your material",440,500)
-        search = tk.StringVar()
-        entry = ttk.Entry(content,textvariable=search)
-        entry.pack(fill="x",pady=(0,12))
-        choices = tk.Listbox(content,bg="#0b1627",fg=INK,selectbackground=PALE,selectforeground=BLUE,borderwidth=0,highlightthickness=0,font=(FONT,11),activestyle="none")
-        choices.pack(fill="both",expand=True)
-        matches = []
-        def update(*_):
-            matches[:] = [b for b in PALETTE if search.get().lower() in b.name or search.get().lower() in b.label.lower()]
-            choices.delete(0,"end")
-            for block in matches:
-                choices.insert("end","  "+block.label)
-            if matches:
-                choices.selection_set(0)
-        def choose(_=None):
-            if choices.curselection():
-                self.block_var.set(str(matches[choices.curselection()[0]]))
-                self.inspector_tabs.select(0)
-                dialog.destroy()
-        search.trace_add("write",update)
-        choices.bind("<Double-Button-1>",choose)
-        dialog.bind("<Return>",choose)
-        Pill(content,"Use this material",choose,True,180).pack(anchor="e",pady=(12,0))
-        update()
         entry.focus_set()
 
     def _sync_selection(self):
@@ -757,7 +744,8 @@ class FacetEditApp(ResourceUI,TransformUI,WorldSaveUI,OperationsUI,EditorManager
             "SAVE YOUR WORK\nCtrl/Cmd+S saves the original world with a retained backup. Close Minecraft\nbefore saving. Save copy exports a separate folder. Projects reference their\nsource world; keep that folder unchanged while using the project.\nUnsaved edits get recovery copies every 30 seconds by default. File includes\nworkspace recovery and world-save checkpoints for interrupted saves.\n\n"
             "DEEPER EDITING\nThe World tab includes Java/Bedrock biomes, typed block NBT, waterlogging,\nlayered fill, trusted Python operations and Bedrock archives. Paste includes\nclone/repeat. Structures: .nbt, .mcstructure, .schem v2/v3, legacy .schematic.\nManage selection regions adds boxes or subtracts holes. The chunk map\ncreates empty chunks, deletes, prunes and imports matching versions.\nChunk actions are staged and undoable, including associated metadata.\n\n"
             "MODELS & TEXTURES\nView → Resource packs and graphics loads local Java resource folders,\nZIPs or client JARs. Order packs, apply/reload and inspect diagnostics.\nAuto graphics uses system OpenGL with a portable software fallback.\nTextures, models, cutouts, fluids and biome colors appear in both cameras.\nOptional animation is off by default. Game assets are not downloaded.\n\n"
-            "CURRENT COMPATIBILITY\nJava numeric/paletted Anvil through DataVersion 4189; Bedrock subchunks\nv8/v9. Legacy Java retains numeric metadata, not modern translated states.\nBedrock export is experimental; database budget is 256 MiB. Full Amulet\nparity, version/edition translation, moving entities, specialized models\nand game lighting remain unfinished. Published world fixtures are tested;\nexports have not been reopened in Minecraft.\n\n"
+            "TRANSLATION & DISCOVERY\nOpen world discovers saved worlds and lets you add saves folders.\nMaterial studio searches versioned names and edits individual states.\nEdit → Translate clipboard previews Java 1.21.4 / Bedrock 1.21.50 rules.\nFile → Convert world creates a copy of a target template after preflight.\nUnsupported blocks, actors, ticks and cross-edition block NBT block output.\n.construction imports/exports sparse native-edition selections and block NBT.\nView → Navigation and controls sets flight keys, speed, FOV and sensitivity.\n\n"
+            "CURRENT COMPATIBILITY\nJava numeric/paletted Anvil through DataVersion 4189; Bedrock subchunks\nv8/v9. Legacy Java retains numeric metadata, not modern translated states.\nBedrock export is experimental; database budget is 256 MiB. Full Amulet\nparity, all-version translation, moving entities, specialized models\nand game lighting remain unfinished. Independent reference readers reopen\nconverted fixtures; exports have not been reopened in Minecraft.\n\n"
             "INDEPENDENT BY DESIGN\nOriginal code and art. Python + Tk only. No Amulet code or runtime.\nNo accounts, network requests, analytics or third-party Python packages."
         )
         Pill(content, "Got it", dialog.destroy, True, 100).pack(side="bottom",anchor="e",pady=12)

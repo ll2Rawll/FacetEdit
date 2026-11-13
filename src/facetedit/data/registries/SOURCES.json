@@ -1,0 +1,19 @@
+{
+  "format": 1,
+  "generator": "scripts/generate_registry.py",
+  "Java 1.21.4": {
+    "input": "generated/reports/blocks.json",
+    "input_sha256": "381aaf2729f48928011683b4364e6a3053c0dd986f00126d77822a68b252d1a5",
+    "source": "https://piston-data.mojang.com/v1/objects/4707d00eb834b446575d89a61a11b5d548d8c001/server.jar",
+    "source_sha1": "4707d00eb834b446575d89a61a11b5d548d8c001",
+    "command": "java -DbundlerMainClass=net.minecraft.data.Main -jar server.jar --reports",
+    "notes": "Only block identifiers, property domains and default states are included. No Minecraft executable code or artwork is redistributed."
+  },
+  "Bedrock 1.21.50": {
+    "palette_version": 18163713,
+    "palette_version_verification": "PyMCTranslate 1.2.53 get_version('bedrock', (1,21,50)).data_version, observed in isolated reference validation. This is a storage identifier, not copied translation code; native Bedrock game validation remains open.",
+    "source": "https://raw.githubusercontent.com/Mojang/bedrock-samples/v1.21.50.7/metadata/vanilladata_modules/mojang-blocks.json",
+    "input_sha256": "377abca7e6a85a7abafb98de342ad9cf6eea581bcd69bca1caf397d3f3171bc5",
+    "notes": "Global state domains only. Mojang's metadata does not specify default permutations or every per-block constraint; initial UI values are not claimed to be game defaults."
+  }
+}

@@ -212,7 +212,7 @@ def decode_bedrock(raw):
     return version, y, layers, palettes
 
 
-def encode_bedrock(version, y, layers, original_palettes=()):
+def encode_bedrock(version, y, layers, original_palettes=(), palette_version=None):
     out = bytearray((version, len(layers)))
     if version == 9:
         out.extend(struct.pack("b", y))
@@ -230,7 +230,7 @@ def encode_bedrock(version, y, layers, original_palettes=()):
             out.extend(struct.pack("<i", len(palette)))
         originals = original_palettes[layer_index] if layer_index < len(original_palettes) else []
         tags = {bedrock_block(t): t for t in originals}
-        block_version = max((get(t, "version", 17959425) for t in originals), default=17959425)
+        block_version = palette_version if palette_version is not None else max((get(t, "version", 17959425) for t in originals), default=17959425)
         for block in palette:
             out.extend(dumps(tags.get(block, bedrock_entry(block, block_version)), little=True))
     return bytes(out)

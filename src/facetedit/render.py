@@ -8,6 +8,7 @@ from .blocks import color, shade
 from .chrome import rounded
 from .camera import Camera
 from .textured_view import TexturedView
+from .navigation import DEFAULT_BINDINGS
 
 SKY = "#080f1d"
 
@@ -20,6 +21,8 @@ class VoxelView(TexturedView,tk.Canvas):
         self.radius = 12
         self.mode = 'orbit'
         self.camera = Camera()
+        self.default_speed=8.
+        self.navigation_keys=dict(DEFAULT_BINDINGS)
         self._keys = set()
         self._key_releases = {}
         self._flight_id = None
@@ -114,7 +117,7 @@ class VoxelView(TexturedView,tk.Canvas):
     def reset(self):
         self.stop_flight()
         if self.mode=='fly':
-            self.camera.yaw,self.camera.pitch,self.camera.speed=0.,-.3,8.
+            self.camera.yaw,self.camera.pitch,self.camera.speed=0.,-.3,self.default_speed
             self.schedule()
             return
         self.auto_fit = True
@@ -150,13 +153,20 @@ class VoxelView(TexturedView,tk.Canvas):
 
     def _key_press(self,event):
         key=event.keysym.lower()
-        if self.mode!='fly' or key not in ('w','a','s','d','q','e','space','shift_l','shift_r') or event.state&12:return
+        if self.mode!='fly' or key not in self._navigation_map() or event.state&12:return
         if key in self._key_releases:self.after_cancel(self._key_releases.pop(key))
         self._keys.add(key)
         if self._flight_id is None:
             self._last_move=time.monotonic()
             self._flight_id=self.after(16,self._flight_tick)
         return 'break'
+
+    def _navigation_map(self):
+        mapping={key:action for action,key in self.navigation_keys.items()}
+        mapping.setdefault('space','up')
+        if self.navigation_keys['boost'] in ('shift_l','shift_r'):
+            mapping.setdefault('shift_l','boost');mapping.setdefault('shift_r','boost')
+        return mapping
 
     def _key_release(self,event):
         key=event.keysym.lower()
@@ -181,10 +191,10 @@ class VoxelView(TexturedView,tk.Canvas):
         if self.mode!='fly' or self.focus_get() is not self or not self._keys:
             self.stop_flight();return
         now=time.monotonic();elapsed=now-self._last_move;self._last_move=now
-        keys=self._keys
-        changed=self.camera.move(int('w' in keys)-int('s' in keys),int('d' in keys)-int('a' in keys),
-                                 int(bool(keys&{'e','space'}))-int('q' in keys),elapsed,
-                                 bool(keys&{'shift_l','shift_r'}),self.document.world.bounds(self.document.dimension))
+        mapping=self._navigation_map();actions={mapping[key] for key in self._keys if key in mapping}
+        changed=self.camera.move(int('forward' in actions)-int('back' in actions),int('right' in actions)-int('left' in actions),
+                                 int('up' in actions)-int('down' in actions),elapsed,
+                                 'boost' in actions,self.document.world.bounds(self.document.dimension))
         if changed:
             self.center_x,self.center_z=math.floor(self.camera.position[0]),math.floor(self.camera.position[2])
             self.schedule()

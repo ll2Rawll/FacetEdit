@@ -8,7 +8,7 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 DIST.mkdir(exist_ok=True)
-VERSION = "0.5.0"
+VERSION = "0.6.0"
 
 stage = DIST / "stage"
 if stage.exists():
@@ -52,6 +52,10 @@ with zipfile.ZipFile(portable, "w", zipfile.ZIP_DEFLATED) as archive:
     for name in ('docs/FULL_PARITY_WORKLIST.md','docs/OPERATIONS.md','artifacts/transform.png','artifacts/transform-preview.png','artifacts/operations.png','artifacts/world-save.png','artifacts/world-corpus-results.json','artifacts/world-fixture-manifest.json','artifacts/streaming-benchmark.json','artifacts/streaming-before-optimization.json'):
         archive.write(ROOT/name,'FacetEdit/'+name)
     for name in ('docs/PARITY_RENDERING_PLAN.md','docs/RESOURCES.md','artifacts/textured-workspace.png','artifacts/model-gallery.png','artifacts/textured-selection.png','artifacts/textured-flight.png','artifacts/textured-compact.png','artifacts/textured-software.png','artifacts/resource-studio.png','artifacts/textured-benchmark.json','artifacts/textured-before-cropping.json','artifacts/resource-corpus.json','artifacts/resource-validation.txt','artifacts/shared-display-test-conflict.txt'):
+        archive.write(ROOT/name,'FacetEdit/'+name)
+    for name in ('docs/PARITY_CONVERSION_PLAN.md','docs/CONVERSION.md','artifacts/material-studio.png','artifacts/material-workspace.png','artifacts/material-states-compact.png','artifacts/clipboard-translation.png','artifacts/world-conversion.png','artifacts/world-library.png','artifacts/navigation-controls.png','artifacts/construction-reference.json','artifacts/translation-reference.json','artifacts/conversion-reference.json','artifacts/conversion-benchmark.json'):
+        archive.write(ROOT/name,'FacetEdit/'+name)
+    for name in ('artifacts/python312-gui-tests.txt','artifacts/diagnostics-0.6.json','artifacts/0.6-gc-first-pass.txt','src/facetedit/data/registries/SOURCES.json'):
         archive.write(ROOT/name,'FacetEdit/'+name)
 
 source = DIST / f"FacetEdit-{VERSION}-source.zip"

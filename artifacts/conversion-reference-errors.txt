@@ -1,0 +1,5 @@
+INFO - PyMCTranslate Version 396
+INFO - Loading level /tmp/facetedit-reference-world-dgg_p9hn/converted-Java
+INFO - Loading level /tmp/facetedit-reference-world-dgg_p9hn/converted-Bedrock
+INFO - Loading level /tmp/facetedit-reference-world-dgg_p9hn/painted
+INFO - Loading level /tmp/facetedit-reference-world-dgg_p9hn/painted.mcstructure

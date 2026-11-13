@@ -1,0 +1,35 @@
+test_name_subset_exact_and_pattern (tests.test_translation.MatchingTests.test_name_subset_exact_and_pattern) ... ok
+test_replace_predicate_is_one_undo_step (tests.test_translation.MatchingTests.test_replace_predicate_is_one_undo_step) ... ok
+test_axis_waterlogging_and_typed_state_vectors (tests.test_translation.TranslationTests.test_axis_waterlogging_and_typed_state_vectors) ... ok
+test_cancellation_and_explicit_air_normalization_note (tests.test_translation.TranslationTests.test_cancellation_and_explicit_air_normalization_note) ... ok
+test_contextual_stair_corner_and_atomic_inconsistent_shape (tests.test_translation.TranslationTests.test_contextual_stair_corner_and_atomic_inconsistent_shape) ... ok
+test_copper_and_wood_slabs_all_native_variants (tests.test_translation.TranslationTests.test_copper_and_wood_slabs_all_native_variants) ... ok
+test_crop_fluid_rail_sign_wall_vectors (tests.test_translation.TranslationTests.test_crop_fluid_rail_sign_wall_vectors) ... ok
+test_every_java_initial_mapping_reverses_or_reports_named_air_normalization (tests.test_translation.TranslationTests.test_every_java_initial_mapping_reverses_or_reports_named_air_normalization) ... ok
+test_explicit_stateless_mapping_corpus (tests.test_translation.TranslationTests.test_explicit_stateless_mapping_corpus) ... ok
+test_unmapped_payload_and_invalid_layer_leave_input_unchanged (tests.test_translation.TranslationTests.test_unmapped_payload_and_invalid_layer_leave_input_unchanged) ... ok
+test_bedrock_to_java_blocks_biomes_and_target_template (tests.test_conversion.WorldConversionTests.test_bedrock_to_java_blocks_biomes_and_target_template) ... ok
+test_block_entity_and_unmapped_block_preflight_refuse_publication (tests.test_conversion.WorldConversionTests.test_block_entity_and_unmapped_block_preflight_refuse_publication) ... ok
+test_cancel_changed_source_and_destination_collision (tests.test_conversion.WorldConversionTests.test_cancel_changed_source_and_destination_collision) ... ok
+test_cancel_during_publish_removes_private_stage (tests.test_conversion.WorldConversionTests.test_cancel_during_publish_removes_private_stage) ... ok
+test_exact_biomes_refuse_resolution_loss (tests.test_conversion.WorldConversionTests.test_exact_biomes_refuse_resolution_loss) ... ok
+test_java_to_bedrock_staged_edits_biomes_and_source_hashes (tests.test_conversion.WorldConversionTests.test_java_to_bedrock_staged_edits_biomes_and_source_hashes) ... ok
+test_bad_current_path_rejected (tests.test_leveldb.LevelDBTests.test_bad_current_path_rejected) ... ok
+test_crc32c_independent_known_vectors (tests.test_leveldb.LevelDBTests.test_crc32c_independent_known_vectors) ... ok
+test_database_snapshot_round_trip (tests.test_leveldb.LevelDBTests.test_database_snapshot_round_trip) ... ok
+test_empty_snapshot (tests.test_leveldb.LevelDBTests.test_empty_snapshot) ... ok
+test_log_checksum_and_truncation (tests.test_leveldb.LevelDBTests.test_log_checksum_and_truncation) ... ok
+test_log_fragment_boundaries (tests.test_leveldb.LevelDBTests.test_log_fragment_boundaries) ... ok
+test_manifest_selects_live_files_and_wal_wins (tests.test_leveldb.LevelDBTests.test_manifest_selects_live_files_and_wal_wins) ... ok
+test_restart_block_shared_prefix (tests.test_leveldb.LevelDBTests.test_restart_block_shared_prefix) ... ok
+test_snappy_copy1_and_copy4 (tests.test_leveldb.LevelDBTests.test_snappy_copy1_and_copy4) ... ok
+test_snappy_invalid_offsets_and_size (tests.test_leveldb.LevelDBTests.test_snappy_invalid_offsets_and_size) ... ok
+test_snappy_literals_and_overlapping_copy (tests.test_leveldb.LevelDBTests.test_snappy_literals_and_overlapping_copy) ... ok
+test_table_checksum_failure (tests.test_leveldb.LevelDBTests.test_table_checksum_failure) ... ok
+test_table_reads_all_supported_zlib_modes (tests.test_leveldb.LevelDBTests.test_table_reads_all_supported_zlib_modes) ... ok
+test_varint_golden (tests.test_leveldb.LevelDBTests.test_varint_golden) ... ok
+
+----------------------------------------------------------------------
+Ran 30 tests in 1.891s
+
+OK

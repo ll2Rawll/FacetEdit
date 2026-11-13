@@ -1,0 +1,17 @@
+test_bedrock_material_state_types_survive_text_field (tests.test_conversion_ui.ConversionDesktopTests.test_bedrock_material_state_types_survive_text_field) ... ok
+test_changed_translation_options_discard_background_result (tests.test_conversion_ui.ConversionDesktopTests.test_changed_translation_options_discard_background_result) ... ok
+test_clipboard_preflight_use_and_paste (tests.test_conversion_ui.ConversionDesktopTests.test_clipboard_preflight_use_and_paste) ... ok
+test_closed_preflight_dialog_releases_prepared_files_without_publication (tests.test_conversion_ui.ConversionDesktopTests.test_closed_preflight_dialog_releases_prepared_files_without_publication) ... ok
+test_construction_import_and_export_menu_paths (tests.test_conversion_ui.ConversionDesktopTests.test_construction_import_and_export_menu_paths) ... ok
+test_material_properties_scroll_and_keyboard_focus_reveals_last_control (tests.test_conversion_ui.ConversionDesktopTests.test_material_properties_scroll_and_keyboard_focus_reveals_last_control) ... ok
+test_material_search_states_and_actual_fill (tests.test_conversion_ui.ConversionDesktopTests.test_material_search_states_and_actual_fill) ... ok
+test_material_variables_and_traces_are_released_when_rebuilt_and_closed (tests.test_conversion_ui.ConversionDesktopTests.test_material_variables_and_traces_are_released_when_rebuilt_and_closed) ... ok
+test_navigation_controls_change_actual_key_movement_and_persist (tests.test_conversion_ui.ConversionDesktopTests.test_navigation_controls_change_actual_key_movement_and_persist) ... ok
+test_unknown_clipboard_does_not_enable_application (tests.test_conversion_ui.ConversionDesktopTests.test_unknown_clipboard_does_not_enable_application) ... ok
+test_world_library_search_and_open_without_loading_database_during_scan (tests.test_conversion_ui.ConversionDesktopTests.test_world_library_search_and_open_without_loading_database_during_scan) ... ok
+test_world_preflight_and_save_through_desktop_callbacks (tests.test_conversion_ui.ConversionDesktopTests.test_world_preflight_and_save_through_desktop_callbacks) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 2.659s
+
+OK

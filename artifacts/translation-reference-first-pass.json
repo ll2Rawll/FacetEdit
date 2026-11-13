@@ -1,0 +1,2432 @@
+{
+  "reference": "Amulet-Core 1.9.41 / PyMCTranslate 1.2.53",
+  "source": "Java 1.21.4",
+  "target": "Bedrock 1.21.50",
+  "supported_initial_block_types": 608,
+  "unsupported_initial_block_types": 487,
+  "state_vectors": 2192,
+  "reference_requested_context_or_nbt": 282,
+  "mismatch_count": 193,
+  "normalization": "Bedrock flowing_water/flowing_lava are compared to water/lava with matching depth; __version__ is checked separately as palette metadata.",
+  "mismatches": [
+    {
+      "input": "minecraft:acacia_sign[rotation=0,waterlogged=true]",
+      "ours": "minecraft:acacia_standing_sign[ground_sign_direction=0]",
+      "expected": "minecraft:acacia_standing_sign[ground_sign_direction=0]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:acacia_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:acacia_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:acacia_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:acacia_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:acacia_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:acacia_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:acacia_wall_sign[facing=north,waterlogged=true]",
+      "ours": "minecraft:acacia_wall_sign[facing_direction=2]",
+      "expected": "minecraft:acacia_wall_sign[facing_direction=2]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:activator_rail[powered=false,shape=north_south,waterlogged=true]",
+      "ours": "minecraft:activator_rail[rail_data_bit=false,rail_direction=0]",
+      "expected": "minecraft:activator_rail[rail_data_bit=false,rail_direction=0]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:andesite_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:andesite_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:andesite_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:andesite_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:andesite_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:andesite_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:andesite_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:andesite_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:andesite_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:bamboo_mosaic_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:bamboo_mosaic_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:bamboo_mosaic_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:bamboo_mosaic_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:bamboo_mosaic_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:bamboo_mosaic_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:bamboo_sign[rotation=0,waterlogged=true]",
+      "ours": "minecraft:bamboo_standing_sign[ground_sign_direction=0]",
+      "expected": "minecraft:bamboo_standing_sign[ground_sign_direction=0]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:bamboo_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:bamboo_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:bamboo_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:bamboo_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:bamboo_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:bamboo_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:bamboo_wall_sign[facing=north,waterlogged=true]",
+      "ours": "minecraft:bamboo_wall_sign[facing_direction=2]",
+      "expected": "minecraft:bamboo_wall_sign[facing_direction=2]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:birch_sign[rotation=0,waterlogged=true]",
+      "ours": "minecraft:birch_standing_sign[ground_sign_direction=0]",
+      "expected": "minecraft:birch_standing_sign[ground_sign_direction=0]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:birch_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:birch_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:birch_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:birch_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:birch_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:birch_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:birch_wall_sign[facing=north,waterlogged=true]",
+      "ours": "minecraft:birch_wall_sign[facing_direction=2]",
+      "expected": "minecraft:birch_wall_sign[facing_direction=2]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:black_candle[candles=1,lit=false,waterlogged=true]",
+      "ours": "minecraft:black_candle[candles=0,lit=false]",
+      "expected": "minecraft:black_candle[candles=0,lit=false]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:blackstone_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:blackstone_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:blackstone_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:blackstone_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:blackstone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:blackstone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:blackstone_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:blackstone_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:blackstone_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:blue_candle[candles=1,lit=false,waterlogged=true]",
+      "ours": "minecraft:blue_candle[candles=0,lit=false]",
+      "expected": "minecraft:blue_candle[candles=0,lit=false]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:brick_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:brick_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:brick_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:brick_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:brick_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:brown_candle[candles=1,lit=false,waterlogged=true]",
+      "ours": "minecraft:brown_candle[candles=0,lit=false]",
+      "expected": "minecraft:brown_candle[candles=0,lit=false]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:candle[candles=1,lit=false,waterlogged=true]",
+      "ours": "minecraft:candle[candles=0,lit=false]",
+      "expected": "minecraft:candle[candles=0,lit=false]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:chain[axis=y,waterlogged=true]",
+      "ours": "minecraft:chain[pillar_axis=y]",
+      "expected": "minecraft:chain[pillar_axis=y]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:cherry_sign[rotation=0,waterlogged=true]",
+      "ours": "minecraft:cherry_standing_sign[ground_sign_direction=0]",
+      "expected": "minecraft:cherry_standing_sign[ground_sign_direction=0]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:cherry_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:cherry_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:cherry_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:cherry_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:cherry_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:cherry_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:cherry_wall_sign[facing=north,waterlogged=true]",
+      "ours": "minecraft:cherry_wall_sign[facing_direction=2]",
+      "expected": "minecraft:cherry_wall_sign[facing_direction=2]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:cobbled_deepslate_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:cobbled_deepslate_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:cobbled_deepslate_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:cobbled_deepslate_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:cobbled_deepslate_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:cobbled_deepslate_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:cobbled_deepslate_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:cobbled_deepslate_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:cobbled_deepslate_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:cobblestone_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:cobblestone_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:cobblestone_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:cobblestone_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:stone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:stone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:cobblestone_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:cobblestone_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:cobblestone_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:crimson_sign[rotation=0,waterlogged=true]",
+      "ours": "minecraft:crimson_standing_sign[ground_sign_direction=0]",
+      "expected": "minecraft:crimson_standing_sign[ground_sign_direction=0]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:crimson_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:crimson_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:crimson_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:crimson_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:crimson_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:crimson_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:crimson_wall_sign[facing=north,waterlogged=true]",
+      "ours": "minecraft:crimson_wall_sign[facing_direction=2]",
+      "expected": "minecraft:crimson_wall_sign[facing_direction=2]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:cut_copper_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:cut_copper_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:cut_copper_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:cut_copper_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:cut_copper_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:cut_copper_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:cut_red_sandstone_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:cut_red_sandstone_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:cut_red_sandstone_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:cut_sandstone_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:cut_sandstone_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:cut_sandstone_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:cyan_candle[candles=1,lit=false,waterlogged=true]",
+      "ours": "minecraft:cyan_candle[candles=0,lit=false]",
+      "expected": "minecraft:cyan_candle[candles=0,lit=false]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:dark_oak_sign[rotation=0,waterlogged=true]",
+      "ours": "minecraft:darkoak_standing_sign[ground_sign_direction=0]",
+      "expected": "minecraft:darkoak_standing_sign[ground_sign_direction=0]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:dark_oak_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:dark_oak_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:dark_oak_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:dark_oak_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:dark_oak_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:dark_oak_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:dark_oak_wall_sign[facing=north,waterlogged=true]",
+      "ours": "minecraft:darkoak_wall_sign[facing_direction=2]",
+      "expected": "minecraft:darkoak_wall_sign[facing_direction=2]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:dark_prismarine_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:dark_prismarine_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:dark_prismarine_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:dark_prismarine_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:dark_prismarine_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:dark_prismarine_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:deepslate_brick_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:deepslate_brick_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:deepslate_brick_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:deepslate_brick_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:deepslate_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:deepslate_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:deepslate_brick_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:deepslate_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:deepslate_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:deepslate_tile_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:deepslate_tile_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:deepslate_tile_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:deepslate_tile_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:deepslate_tile_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:deepslate_tile_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:deepslate_tile_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:deepslate_tile_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:deepslate_tile_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:detector_rail[powered=false,shape=north_south,waterlogged=true]",
+      "ours": "minecraft:detector_rail[rail_data_bit=false,rail_direction=0]",
+      "expected": "minecraft:detector_rail[rail_data_bit=false,rail_direction=0]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:diorite_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:diorite_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:diorite_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:diorite_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:diorite_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:diorite_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:diorite_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:diorite_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:diorite_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:end_stone_brick_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:end_stone_brick_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:end_stone_brick_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:end_stone_brick_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:end_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:end_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:end_stone_brick_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:end_stone_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:end_stone_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:exposed_cut_copper_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:exposed_cut_copper_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:exposed_cut_copper_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:exposed_cut_copper_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:exposed_cut_copper_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:exposed_cut_copper_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:granite_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:granite_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:granite_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:granite_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:granite_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:granite_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:granite_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:granite_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:granite_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:gray_candle[candles=1,lit=false,waterlogged=true]",
+      "ours": "minecraft:gray_candle[candles=0,lit=false]",
+      "expected": "minecraft:gray_candle[candles=0,lit=false]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:green_candle[candles=1,lit=false,waterlogged=true]",
+      "ours": "minecraft:green_candle[candles=0,lit=false]",
+      "expected": "minecraft:green_candle[candles=0,lit=false]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:jungle_sign[rotation=0,waterlogged=true]",
+      "ours": "minecraft:jungle_standing_sign[ground_sign_direction=0]",
+      "expected": "minecraft:jungle_standing_sign[ground_sign_direction=0]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:jungle_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:jungle_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:jungle_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:jungle_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:jungle_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:jungle_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:jungle_wall_sign[facing=north,waterlogged=true]",
+      "ours": "minecraft:jungle_wall_sign[facing_direction=2]",
+      "expected": "minecraft:jungle_wall_sign[facing_direction=2]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:ladder[facing=north,waterlogged=true]",
+      "ours": "minecraft:ladder[facing_direction=2]",
+      "expected": "minecraft:ladder[facing_direction=2]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:light_blue_candle[candles=1,lit=false,waterlogged=true]",
+      "ours": "minecraft:light_blue_candle[candles=0,lit=false]",
+      "expected": "minecraft:light_blue_candle[candles=0,lit=false]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:light_gray_candle[candles=1,lit=false,waterlogged=true]",
+      "ours": "minecraft:light_gray_candle[candles=0,lit=false]",
+      "expected": "minecraft:light_gray_candle[candles=0,lit=false]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:lime_candle[candles=1,lit=false,waterlogged=true]",
+      "ours": "minecraft:lime_candle[candles=0,lit=false]",
+      "expected": "minecraft:lime_candle[candles=0,lit=false]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:magenta_candle[candles=1,lit=false,waterlogged=true]",
+      "ours": "minecraft:magenta_candle[candles=0,lit=false]",
+      "expected": "minecraft:magenta_candle[candles=0,lit=false]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:mangrove_sign[rotation=0,waterlogged=true]",
+      "ours": "minecraft:mangrove_standing_sign[ground_sign_direction=0]",
+      "expected": "minecraft:mangrove_standing_sign[ground_sign_direction=0]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:mangrove_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:mangrove_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:mangrove_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:mangrove_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:mangrove_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:mangrove_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:mangrove_wall_sign[facing=north,waterlogged=true]",
+      "ours": "minecraft:mangrove_wall_sign[facing_direction=2]",
+      "expected": "minecraft:mangrove_wall_sign[facing_direction=2]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:mossy_cobblestone_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:mossy_cobblestone_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:mossy_cobblestone_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:mossy_cobblestone_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:mossy_cobblestone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:mossy_cobblestone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:mossy_cobblestone_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:mossy_cobblestone_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:mossy_cobblestone_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:mossy_stone_brick_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:mossy_stone_brick_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:mossy_stone_brick_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:mossy_stone_brick_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:mossy_stone_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:mossy_stone_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:mossy_stone_brick_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:mossy_stone_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:mossy_stone_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:mud_brick_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:mud_brick_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:mud_brick_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:mud_brick_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:mud_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:mud_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:mud_brick_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:mud_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:mud_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:nether_brick_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:nether_brick_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:nether_brick_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:nether_brick_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:nether_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:nether_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:nether_brick_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:nether_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:nether_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:oak_sign[rotation=0,waterlogged=true]",
+      "ours": "minecraft:standing_sign[ground_sign_direction=0]",
+      "expected": "minecraft:standing_sign[ground_sign_direction=0]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:oak_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:oak_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:oak_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:oak_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:oak_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:oak_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:oak_wall_sign[facing=north,waterlogged=true]",
+      "ours": "minecraft:wall_sign[facing_direction=2]",
+      "expected": "minecraft:wall_sign[facing_direction=2]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:orange_candle[candles=1,lit=false,waterlogged=true]",
+      "ours": "minecraft:orange_candle[candles=0,lit=false]",
+      "expected": "minecraft:orange_candle[candles=0,lit=false]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:oxidized_cut_copper_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:oxidized_cut_copper_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:oxidized_cut_copper_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:oxidized_cut_copper_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:oxidized_cut_copper_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:oxidized_cut_copper_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:pale_oak_sign[rotation=0,waterlogged=true]",
+      "ours": "minecraft:pale_oak_standing_sign[ground_sign_direction=0]",
+      "expected": "minecraft:pale_oak_standing_sign[ground_sign_direction=0]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:pale_oak_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:pale_oak_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:pale_oak_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:pale_oak_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:pale_oak_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:pale_oak_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:pale_oak_wall_sign[facing=north,waterlogged=true]",
+      "ours": "minecraft:pale_oak_wall_sign[facing_direction=2]",
+      "expected": "minecraft:pale_oak_wall_sign[facing_direction=2]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:petrified_oak_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:petrified_oak_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:petrified_oak_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:pink_candle[candles=1,lit=false,waterlogged=true]",
+      "ours": "minecraft:pink_candle[candles=0,lit=false]",
+      "expected": "minecraft:pink_candle[candles=0,lit=false]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_andesite_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:polished_andesite_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:polished_andesite_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_andesite_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:polished_andesite_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:polished_andesite_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_blackstone_brick_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:polished_blackstone_brick_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:polished_blackstone_brick_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_blackstone_brick_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:polished_blackstone_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:polished_blackstone_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_blackstone_brick_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:polished_blackstone_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:polished_blackstone_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_blackstone_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:polished_blackstone_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:polished_blackstone_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_blackstone_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:polished_blackstone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:polished_blackstone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_blackstone_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:polished_blackstone_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:polished_blackstone_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_deepslate_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:polished_deepslate_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:polished_deepslate_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_deepslate_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:polished_deepslate_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:polished_deepslate_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_deepslate_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:polished_deepslate_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:polished_deepslate_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_diorite_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:polished_diorite_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:polished_diorite_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_diorite_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:polished_diorite_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:polished_diorite_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_granite_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:polished_granite_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:polished_granite_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_granite_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:polished_granite_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:polished_granite_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_tuff_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:polished_tuff_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:polished_tuff_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_tuff_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:polished_tuff_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:polished_tuff_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:polished_tuff_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:polished_tuff_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:polished_tuff_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:powered_rail[powered=false,shape=north_south,waterlogged=true]",
+      "ours": "minecraft:golden_rail[rail_data_bit=false,rail_direction=0]",
+      "expected": "minecraft:golden_rail[rail_data_bit=false,rail_direction=0]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:prismarine_brick_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:prismarine_brick_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:prismarine_brick_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:prismarine_brick_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:prismarine_bricks_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:prismarine_bricks_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:prismarine_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:prismarine_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:prismarine_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:prismarine_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:prismarine_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:prismarine_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:prismarine_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:prismarine_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:prismarine_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:purple_candle[candles=1,lit=false,waterlogged=true]",
+      "ours": "minecraft:purple_candle[candles=0,lit=false]",
+      "expected": "minecraft:purple_candle[candles=0,lit=false]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:purpur_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:purpur_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:purpur_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:purpur_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:purpur_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:purpur_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:quartz_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:quartz_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:quartz_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:quartz_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:quartz_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:quartz_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:rail[shape=north_south,waterlogged=true]",
+      "ours": "minecraft:rail[rail_direction=0]",
+      "expected": "minecraft:rail[rail_direction=0]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:red_candle[candles=1,lit=false,waterlogged=true]",
+      "ours": "minecraft:red_candle[candles=0,lit=false]",
+      "expected": "minecraft:red_candle[candles=0,lit=false]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:red_nether_brick_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:red_nether_brick_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:red_nether_brick_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:red_nether_brick_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:red_nether_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:red_nether_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:red_nether_brick_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:red_nether_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:red_nether_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:red_sandstone_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:red_sandstone_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:red_sandstone_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:red_sandstone_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:red_sandstone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:red_sandstone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:red_sandstone_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:red_sandstone_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:red_sandstone_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:resin_brick_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:resin_brick_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:resin_brick_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:resin_brick_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:resin_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:resin_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:resin_brick_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:resin_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:resin_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:sandstone_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:sandstone_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:sandstone_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:sandstone_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:sandstone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:sandstone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:sandstone_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:sandstone_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:sandstone_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:smooth_quartz_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:smooth_quartz_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:smooth_quartz_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:smooth_quartz_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:smooth_quartz_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:smooth_quartz_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:smooth_red_sandstone_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:smooth_red_sandstone_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:smooth_red_sandstone_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:smooth_red_sandstone_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:smooth_red_sandstone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:smooth_red_sandstone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:smooth_sandstone_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:smooth_sandstone_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:smooth_sandstone_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:smooth_sandstone_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:smooth_sandstone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:smooth_sandstone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:smooth_stone_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:smooth_stone_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:smooth_stone_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:spruce_sign[rotation=0,waterlogged=true]",
+      "ours": "minecraft:spruce_standing_sign[ground_sign_direction=0]",
+      "expected": "minecraft:spruce_standing_sign[ground_sign_direction=0]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:spruce_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:spruce_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:spruce_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:spruce_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:spruce_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:spruce_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:spruce_wall_sign[facing=north,waterlogged=true]",
+      "ours": "minecraft:spruce_wall_sign[facing_direction=2]",
+      "expected": "minecraft:spruce_wall_sign[facing_direction=2]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:stone_brick_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:stone_brick_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:stone_brick_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:stone_brick_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:stone_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:stone_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:stone_brick_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:stone_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:stone_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:stone_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:normal_stone_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:normal_stone_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:stone_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:normal_stone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:normal_stone_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:tuff_brick_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:tuff_brick_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:tuff_brick_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:tuff_brick_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:tuff_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:tuff_brick_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:tuff_brick_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:tuff_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:tuff_brick_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:tuff_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:tuff_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:tuff_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:tuff_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:tuff_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:tuff_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:tuff_wall[east=none,north=none,south=none,up=true,waterlogged=true,west=none]",
+      "ours": "minecraft:tuff_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "expected": "minecraft:tuff_wall[wall_connection_type_east=none,wall_connection_type_north=none,wall_connection_type_south=none,wall_connection_type_west=none,wall_post_bit=true]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:warped_sign[rotation=0,waterlogged=true]",
+      "ours": "minecraft:warped_standing_sign[ground_sign_direction=0]",
+      "expected": "minecraft:warped_standing_sign[ground_sign_direction=0]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:warped_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:warped_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:warped_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:warped_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:warped_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:warped_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:warped_wall_sign[facing=north,waterlogged=true]",
+      "ours": "minecraft:warped_wall_sign[facing_direction=2]",
+      "expected": "minecraft:warped_wall_sign[facing_direction=2]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": true
+    },
+    {
+      "input": "minecraft:waxed_cut_copper_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:waxed_cut_copper_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:waxed_cut_copper_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:waxed_cut_copper_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:waxed_cut_copper_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:waxed_cut_copper_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:waxed_exposed_cut_copper_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:waxed_exposed_cut_copper_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:waxed_exposed_cut_copper_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:waxed_exposed_cut_copper_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:waxed_exposed_cut_copper_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:waxed_exposed_cut_copper_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:waxed_oxidized_cut_copper_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:waxed_oxidized_cut_copper_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:waxed_oxidized_cut_copper_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:waxed_oxidized_cut_copper_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:waxed_oxidized_cut_copper_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:waxed_oxidized_cut_copper_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:waxed_weathered_cut_copper_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:waxed_weathered_cut_copper_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:waxed_weathered_cut_copper_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:waxed_weathered_cut_copper_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:waxed_weathered_cut_copper_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:waxed_weathered_cut_copper_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:weathered_cut_copper_slab[type=bottom,waterlogged=true]",
+      "ours": "minecraft:weathered_cut_copper_slab[minecraft:vertical_half=bottom]",
+      "expected": "minecraft:weathered_cut_copper_slab[minecraft:vertical_half=bottom]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:weathered_cut_copper_stairs[facing=north,half=bottom,shape=straight,waterlogged=true]",
+      "ours": "minecraft:weathered_cut_copper_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "expected": "minecraft:weathered_cut_copper_stairs[upside_down_bit=false,weirdo_direction=3]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:white_candle[candles=1,lit=false,waterlogged=true]",
+      "ours": "minecraft:white_candle[candles=0,lit=false]",
+      "expected": "minecraft:white_candle[candles=0,lit=false]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    },
+    {
+      "input": "minecraft:yellow_candle[candles=1,lit=false,waterlogged=true]",
+      "ours": "minecraft:yellow_candle[candles=0,lit=false]",
+      "expected": "minecraft:yellow_candle[candles=0,lit=false]",
+      "ours_layers": [
+        "minecraft:water[liquid_depth=0]"
+      ],
+      "expected_layers": [],
+      "context_or_nbt_requested": false
+    }
+  ],
+  "unsupported": [
+    "minecraft:acacia_button",
+    "minecraft:acacia_door",
+    "minecraft:acacia_fence",
+    "minecraft:acacia_fence_gate",
+    "minecraft:acacia_hanging_sign",
+    "minecraft:acacia_leaves",
+    "minecraft:acacia_pressure_plate",
+    "minecraft:acacia_sapling",
+    "minecraft:acacia_trapdoor",
+    "minecraft:acacia_wall_hanging_sign",
+    "minecraft:amethyst_cluster",
+    "minecraft:anvil",
+    "minecraft:attached_melon_stem",
+    "minecraft:attached_pumpkin_stem",
+    "minecraft:azalea_leaves",
+    "minecraft:bamboo",
+    "minecraft:bamboo_button",
+    "minecraft:bamboo_door",
+    "minecraft:bamboo_fence",
+    "minecraft:bamboo_fence_gate",
+    "minecraft:bamboo_hanging_sign",
+    "minecraft:bamboo_pressure_plate",
+    "minecraft:bamboo_sapling",
+    "minecraft:bamboo_trapdoor",
+    "minecraft:bamboo_wall_hanging_sign",
+    "minecraft:barrel",
+    "minecraft:barrier",
+    "minecraft:bee_nest",
+    "minecraft:beehive",
+    "minecraft:bell",
+    "minecraft:big_dripleaf",
+    "minecraft:big_dripleaf_stem",
+    "minecraft:birch_button",
+    "minecraft:birch_door",
+    "minecraft:birch_fence",
+    "minecraft:birch_fence_gate",
+    "minecraft:birch_hanging_sign",
+    "minecraft:birch_leaves",
+    "minecraft:birch_pressure_plate",
+    "minecraft:birch_sapling",
+    "minecraft:birch_trapdoor",
+    "minecraft:birch_wall_hanging_sign",
+    "minecraft:black_banner",
+    "minecraft:black_bed",
+    "minecraft:black_glazed_terracotta",
+    "minecraft:black_shulker_box",
+    "minecraft:black_stained_glass_pane",
+    "minecraft:black_wall_banner",
+    "minecraft:blue_banner",
+    "minecraft:blue_bed",
+    "minecraft:blue_glazed_terracotta",
+    "minecraft:blue_shulker_box",
+    "minecraft:blue_stained_glass_pane",
+    "minecraft:blue_wall_banner",
+    "minecraft:bone_block",
+    "minecraft:brain_coral",
+    "minecraft:brain_coral_fan",
+    "minecraft:brain_coral_wall_fan",
+    "minecraft:brewing_stand",
+    "minecraft:bricks",
+    "minecraft:brown_banner",
+    "minecraft:brown_bed",
+    "minecraft:brown_glazed_terracotta",
+    "minecraft:brown_mushroom_block",
+    "minecraft:brown_shulker_box",
+    "minecraft:brown_stained_glass_pane",
+    "minecraft:brown_wall_banner",
+    "minecraft:bubble_column",
+    "minecraft:bubble_coral",
+    "minecraft:bubble_coral_fan",
+    "minecraft:bubble_coral_wall_fan",
+    "minecraft:cake",
+    "minecraft:calibrated_sculk_sensor",
+    "minecraft:campfire",
+    "minecraft:cauldron",
+    "minecraft:cave_vines",
+    "minecraft:cave_vines_plant",
+    "minecraft:chain_command_block",
+    "minecraft:cherry_button",
+    "minecraft:cherry_door",
+    "minecraft:cherry_fence",
+    "minecraft:cherry_fence_gate",
+    "minecraft:cherry_hanging_sign",
+    "minecraft:cherry_leaves",
+    "minecraft:cherry_pressure_plate",
+    "minecraft:cherry_sapling",
+    "minecraft:cherry_trapdoor",
+    "minecraft:cherry_wall_hanging_sign",
+    "minecraft:chest",
+    "minecraft:chipped_anvil",
+    "minecraft:chiseled_bookshelf",
+    "minecraft:chiseled_quartz_block",
+    "minecraft:chorus_flower",
+    "minecraft:chorus_plant",
+    "minecraft:cocoa",
+    "minecraft:command_block",
+    "minecraft:comparator",
+    "minecraft:composter",
+    "minecraft:conduit",
+    "minecraft:copper_bulb",
+    "minecraft:copper_door",
+    "minecraft:copper_grate",
+    "minecraft:copper_trapdoor",
+    "minecraft:crafter",
+    "minecraft:creaking_heart",
+    "minecraft:creeper_head",
+    "minecraft:creeper_wall_head",
+    "minecraft:crimson_button",
+    "minecraft:crimson_door",
+    "minecraft:crimson_fence",
+    "minecraft:crimson_fence_gate",
+    "minecraft:crimson_hanging_sign",
+    "minecraft:crimson_pressure_plate",
+    "minecraft:crimson_trapdoor",
+    "minecraft:crimson_wall_hanging_sign",
+    "minecraft:cyan_banner",
+    "minecraft:cyan_bed",
+    "minecraft:cyan_glazed_terracotta",
+    "minecraft:cyan_shulker_box",
+    "minecraft:cyan_stained_glass_pane",
+    "minecraft:cyan_wall_banner",
+    "minecraft:damaged_anvil",
+    "minecraft:dark_oak_button",
+    "minecraft:dark_oak_door",
+    "minecraft:dark_oak_fence",
+    "minecraft:dark_oak_fence_gate",
+    "minecraft:dark_oak_hanging_sign",
+    "minecraft:dark_oak_leaves",
+    "minecraft:dark_oak_pressure_plate",
+    "minecraft:dark_oak_sapling",
+    "minecraft:dark_oak_trapdoor",
+    "minecraft:dark_oak_wall_hanging_sign",
+    "minecraft:daylight_detector",
+    "minecraft:dead_brain_coral",
+    "minecraft:dead_brain_coral_fan",
+    "minecraft:dead_brain_coral_wall_fan",
+    "minecraft:dead_bubble_coral",
+    "minecraft:dead_bubble_coral_fan",
+    "minecraft:dead_bubble_coral_wall_fan",
+    "minecraft:dead_bush",
+    "minecraft:dead_fire_coral",
+    "minecraft:dead_fire_coral_fan",
+    "minecraft:dead_fire_coral_wall_fan",
+    "minecraft:dead_horn_coral",
+    "minecraft:dead_horn_coral_fan",
+    "minecraft:dead_horn_coral_wall_fan",
+    "minecraft:dead_tube_coral",
+    "minecraft:dead_tube_coral_fan",
+    "minecraft:dead_tube_coral_wall_fan",
+    "minecraft:decorated_pot",
+    "minecraft:deepslate_redstone_ore",
+    "minecraft:dispenser",
+    "minecraft:dragon_head",
+    "minecraft:dragon_wall_head",
+    "minecraft:dropper",
+    "minecraft:end_gateway",
+    "minecraft:end_portal_frame",
+    "minecraft:end_rod",
+    "minecraft:end_stone_bricks",
+    "minecraft:ender_chest",
+    "minecraft:exposed_copper_bulb",
+    "minecraft:exposed_copper_door",
+    "minecraft:exposed_copper_grate",
+    "minecraft:exposed_copper_trapdoor",
+    "minecraft:fire",
+    "minecraft:fire_coral",
+    "minecraft:fire_coral_fan",
+    "minecraft:fire_coral_wall_fan",
+    "minecraft:flower_pot",
+    "minecraft:flowering_azalea_leaves",
+    "minecraft:frogspawn",
+    "minecraft:frosted_ice",
+    "minecraft:glass_pane",
+    "minecraft:glow_lichen",
+    "minecraft:gray_banner",
+    "minecraft:gray_bed",
+    "minecraft:gray_glazed_terracotta",
+    "minecraft:gray_shulker_box",
+    "minecraft:gray_stained_glass_pane",
+    "minecraft:gray_wall_banner",
+    "minecraft:green_banner",
+    "minecraft:green_bed",
+    "minecraft:green_glazed_terracotta",
+    "minecraft:green_shulker_box",
+    "minecraft:green_stained_glass_pane",
+    "minecraft:green_wall_banner",
+    "minecraft:grindstone",
+    "minecraft:hanging_roots",
+    "minecraft:hay_block",
+    "minecraft:heavy_core",
+    "minecraft:heavy_weighted_pressure_plate",
+    "minecraft:hopper",
+    "minecraft:horn_coral",
+    "minecraft:horn_coral_fan",
+    "minecraft:horn_coral_wall_fan",
+    "minecraft:iron_bars",
+    "minecraft:iron_door",
+    "minecraft:iron_trapdoor",
+    "minecraft:jigsaw",
+    "minecraft:jukebox",
+    "minecraft:jungle_button",
+    "minecraft:jungle_door",
+    "minecraft:jungle_fence",
+    "minecraft:jungle_fence_gate",
+    "minecraft:jungle_hanging_sign",
+    "minecraft:jungle_leaves",
+    "minecraft:jungle_pressure_plate",
+    "minecraft:jungle_sapling",
+    "minecraft:jungle_trapdoor",
+    "minecraft:jungle_wall_hanging_sign",
+    "minecraft:kelp",
+    "minecraft:kelp_plant",
+    "minecraft:lantern",
+    "minecraft:large_amethyst_bud",
+    "minecraft:lava_cauldron",
+    "minecraft:lectern",
+    "minecraft:lever",
+    "minecraft:light",
+    "minecraft:light_blue_banner",
+    "minecraft:light_blue_bed",
+    "minecraft:light_blue_glazed_terracotta",
+    "minecraft:light_blue_shulker_box",
+    "minecraft:light_blue_stained_glass_pane",
+    "minecraft:light_blue_wall_banner",
+    "minecraft:light_gray_banner",
+    "minecraft:light_gray_bed",
+    "minecraft:light_gray_glazed_terracotta",
+    "minecraft:light_gray_shulker_box",
+    "minecraft:light_gray_stained_glass_pane",
+    "minecraft:light_gray_wall_banner",
+    "minecraft:light_weighted_pressure_plate",
+    "minecraft:lightning_rod",
+    "minecraft:lily_pad",
+    "minecraft:lime_banner",
+    "minecraft:lime_bed",
+    "minecraft:lime_glazed_terracotta",
+    "minecraft:lime_shulker_box",
+    "minecraft:lime_stained_glass_pane",
+    "minecraft:lime_wall_banner",
+    "minecraft:loom",
+    "minecraft:magenta_banner",
+    "minecraft:magenta_bed",
+    "minecraft:magenta_glazed_terracotta",
+    "minecraft:magenta_shulker_box",
+    "minecraft:magenta_stained_glass_pane",
+    "minecraft:magenta_wall_banner",
+    "minecraft:mangrove_button",
+    "minecraft:mangrove_door",
+    "minecraft:mangrove_fence",
+    "minecraft:mangrove_fence_gate",
+    "minecraft:mangrove_hanging_sign",
+    "minecraft:mangrove_leaves",
+    "minecraft:mangrove_pressure_plate",
+    "minecraft:mangrove_propagule",
+    "minecraft:mangrove_roots",
+    "minecraft:mangrove_trapdoor",
+    "minecraft:mangrove_wall_hanging_sign",
+    "minecraft:medium_amethyst_bud",
+    "minecraft:melon",
+    "minecraft:melon_stem",
+    "minecraft:moving_piston",
+    "minecraft:mushroom_stem",
+    "minecraft:nether_brick_fence",
+    "minecraft:nether_bricks",
+    "minecraft:nether_portal",
+    "minecraft:nether_quartz_ore",
+    "minecraft:nether_wart",
+    "minecraft:note_block",
+    "minecraft:oak_button",
+    "minecraft:oak_door",
+    "minecraft:oak_fence",
+    "minecraft:oak_fence_gate",
+    "minecraft:oak_hanging_sign",
+    "minecraft:oak_leaves",
+    "minecraft:oak_pressure_plate",
+    "minecraft:oak_sapling",
+    "minecraft:oak_trapdoor",
+    "minecraft:oak_wall_hanging_sign",
+    "minecraft:observer",
+    "minecraft:orange_banner",
+    "minecraft:orange_bed",
+    "minecraft:orange_glazed_terracotta",
+    "minecraft:orange_shulker_box",
+    "minecraft:orange_stained_glass_pane",
+    "minecraft:orange_wall_banner",
+    "minecraft:oxidized_copper_bulb",
+    "minecraft:oxidized_copper_door",
+    "minecraft:oxidized_copper_grate",
+    "minecraft:oxidized_copper_trapdoor",
+    "minecraft:pale_hanging_moss",
+    "minecraft:pale_moss_carpet",
+    "minecraft:pale_oak_button",
+    "minecraft:pale_oak_door",
+    "minecraft:pale_oak_fence",
+    "minecraft:pale_oak_fence_gate",
+    "minecraft:pale_oak_hanging_sign",
+    "minecraft:pale_oak_leaves",
+    "minecraft:pale_oak_pressure_plate",
+    "minecraft:pale_oak_sapling",
+    "minecraft:pale_oak_trapdoor",
+    "minecraft:pale_oak_wall_hanging_sign",
+    "minecraft:piglin_head",
+    "minecraft:piglin_wall_head",
+    "minecraft:pink_banner",
+    "minecraft:pink_bed",
+    "minecraft:pink_glazed_terracotta",
+    "minecraft:pink_petals",
+    "minecraft:pink_shulker_box",
+    "minecraft:pink_stained_glass_pane",
+    "minecraft:pink_wall_banner",
+    "minecraft:piston",
+    "minecraft:piston_head",
+    "minecraft:pitcher_crop",
+    "minecraft:player_head",
+    "minecraft:player_wall_head",
+    "minecraft:pointed_dripstone",
+    "minecraft:polished_blackstone_button",
+    "minecraft:polished_blackstone_pressure_plate",
+    "minecraft:potted_acacia_sapling",
+    "minecraft:potted_allium",
+    "minecraft:potted_azalea_bush",
+    "minecraft:potted_azure_bluet",
+    "minecraft:potted_bamboo",
+    "minecraft:potted_birch_sapling",
+    "minecraft:potted_blue_orchid",
+    "minecraft:potted_brown_mushroom",
+    "minecraft:potted_cactus",
+    "minecraft:potted_cherry_sapling",
+    "minecraft:potted_closed_eyeblossom",
+    "minecraft:potted_cornflower",
+    "minecraft:potted_crimson_fungus",
+    "minecraft:potted_crimson_roots",
+    "minecraft:potted_dandelion",
+    "minecraft:potted_dark_oak_sapling",
+    "minecraft:potted_dead_bush",
+    "minecraft:potted_fern",
+    "minecraft:potted_flowering_azalea_bush",
+    "minecraft:potted_jungle_sapling",
+    "minecraft:potted_lily_of_the_valley",
+    "minecraft:potted_mangrove_propagule",
+    "minecraft:potted_oak_sapling",
+    "minecraft:potted_open_eyeblossom",
+    "minecraft:potted_orange_tulip",
+    "minecraft:potted_oxeye_daisy",
+    "minecraft:potted_pale_oak_sapling",
+    "minecraft:potted_pink_tulip",
+    "minecraft:potted_poppy",
+    "minecraft:potted_red_mushroom",
+    "minecraft:potted_red_tulip",
+    "minecraft:potted_spruce_sapling",
+    "minecraft:potted_torchflower",
+    "minecraft:potted_warped_fungus",
+    "minecraft:potted_warped_roots",
+    "minecraft:potted_white_tulip",
+    "minecraft:potted_wither_rose",
+    "minecraft:powder_snow_cauldron",
+    "minecraft:pumpkin",
+    "minecraft:pumpkin_stem",
+    "minecraft:purple_banner",
+    "minecraft:purple_bed",
+    "minecraft:purple_glazed_terracotta",
+    "minecraft:purple_shulker_box",
+    "minecraft:purple_stained_glass_pane",
+    "minecraft:purple_wall_banner",
+    "minecraft:purpur_block",
+    "minecraft:red_banner",
+    "minecraft:red_bed",
+    "minecraft:red_glazed_terracotta",
+    "minecraft:red_mushroom_block",
+    "minecraft:red_nether_bricks",
+    "minecraft:red_shulker_box",
+    "minecraft:red_stained_glass_pane",
+    "minecraft:red_wall_banner",
+    "minecraft:redstone_ore",
+    "minecraft:redstone_torch",
+    "minecraft:redstone_wall_torch",
+    "minecraft:redstone_wire",
+    "minecraft:repeater",
+    "minecraft:repeating_command_block",
+    "minecraft:resin_clump",
+    "minecraft:respawn_anchor",
+    "minecraft:rooted_dirt",
+    "minecraft:scaffolding",
+    "minecraft:sculk_catalyst",
+    "minecraft:sculk_sensor",
+    "minecraft:sculk_shrieker",
+    "minecraft:sculk_vein",
+    "minecraft:sea_pickle",
+    "minecraft:seagrass",
+    "minecraft:shulker_box",
+    "minecraft:skeleton_skull",
+    "minecraft:skeleton_wall_skull",
+    "minecraft:slime_block",
+    "minecraft:small_amethyst_bud",
+    "minecraft:small_dripleaf",
+    "minecraft:sniffer_egg",
+    "minecraft:soul_campfire",
+    "minecraft:soul_fire",
+    "minecraft:soul_lantern",
+    "minecraft:soul_torch",
+    "minecraft:soul_wall_torch",
+    "minecraft:spawner",
+    "minecraft:spruce_button",
+    "minecraft:spruce_door",
+    "minecraft:spruce_fence",
+    "minecraft:spruce_fence_gate",
+    "minecraft:spruce_hanging_sign",
+    "minecraft:spruce_leaves",
+    "minecraft:spruce_pressure_plate",
+    "minecraft:spruce_sapling",
+    "minecraft:spruce_trapdoor",
+    "minecraft:spruce_wall_hanging_sign",
+    "minecraft:sticky_piston",
+    "minecraft:stone_button",
+    "minecraft:stone_pressure_plate",
+    "minecraft:stonecutter",
+    "minecraft:structure_block",
+    "minecraft:suspicious_gravel",
+    "minecraft:suspicious_sand",
+    "minecraft:sweet_berry_bush",
+    "minecraft:tall_seagrass",
+    "minecraft:target",
+    "minecraft:terracotta",
+    "minecraft:tnt",
+    "minecraft:torch",
+    "minecraft:torchflower_crop",
+    "minecraft:trapped_chest",
+    "minecraft:trial_spawner",
+    "minecraft:tripwire",
+    "minecraft:tripwire_hook",
+    "minecraft:tube_coral",
+    "minecraft:tube_coral_fan",
+    "minecraft:tube_coral_wall_fan",
+    "minecraft:turtle_egg",
+    "minecraft:twisting_vines",
+    "minecraft:twisting_vines_plant",
+    "minecraft:vault",
+    "minecraft:vine",
+    "minecraft:wall_torch",
+    "minecraft:warped_button",
+    "minecraft:warped_door",
+    "minecraft:warped_fence",
+    "minecraft:warped_fence_gate",
+    "minecraft:warped_hanging_sign",
+    "minecraft:warped_pressure_plate",
+    "minecraft:warped_trapdoor",
+    "minecraft:warped_wall_hanging_sign",
+    "minecraft:water_cauldron",
+    "minecraft:waxed_copper_block",
+    "minecraft:waxed_copper_bulb",
+    "minecraft:waxed_copper_door",
+    "minecraft:waxed_copper_grate",
+    "minecraft:waxed_copper_trapdoor",
+    "minecraft:waxed_exposed_copper_bulb",
+    "minecraft:waxed_exposed_copper_door",
+    "minecraft:waxed_exposed_copper_grate",
+    "minecraft:waxed_exposed_copper_trapdoor",
+    "minecraft:waxed_oxidized_copper_bulb",
+    "minecraft:waxed_oxidized_copper_door",
+    "minecraft:waxed_oxidized_copper_grate",
+    "minecraft:waxed_oxidized_copper_trapdoor",
+    "minecraft:waxed_weathered_copper_bulb",
+    "minecraft:waxed_weathered_copper_door",
+    "minecraft:waxed_weathered_copper_grate",
+    "minecraft:waxed_weathered_copper_trapdoor",
+    "minecraft:weathered_copper_bulb",
+    "minecraft:weathered_copper_door",
+    "minecraft:weathered_copper_grate",
+    "minecraft:weathered_copper_trapdoor",
+    "minecraft:weeping_vines",
+    "minecraft:weeping_vines_plant",
+    "minecraft:white_banner",
+    "minecraft:white_bed",
+    "minecraft:white_glazed_terracotta",
+    "minecraft:white_shulker_box",
+    "minecraft:white_stained_glass_pane",
+    "minecraft:white_wall_banner",
+    "minecraft:wither_skeleton_skull",
+    "minecraft:wither_skeleton_wall_skull",
+    "minecraft:yellow_banner",
+    "minecraft:yellow_bed",
+    "minecraft:yellow_glazed_terracotta",
+    "minecraft:yellow_shulker_box",
+    "minecraft:yellow_stained_glass_pane",
+    "minecraft:yellow_wall_banner",
+    "minecraft:zombie_head",
+    "minecraft:zombie_wall_head"
+  ]
+}

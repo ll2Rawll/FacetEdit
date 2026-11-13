@@ -103,6 +103,11 @@ def export_mcstructure(clipboard, path):
         raise ValueError("Structure exceeds the block limit")
     if any(len(layers)>1 for layers in clipboard.extra_blocks.values()):
         raise ValueError('mcstructure supports two layers; this selection has more')
+    from .registry import for_clipboard
+    try:
+        palette_version = for_clipboard(clipboard).palette_version or 17959425
+    except ValueError:
+        palette_version = 17959425
     palette = list(dict.fromkeys((*clipboard.blocks.values(),*(b for layers in clipboard.extra_blocks.values() for b in layers))))
     lookup = {block: i for i, block in enumerate(palette)}
     indices = [-1] * volume
@@ -120,7 +125,7 @@ def export_mcstructure(clipboard, path):
             block_indices=nbt.Tag(nbt.LIST, nbt.ListValue(nbt.LIST, [nbt.ListValue(nbt.INT, indices), nbt.ListValue(nbt.INT,secondary)])),
             entities=nbt.Tag(nbt.LIST, nbt.ListValue(nbt.COMPOUND, [])),
             palette=nbt.compound(default=nbt.compound(
-                block_palette=nbt.Tag(nbt.LIST, nbt.ListValue(nbt.COMPOUND, [bedrock_entry(b).value for b in palette])),
+                block_palette=nbt.Tag(nbt.LIST, nbt.ListValue(nbt.COMPOUND, [bedrock_entry(b, palette_version).value for b in palette])),
                 block_position_data=nbt.Tag(nbt.COMPOUND,{
                     str(x*height*depth+y*depth+z): nbt.compound(block_entity_data=nbt.loads(relocate(data,(x,y,z)))[1])
                     for (x,y,z),data in clipboard.entities.items()

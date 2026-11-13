@@ -1,0 +1,32 @@
+{
+  "reference": "Amulet-Core 1.9.41, native amulet-leveldb 1.0.7",
+  "game_execution": false,
+  "cases": [
+    {
+      "source": "Java",
+      "target": "bedrock",
+      "native_reference_reopen": "pass",
+      "negative_chunk": "pass",
+      "direction_and_waterlogging": "pass"
+    },
+    {
+      "source": "Bedrock",
+      "target": "java",
+      "native_reference_reopen": "pass",
+      "negative_chunk": "pass",
+      "direction_and_waterlogging": "pass"
+    },
+    {
+      "operation": "native Bedrock edit",
+      "format": "LevelDB world",
+      "native_reference_reopen": "pass",
+      "current_palette_version_and_top_slab": "pass"
+    },
+    {
+      "operation": "native Bedrock edit",
+      "format": ".mcstructure",
+      "native_reference_reopen": "pass",
+      "current_palette_version_and_top_slab": "pass"
+    }
+  ]
+}

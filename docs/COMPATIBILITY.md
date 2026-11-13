@@ -1,4 +1,4 @@
-# FacetEdit 0.5.0 — compatibility and parity ledger
+# FacetEdit 0.6.0 — compatibility and parity ledger
 
 Implemented means code and the stated tests exist, within the listed limits.
 It does not mean every Minecraft version or in-game behavior has been verified.
@@ -18,14 +18,16 @@ Full Amulet parity remains an unfinished project goal.
 | Bedrock blocks | Persistent subchunks v8/v9; primary and up to seven extra storage layers; typed palettes retained through editing, clipboard, undo, projects and world export |
 | Other Bedrock encodings | Older/runtime/inherited/network storage unsupported; no every-version claim |
 | Java .nbt structure | Blocks and block NBT, typed inventory data, declared DataVersion retained |
-| Bedrock .mcstructure | Two storage layers and block_position_data/block_entity_data; typed states retained; more than two layers refused |
+| Bedrock .mcstructure | Two storage layers and block_position_data/block_entity_data; typed states retained; known 1.21.50 exports use the verified native palette version. Imported structures have no inferred game release; arbitrary original per-entry palette version tags are not retained. More than two layers refused. |
 | Sponge .schem v2/v3 | Blocks, block entities, varint palettes, unsigned-short dimensions, offsets and DataVersion retained |
 | Structure restrictions | Moving entities, biome data and scheduled-tick payloads refused when detected; Java/Sponge reject extra layers; no silent dropping of these detected payloads |
 | Legacy .schematic | Alpha numeric Blocks/Data/AddBlocks, block NBT, offsets, rectangular selections and declared/default legacy DataVersion; alternate mod mappings and moving entities refused |
-| .construction | Not implemented; its universal block/entity representation requires the missing translation registry |
+| .construction v0 | Independent native Java/Bedrock codec; sparse boxes, signed palette arrays, offsets, block NBT and up to eight layers; known Java release tuples through 1.21.4. Moving entities/universal-edition data refused. Bidirectional interoperability checked with Amulet-Core 1.9.41. The earlier claim that this format requires universal translation was incorrect. |
 | Bedrock .mcworld | Bounded ZIP import to a new folder; edited archive export; unsafe paths, symlinks, duplicate-case names and oversized extraction refused |
 | Archive publishing | Atomic no-clobber hard-link publication on the destination filesystem; filesystems without hard-link support fail cleanly |
-| Cross-edition/version conversion | Not implemented; clipboard edition and Java DataVersion must match target |
+| Cross-edition conversion | Explicit Java 1.21.4 ↔ Bedrock 1.21.50 rules, typed states, water layers, stair/door context and leaf distances; clipboard preview and template-world preflight/publication. Unsupported blocks, cross-edition block NBT, actors and ticks block output. This is partial coverage, not universal translation. |
+| Cross-version conversion | No complete version migration registry; other release profiles remain unimplemented. Same-edition clipboard DataVersion/known Bedrock release must match the destination. |
+| Conversion metadata policy | Target template supplies settings, seed, players and untouched chunks. Source players, maps, structure starts, POI and auxiliary world/chunk metadata are not migrated. Exact biome preservation refuses incompatible resolution; sampling/default-biome alternatives are explicit. |
 
 ## Editing
 
@@ -34,14 +36,16 @@ Full Amulet parity remains an unfinished project goal.
 | Dimensions | Java overworld/Nether/End/custom region folders; inline or enabled folder/ZIP datapack dimension heights; missing custom height definitions refused; standard Bedrock dimension keys |
 | Selection | Inclusive boxes; pointer/numeric bounds; clear, nudge, expand, shrink |
 | Multiple disjoint selections | Union/subtraction with up to 256 normalized boxes, unique-block edits, region manager and per-box outlines; sparse clipboards preserve gaps |
-| Fill / replace / erase | Atomic edit transactions, up to 65,536 blocks per operation |
+| Fill / replace / erase | Atomic edit transactions, up to 65,536 blocks per operation; replace supports exact states, name-only, property subsets and identifier glob patterns |
 | Copy / cut / paste / clone | Same-edition blocks, block entities and extra layers; separate air/water/lava primary-block masks; overlapping clone captures source before writes |
 | Cardinal rotations / mirror | Coordinates, offsets, common Java/Bedrock facing/axis/sign states, cardinal connections, rails, stairs, hinge/chest sides, vines and selected mushroom states; not a full versioned state registry |
 | Arbitrary transforms | XYZ angles, positive/negative per-axis scales, nearest-cell inverse sampling, sparse holes and bounded destination volume; movable outline/block-sample preview, one undoable paste; some tilted and legacy orientations are refused unless state rotation is disabled |
 | NBT transforms | Root xyz, paired-container x/z links and Rot states; typed inventories preserved; paired chests cannot be tilted into vertical links |
 | Embedded world references | Arbitrary nested coordinates in opaque NBT are preserved verbatim, not universally translated |
 | Bedrock secondary-layer clipboard | Copy/cut/paste/clone and transforms preserve layers; ordinary fill clears extras; explicit layered fill selects overlay/underlay/game/first/second behavior |
-| Block states | Java strings; Bedrock byte/int/string metadata retained; no complete versioned registry/default-state validator |
+| Block states | Searchable schemas for 1,095 Java 1.21.4 and 1,239 Bedrock 1.21.50 blocks; Java defaults and typed Bedrock state editing. Bedrock primary metadata contains global property domains, not all per-block restrictions/default permutations. No all-version validator. |
+| World discovery | Bounded background metadata scan of standard desktop Java/Bedrock locations, selected launcher instances, recent saves and added folders; search and manual browse |
+| Navigation settings | FOV, default speed, mouse sensitivity/inversion, boost multiplier and individual movement keys; focus-safe flight and retained settings |
 | Block-entity NBT | Typed JSON inspection/editing, type/range checks, immutable selected xyz, undo/redo, project/export persistence in both editions |
 | Moving entities / players | Existing opaque storage retained during copy export; dedicated inspection/editing/rendering not implemented |
 | Modern Java biomes | Java 1.18+ paletted 4×4×4 cells; selection edits, undo/redo, project persistence and export |
@@ -123,3 +127,9 @@ and entity lookups use bounded LRU caches. Projects are capped at 64 MiB.
    native Windows, macOS and Linux; finish platform packaging/accessibility.
 6. Compare every reference workflow against the chosen Amulet release. Synthetic
    codec round trips alone do not establish an exact replica.
+
+Terrain generation, a standalone relighting engine and dedicated entity/player
+editors are not established stock Amulet 0.10.67 workflows from the interface
+audit. Their absence above describes this product's limits; it does not imply
+each is a separate Amulet parity requirement. Payload preservation/conversion
+and equivalent documented reference operations still require verification.

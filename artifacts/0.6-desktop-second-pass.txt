@@ -1,0 +1,27 @@
+test_bedrock_material_state_types_survive_text_field (tests.test_conversion_ui.ConversionDesktopTests.test_bedrock_material_state_types_survive_text_field) ... ok
+test_clipboard_preflight_use_and_paste (tests.test_conversion_ui.ConversionDesktopTests.test_clipboard_preflight_use_and_paste) ... ok
+test_construction_import_and_export_menu_paths (tests.test_conversion_ui.ConversionDesktopTests.test_construction_import_and_export_menu_paths) ... ok
+test_material_search_states_and_actual_fill (tests.test_conversion_ui.ConversionDesktopTests.test_material_search_states_and_actual_fill) ... ok
+test_navigation_controls_change_actual_key_movement_and_persist (tests.test_conversion_ui.ConversionDesktopTests.test_navigation_controls_change_actual_key_movement_and_persist) ... ok
+test_unknown_clipboard_does_not_enable_application (tests.test_conversion_ui.ConversionDesktopTests.test_unknown_clipboard_does_not_enable_application) ... ok
+test_world_library_search_and_open_without_loading_database_during_scan (tests.test_conversion_ui.ConversionDesktopTests.test_world_library_search_and_open_without_loading_database_during_scan) ... ok
+test_world_preflight_and_save_through_desktop_callbacks (tests.test_conversion_ui.ConversionDesktopTests.test_world_preflight_and_save_through_desktop_callbacks) ... ok
+test_cancel_and_symlinks (tests.test_discovery_navigation.DiscoveryTests.test_cancel_and_symlinks) ... ok
+test_platform_paths_do_not_require_running_on_that_platform (tests.test_discovery_navigation.DiscoveryTests.test_platform_paths_do_not_require_running_on_that_platform) ... ok
+test_roots_java_bedrock_recent_deduplication_and_corrupt_metadata (tests.test_discovery_navigation.DiscoveryTests.test_roots_java_bedrock_recent_deduplication_and_corrupt_metadata) ... ok
+test_camera_sensitivity_inversion_and_boost (tests.test_discovery_navigation.NavigationTests.test_camera_sensitivity_inversion_and_boost) ... ok
+test_validation_nan_conflicts_and_settings_roundtrip (tests.test_discovery_navigation.NavigationTests.test_validation_nan_conflicts_and_settings_roundtrip) ... ok
+test_bedrock_typed_states_three_layers_and_transforms (tests.test_construction.ConstructionTests.test_bedrock_typed_states_three_layers_and_transforms) ... ok
+test_footer_range_and_section_overlap_are_rejected (tests.test_construction.ConstructionTests.test_footer_range_and_section_overlap_are_rejected) ... ok
+test_full_16_cube_uses_one_section_and_z_fast_order (tests.test_construction.ConstructionTests.test_full_16_cube_uses_one_section_and_z_fast_order) ... ok
+test_hand_assembled_raw_nbt_fixture_and_signed_byte_index (tests.test_construction.ConstructionTests.test_hand_assembled_raw_nbt_fixture_and_signed_byte_index) ... ok
+test_invalid_export_keeps_existing_destination (tests.test_construction.ConstructionTests.test_invalid_export_keeps_existing_destination) ... ok
+test_more_than_256_palette_entries_uses_int_array (tests.test_construction.ConstructionTests.test_more_than_256_palette_entries_uses_int_array) ... ok
+test_numeric_java_metadata_roundtrip (tests.test_construction.ConstructionTests.test_numeric_java_metadata_roundtrip) ... ok
+test_palette_cycles_and_universal_edition_are_rejected (tests.test_construction.ConstructionTests.test_palette_cycles_and_universal_edition_are_rejected) ... ok
+test_sparse_mask_negative_offset_air_and_block_nbt (tests.test_construction.ConstructionTests.test_sparse_mask_negative_offset_air_and_block_nbt) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 1.496s
+
+OK

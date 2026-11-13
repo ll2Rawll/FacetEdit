@@ -1,0 +1,31 @@
+...........................................................................................................F......................................................................................................................................................................................................................................................................................................F.................................
+======================================================================
+FAIL: test_java_version_is_preserved_and_incompatible_paste_refused (test_entity_clipboard.EntityClipboardTests.test_java_version_is_preserved_and_incompatible_paste_refused)
+----------------------------------------------------------------------
+ValueError: Translate the clipboard to this Java DataVersion first: Edit → Translate clipboard
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/facetedit/tests/test_entity_clipboard.py", line 196, in test_java_version_is_preserved_and_incompatible_paste_refused
+    with self.assertRaisesRegex(ValueError,'Cross-version'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "Cross-version" does not match "Translate the clipboard to this Java DataVersion first: Edit → Translate clipboard"
+
+======================================================================
+FAIL: test_cross_edition_clipboard_refused (test_workflows.WorkflowTests.test_cross_edition_clipboard_refused)
+----------------------------------------------------------------------
+ValueError: Translate the clipboard to this edition first: Edit → Translate clipboard
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/facetedit/tests/test_workflows.py", line 251, in test_cross_edition_clipboard_refused
+    with self.assertRaisesRegex(ValueError, "Cross-edition"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "Cross-edition" does not match "Translate the clipboard to this edition first: Edit → Translate clipboard"
+
+----------------------------------------------------------------------
+Ran 436 tests in 19.785s
+
+FAILED (failures=2)

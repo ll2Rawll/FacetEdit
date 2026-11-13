@@ -1,0 +1,17 @@
+test_atomic_publication_refuses_even_an_existing_empty_directory (tests.test_conversion.WorldConversionTests.test_atomic_publication_refuses_even_an_existing_empty_directory) ... ok
+test_bedrock_to_java_blocks_biomes_and_target_template (tests.test_conversion.WorldConversionTests.test_bedrock_to_java_blocks_biomes_and_target_template) ... ok
+test_block_entity_and_unmapped_block_preflight_refuse_publication (tests.test_conversion.WorldConversionTests.test_block_entity_and_unmapped_block_preflight_refuse_publication) ... ok
+test_block_nbt_in_an_absent_terrain_section_still_blocks_cross_edition_conversion (tests.test_conversion.WorldConversionTests.test_block_nbt_in_an_absent_terrain_section_still_blocks_cross_edition_conversion) ... ok
+test_cancel_changed_source_and_destination_collision (tests.test_conversion.WorldConversionTests.test_cancel_changed_source_and_destination_collision) ... ok
+test_cancel_during_publish_removes_private_stage (tests.test_conversion.WorldConversionTests.test_cancel_during_publish_removes_private_stage) ... ok
+test_current_bedrock_edits_and_structures_tag_new_states_with_the_native_version (tests.test_conversion.WorldConversionTests.test_current_bedrock_edits_and_structures_tag_new_states_with_the_native_version) ... ok
+test_exact_biomes_refuse_resolution_loss (tests.test_conversion.WorldConversionTests.test_exact_biomes_refuse_resolution_loss) ... ok
+test_in_memory_sample_is_not_a_saved_conversion_input (tests.test_conversion.WorldConversionTests.test_in_memory_sample_is_not_a_saved_conversion_input) ... ok
+test_java_to_bedrock_staged_edits_biomes_and_source_hashes (tests.test_conversion.WorldConversionTests.test_java_to_bedrock_staged_edits_biomes_and_source_hashes) ... ok
+test_prepared_chunk_corruption_removes_unpublished_stage (tests.test_conversion.WorldConversionTests.test_prepared_chunk_corruption_removes_unpublished_stage) ... ok
+test_same_version_bedrock_conversion_preserves_individual_numeric_biome_voxels (tests.test_conversion.WorldConversionTests.test_same_version_bedrock_conversion_preserves_individual_numeric_biome_voxels) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 4.316s
+
+OK

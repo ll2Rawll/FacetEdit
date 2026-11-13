@@ -19,6 +19,12 @@ class StudioLayout:
         self.option_add("*TCombobox*Listbox.selectBackground",PALE)
         style.configure("TCheckbutton",background=SURFACE,foreground=MUTED,font=(FONT,9))
         style.map("TCheckbutton",background=[("active",SURFACE)],foreground=[("active",INK)])
+        style.configure('Treeview',background='#0b1627',fieldbackground='#0b1627',foreground=INK,
+                        bordercolor=LINE,lightcolor=LINE,darkcolor=LINE,borderwidth=0,rowheight=32,font=(FONT,10))
+        style.map('Treeview',background=[('selected',PALE)],foreground=[('selected',BLUE)])
+        style.configure('Treeview.Heading',background='#1b2c42',foreground=MUTED,
+                        bordercolor=LINE,lightcolor=LINE,darkcolor=LINE,relief='flat',font=(FONT,9,'bold'),padding=(10,8))
+        style.map('Treeview.Heading',background=[('active','#24394c')],foreground=[('active',INK)])
         style.configure("TNotebook",background=SURFACE,borderwidth=0,tabmargins=(0,0,0,10))
         style.configure("TNotebook.Tab",background="#111c2c",foreground=MUTED,padding=(9,8),font=(FONT,9),borderwidth=0)
         style.map("TNotebook.Tab",background=[("selected","#24394c")],foreground=[("selected",BLUE)])
@@ -61,6 +67,8 @@ class StudioLayout:
         self.viewport.radius = self.settings.data["radius"]
         self.viewport.grid = self.settings.data["grid"]
         self.viewport.glass = self.settings.data["glass"]
+        from .navigation import apply_navigation
+        apply_navigation(self.viewport,self.settings.data['navigation'])
         self.viewport.pack(fill="both",expand=True)
         self.scene_badge = tk.Frame(self.workspace,bg=BG)
         label(self.scene_badge,"WORLD STUDIO",8,True,BLUE).pack(anchor="w")

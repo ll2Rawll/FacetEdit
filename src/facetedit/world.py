@@ -462,6 +462,12 @@ class BedrockWorld(DiskWorld):
     edition = "Bedrock · experimental export"
     dimension_ids = {"overworld": 0, "the_nether": 1, "the_end": 2}
 
+    def stored_sections(self,cx,cz,dimension):
+        self.chunk_positions(dimension)
+        keys=self.chunk_record_index.get((self.dimension_ids[dimension],cx,cz),())
+        prefix=self.prefix(cx,cz,dimension)
+        return tuple(sorted(struct.unpack('b',key[-1:])[0] for key in keys if key[len(prefix):len(prefix)+1]==b'/' and len(key)==len(prefix)+2))
+
     def __init__(self, path):
         super().__init__(path)
         raw = read_metadata(self.path / "level.dat")
@@ -596,6 +602,11 @@ class BedrockWorld(DiskWorld):
     def _write_edits(self, stage, edits, entity_edits=None, biome_edits=None,layer_edits=None):
         entity_edits = entity_edits or {}
         values = dict(self.values)
+        from .registry import for_world
+        try:
+            palette_version = for_world(self).palette_version
+        except ValueError:
+            palette_version = None
         biome_groups=defaultdict(dict)
         for (dimension,x,y,z),value in (biome_edits or {}).items():
             biome_groups[dimension,x//16,z//16][x,y,z]=biomes.identifier(value,'Bedrock')
@@ -631,7 +642,7 @@ class BedrockWorld(DiskWorld):
                 while len(layers)<=len(extra):layers.append([AIR]*4096)
                 for i,layer in enumerate(layers[1:]):layer[index]=extra[i] if i<len(extra) else AIR
             prefix = self.prefix(cx, cz, dimension)
-            values[prefix + b"/" + struct.pack("b", sy)] = encode_bedrock(version, sy, layers, palettes)
+            values[prefix + b"/" + struct.pack("b", sy)] = encode_bedrock(version, sy, layers, palettes, palette_version)
             changed_chunks[prefix].update(changes)
         replacements = defaultdict(dict)
         for (dimension,x,y,z),value in entity_edits.items():

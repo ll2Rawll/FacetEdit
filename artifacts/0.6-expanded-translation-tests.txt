@@ -1,0 +1,29 @@
+test_name_subset_exact_and_pattern (tests.test_translation.MatchingTests.test_name_subset_exact_and_pattern) ... ok
+test_replace_predicate_is_one_undo_step (tests.test_translation.MatchingTests.test_replace_predicate_is_one_undo_step) ... ok
+test_axis_waterlogging_and_typed_state_vectors (tests.test_translation.TranslationTests.test_axis_waterlogging_and_typed_state_vectors) ... ok
+test_building_controls_and_vegetation_vectors (tests.test_translation.TranslationTests.test_building_controls_and_vegetation_vectors) ... ok
+test_cancellation_and_explicit_air_normalization_note (tests.test_translation.TranslationTests.test_cancellation_and_explicit_air_normalization_note) ... ok
+test_contextual_stair_corner_and_atomic_inconsistent_shape (tests.test_translation.TranslationTests.test_contextual_stair_corner_and_atomic_inconsistent_shape) ... ok
+test_copper_and_wood_slabs_all_native_variants (tests.test_translation.TranslationTests.test_copper_and_wood_slabs_all_native_variants) ... ok
+test_crop_fluid_rail_sign_wall_vectors (tests.test_translation.TranslationTests.test_crop_fluid_rail_sign_wall_vectors) ... ok
+test_door_pair_context_restores_shared_properties (tests.test_translation.TranslationTests.test_door_pair_context_restores_shared_properties) ... ok
+test_every_java_initial_mapping_reverses_or_reports_named_air_normalization (tests.test_translation.TranslationTests.test_every_java_initial_mapping_reverses_or_reports_named_air_normalization) ... ok
+test_explicit_stateless_mapping_corpus (tests.test_translation.TranslationTests.test_explicit_stateless_mapping_corpus) ... ok
+test_leaf_distance_uses_source_neighbours_and_keeps_water_layer (tests.test_translation.TranslationTests.test_leaf_distance_uses_source_neighbours_and_keeps_water_layer) ... ok
+test_trapdoor_transform_uses_verified_native_direction_order (tests.test_translation.TranslationTests.test_trapdoor_transform_uses_verified_native_direction_order) ... ok
+test_unmapped_payload_and_invalid_layer_leave_input_unchanged (tests.test_translation.TranslationTests.test_unmapped_payload_and_invalid_layer_leave_input_unchanged) ... ok
+test_bedrock_to_java_blocks_biomes_and_target_template (tests.test_conversion.WorldConversionTests.test_bedrock_to_java_blocks_biomes_and_target_template) ... ok
+test_block_entity_and_unmapped_block_preflight_refuse_publication (tests.test_conversion.WorldConversionTests.test_block_entity_and_unmapped_block_preflight_refuse_publication) ... ok
+test_cancel_changed_source_and_destination_collision (tests.test_conversion.WorldConversionTests.test_cancel_changed_source_and_destination_collision) ... ok
+test_cancel_during_publish_removes_private_stage (tests.test_conversion.WorldConversionTests.test_cancel_during_publish_removes_private_stage) ... ok
+test_exact_biomes_refuse_resolution_loss (tests.test_conversion.WorldConversionTests.test_exact_biomes_refuse_resolution_loss) ... ok
+test_java_to_bedrock_staged_edits_biomes_and_source_hashes (tests.test_conversion.WorldConversionTests.test_java_to_bedrock_staged_edits_biomes_and_source_hashes) ... ok
+test_bedrock_numeric_states_keep_types_and_cycle (tests.test_transforms.ExtendedTransformTests.test_bedrock_numeric_states_keep_types_and_cycle) ... ok
+test_handed_states_reflect_and_connections_rotate (tests.test_transforms.ExtendedTransformTests.test_handed_states_reflect_and_connections_rotate) ... ok
+test_paired_containers_and_typed_inventory_rotate_together (tests.test_transforms.ExtendedTransformTests.test_paired_containers_and_typed_inventory_rotate_together) ... ok
+test_rails_rotate_and_reflect_all_shapes (tests.test_transforms.ExtendedTransformTests.test_rails_rotate_and_reflect_all_shapes) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 1.855s
+
+OK

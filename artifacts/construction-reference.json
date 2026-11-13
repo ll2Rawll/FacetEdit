@@ -1,0 +1,38 @@
+{
+  "reference": "Amulet-Core 1.9.41",
+  "runtime_dependency_added": false,
+  "cases": [
+    {
+      "fixture": "java_sparse",
+      "blocks": 3,
+      "facetedit_to_amulet": "pass",
+      "amulet_resave_to_facetedit": "pass",
+      "sha256": "53debe2f09dfc5ef9132808547e1e1badf25f91b8f50f291ff91aeac2c3dc28e"
+    },
+    {
+      "fixture": "bedrock_layers",
+      "blocks": 1,
+      "facetedit_to_amulet": "pass",
+      "amulet_resave_to_facetedit": "pass",
+      "sha256": "a7a2513e96279ee15c42f0298f0f6deb57c251eedf4be1386435c47f9cf0dbc6"
+    },
+    {
+      "fixture": "java_129_palette",
+      "blocks": 129,
+      "facetedit_to_amulet": "pass",
+      "amulet_resave_to_facetedit": "pass",
+      "sha256": "2fe35dd3cc9fc8a333de8952f64d9cbfac2d74b51eeb510b15d29aeb54d32caa"
+    },
+    {
+      "fixture": "reference-original",
+      "reference_version": [
+        1,
+        21,
+        4
+      ],
+      "amulet_to_facetedit": "pass",
+      "block_entity": "pass",
+      "sha256": "eb67723f1327294c01eac40b4dfe454d6dcd8e5d28240a5c76681564d18b5d48"
+    }
+  ]
+}

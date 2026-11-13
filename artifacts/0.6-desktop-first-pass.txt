@@ -1,0 +1,11 @@
+test_bedrock_material_state_types_survive_text_field (tests.test_conversion_ui.ConversionDesktopTests.test_bedrock_material_state_types_survive_text_field) ... ok
+test_clipboard_preflight_use_and_paste (tests.test_conversion_ui.ConversionDesktopTests.test_clipboard_preflight_use_and_paste) ... ok
+test_construction_import_and_export_menu_paths (tests.test_conversion_ui.ConversionDesktopTests.test_construction_import_and_export_menu_paths) ... ok
+test_material_search_states_and_actual_fill (tests.test_conversion_ui.ConversionDesktopTests.test_material_search_states_and_actual_fill) ... ok
+test_unknown_clipboard_does_not_enable_application (tests.test_conversion_ui.ConversionDesktopTests.test_unknown_clipboard_does_not_enable_application) ... ok
+test_world_preflight_and_save_through_desktop_callbacks (tests.test_conversion_ui.ConversionDesktopTests.test_world_preflight_and_save_through_desktop_callbacks) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 1.412s
+
+OK

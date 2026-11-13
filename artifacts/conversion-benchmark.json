@@ -1,0 +1,22 @@
+{
+  "scope": "This Linux host. 8 MiB preallocated journal payload; traced memory measures serialization only, not the full world/database. Five synthetic sparse chunks; no game/native-platform throughput claim.",
+  "journal_before": {
+    "median_ms": 854.827,
+    "peak_traced_bytes": 17608649,
+    "timing_runs": 3,
+    "memory_runs": 1
+  },
+  "journal_streamed": {
+    "median_ms": 909.164,
+    "peak_traced_bytes": 70715,
+    "timing_runs": 3,
+    "memory_runs": 1
+  },
+  "identical_journal_bytes": true,
+  "journal_sha256": "0798be9e036ba50ca23bf0c9b5267f6ae62604386fbe00ddb8e7f456390829d2",
+  "conversion": {
+    "chunks": 5,
+    "prepare_seconds": 0.282,
+    "publish_seconds": 0.003
+  }
+}

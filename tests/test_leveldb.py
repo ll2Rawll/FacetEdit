@@ -1,10 +1,11 @@
 from pathlib import Path
 import struct
+import io
 import tempfile
 import unittest
 import zlib
 
-from facetedit.leveldb import Cursor, MAGIC, blob, block_entries, crc32c, load_database, log_records, masked_crc, snappy_decode, table_entries, varint, write_database, write_log
+from facetedit.leveldb import Cursor, MAGIC, LogWriter, blob, block_entries, crc32c, load_database, log_records, masked_crc, snappy_decode, table_entries, varint, write_database, write_log
 from facetedit.nbt import FormatError
 
 
@@ -32,6 +33,13 @@ def make_table(key, value, compression=0):
 
 
 class LevelDBTests(unittest.TestCase):
+    def test_streamed_log_matches_buffered_fragments_at_block_boundaries(self):
+        records=[b'a'*32761,b'b'*32762,b'',b'c'*65536,b'd'*32758,b'end']
+        output=io.BytesIO();writer=LogWriter(output)
+        for record in records:writer.record(record)
+        self.assertEqual(output.getvalue(),write_log(records))
+        self.assertEqual(list(log_records(output.getvalue())),records)
+
     def test_crc32c_independent_known_vectors(self):
         self.assertEqual(crc32c(b"123456789"), 0xE3069283)
         self.assertEqual(crc32c(b""), 0)

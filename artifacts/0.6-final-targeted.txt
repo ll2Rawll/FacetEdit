@@ -1,0 +1,46 @@
+test_name_subset_exact_and_pattern (tests.test_translation.MatchingTests.test_name_subset_exact_and_pattern) ... ok
+test_replace_predicate_is_one_undo_step (tests.test_translation.MatchingTests.test_replace_predicate_is_one_undo_step) ... ok
+test_axis_waterlogging_and_typed_state_vectors (tests.test_translation.TranslationTests.test_axis_waterlogging_and_typed_state_vectors) ... ok
+test_building_controls_and_vegetation_vectors (tests.test_translation.TranslationTests.test_building_controls_and_vegetation_vectors) ... ok
+test_cancellation_and_explicit_air_normalization_note (tests.test_translation.TranslationTests.test_cancellation_and_explicit_air_normalization_note) ... ok
+test_contextual_stair_corner_and_atomic_inconsistent_shape (tests.test_translation.TranslationTests.test_contextual_stair_corner_and_atomic_inconsistent_shape) ... ok
+test_copper_and_wood_slabs_all_native_variants (tests.test_translation.TranslationTests.test_copper_and_wood_slabs_all_native_variants) ... ok
+test_crop_fluid_rail_sign_wall_vectors (tests.test_translation.TranslationTests.test_crop_fluid_rail_sign_wall_vectors) ... ok
+test_door_pair_context_restores_shared_properties (tests.test_translation.TranslationTests.test_door_pair_context_restores_shared_properties) ... ok
+test_every_java_initial_mapping_reverses_or_reports_named_air_normalization (tests.test_translation.TranslationTests.test_every_java_initial_mapping_reverses_or_reports_named_air_normalization) ... ok
+test_explicit_profile_cannot_relabel_known_clipboard_metadata (tests.test_translation.TranslationTests.test_explicit_profile_cannot_relabel_known_clipboard_metadata) ... ok
+test_explicit_stateless_mapping_corpus (tests.test_translation.TranslationTests.test_explicit_stateless_mapping_corpus) ... ok
+test_leaf_distance_uses_source_neighbours_and_keeps_water_layer (tests.test_translation.TranslationTests.test_leaf_distance_uses_source_neighbours_and_keeps_water_layer) ... ok
+test_trapdoor_transform_uses_verified_native_direction_order (tests.test_translation.TranslationTests.test_trapdoor_transform_uses_verified_native_direction_order) ... ok
+test_unmapped_payload_and_invalid_layer_leave_input_unchanged (tests.test_translation.TranslationTests.test_unmapped_payload_and_invalid_layer_leave_input_unchanged) ... ok
+test_atomic_publication_refuses_even_an_existing_empty_directory (tests.test_conversion.WorldConversionTests.test_atomic_publication_refuses_even_an_existing_empty_directory) ... ok
+test_bedrock_to_java_blocks_biomes_and_target_template (tests.test_conversion.WorldConversionTests.test_bedrock_to_java_blocks_biomes_and_target_template) ... ok
+test_block_entity_and_unmapped_block_preflight_refuse_publication (tests.test_conversion.WorldConversionTests.test_block_entity_and_unmapped_block_preflight_refuse_publication) ... ok
+test_cancel_changed_source_and_destination_collision (tests.test_conversion.WorldConversionTests.test_cancel_changed_source_and_destination_collision) ... ok
+test_cancel_during_publish_removes_private_stage (tests.test_conversion.WorldConversionTests.test_cancel_during_publish_removes_private_stage) ... ok
+test_current_bedrock_edits_and_structures_tag_new_states_with_the_native_version (tests.test_conversion.WorldConversionTests.test_current_bedrock_edits_and_structures_tag_new_states_with_the_native_version) ... ERROR
+test_exact_biomes_refuse_resolution_loss (tests.test_conversion.WorldConversionTests.test_exact_biomes_refuse_resolution_loss) ... ok
+test_java_to_bedrock_staged_edits_biomes_and_source_hashes (tests.test_conversion.WorldConversionTests.test_java_to_bedrock_staged_edits_biomes_and_source_hashes) ... ok
+test_prepared_chunk_corruption_removes_unpublished_stage (tests.test_conversion.WorldConversionTests.test_prepared_chunk_corruption_removes_unpublished_stage) ... ok
+test_bedrock_material_state_types_survive_text_field (tests.test_conversion_ui.ConversionDesktopTests.test_bedrock_material_state_types_survive_text_field) ... ok
+test_clipboard_preflight_use_and_paste (tests.test_conversion_ui.ConversionDesktopTests.test_clipboard_preflight_use_and_paste) ... ok
+test_construction_import_and_export_menu_paths (tests.test_conversion_ui.ConversionDesktopTests.test_construction_import_and_export_menu_paths) ... ok
+test_material_search_states_and_actual_fill (tests.test_conversion_ui.ConversionDesktopTests.test_material_search_states_and_actual_fill) ... ok
+test_navigation_controls_change_actual_key_movement_and_persist (tests.test_conversion_ui.ConversionDesktopTests.test_navigation_controls_change_actual_key_movement_and_persist) ... ok
+test_unknown_clipboard_does_not_enable_application (tests.test_conversion_ui.ConversionDesktopTests.test_unknown_clipboard_does_not_enable_application) ... ok
+test_world_library_search_and_open_without_loading_database_during_scan (tests.test_conversion_ui.ConversionDesktopTests.test_world_library_search_and_open_without_loading_database_during_scan) ... ok
+test_world_preflight_and_save_through_desktop_callbacks (tests.test_conversion_ui.ConversionDesktopTests.test_world_preflight_and_save_through_desktop_callbacks) ... ok
+
+======================================================================
+ERROR: test_current_bedrock_edits_and_structures_tag_new_states_with_the_native_version (tests.test_conversion.WorldConversionTests.test_current_bedrock_edits_and_structures_tag_new_states_with_the_native_version)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/facetedit/tests/test_conversion.py", line 69, in test_current_bedrock_edits_and_structures_tag_new_states_with_the_native_version
+    output=self.path/'edited';doc.export(output)
+                              ^^^^^^^^^^
+AttributeError: 'Document' object has no attribute 'export'
+
+----------------------------------------------------------------------
+Ran 32 tests in 3.807s
+
+FAILED (errors=1)

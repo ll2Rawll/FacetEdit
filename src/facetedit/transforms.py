@@ -50,7 +50,7 @@ def state_properties(block,turns=0,mirror=False,edition='Java'):
         numeric('weirdo_direction',('east','west','south','north'))
         # Doors and trapdoors expose a different numeric order from repeaters.
         order=('east','south','west','north') if block.name.endswith('_door') else ('south','west','north','east')
-        if block.name.endswith('trapdoor'):order=('south','north','east','west')
+        if block.name.endswith('trapdoor'):order=('east','west','south','north')
         numeric('direction',order)
         if 'rail_direction' in props:
             value=int(props['rail_direction'])

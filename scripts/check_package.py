@@ -20,7 +20,17 @@ with zipfile.ZipFile(archive) as package:
 sys.path.insert(0,str(archive))
 import facetedit
 assert str(archive) in facetedit.__file__,facetedit.__file__
+from facetedit.registry import profile
+from facetedit.translation import LOGS, LEAVES, STATELESS
+profiles={name:profile(name) for name in ('Java 1.21.4','Bedrock 1.21.50')}
+assert len(profiles['Java 1.21.4'].blocks)==1095
+assert len(profiles['Bedrock 1.21.50'].blocks)==1239
+assert profiles['Bedrock 1.21.50'].palette_version==18163713
+assert len(STATELESS)==307 and 'minecraft:mushroom_stem' not in LOGS
+assert 'minecraft:oak_log' in LOGS and 'minecraft:oak_leaves' in LEAVES
 report={'version':facetedit.__version__,'module_origin':facetedit.__file__,'python_modules':len(modules),
         'third_party_imports':sorted(unsupported),'logo_assets':assets,
+        'bundled_block_definitions':{name:len(value.blocks) for name,value in profiles.items()},
+        'native_bedrock_palette_version':profiles['Bedrock 1.21.50'].palette_version,
         'bytes':archive.stat().st_size,'sha256':hashlib.sha256(archive.read_bytes()).hexdigest()}
 print(json.dumps(report,indent=2))

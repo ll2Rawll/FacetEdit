@@ -6,7 +6,7 @@ Written from scratch in Python's standard library and Tk. No Amulet code,
 translation tables, plugins, third-party Python packages, webview, account,
 telemetry, or network service is used by the application.
 
-**Version 0.5.0 is experimental. Full Amulet feature parity is unfinished.**
+**Version 0.6.0 is experimental. Full Amulet feature parity is unfinished.**
 The editor performs real Java and Bedrock edits; the exact boundaries are in
 [Compatibility](docs/COMPATIBILITY.md). Synthetic tests and independent database
 validation do not establish that exported worlds have been validated in Minecraft.
@@ -29,7 +29,7 @@ Windows:
 py -3 launch.py
 ```
 
-Or extract `FacetEdit-0.5.0-portable.zip` and open the matching platform launcher.
+Or extract `FacetEdit-0.6.0-portable.zip` and open the matching platform launcher.
 The portable app is a Python zipapp, not a self-contained `.exe` or signed `.app`:
 
 ```sh
@@ -44,6 +44,13 @@ Linux desktop testing used Python 3.13.5 / Tk 8.6 with antialiased system fonts.
 Native Windows/macOS execution has not been verified in this environment.
 
 ## The workspace
+
+New in 0.6: a searchable material/state studio backed by pinned Java 1.21.4 and
+Bedrock 1.21.50 metadata; native `.construction` interchange; clipboard and
+template-world conversion with preflight reports; richer replace matching;
+saved-world discovery; and configurable flight controls. Translation remains
+partial: unsupported blocks and payloads stop conversion. See the
+[conversion guide](docs/CONVERSION.md) for exact supported versions and policies.
 
 - **World stage:** full-width voxel cutaway with orbit, zoom, pan, block picking,
   construction grid and cyan selection bounds. Drag to orbit, right-drag to pan,
@@ -63,7 +70,7 @@ Midnight Glass is the default. The layered colors, curved controls, gradients
 and edge highlights are drawn locally. They are an iOS 26-inspired appearance;
 Tk does not provide Apple's native backdrop-refraction material.
 
-**View → Resource packs and graphics** opens the material studio. Add local Java
+**View → Resource packs and graphics** opens the graphics studio. Add local Java
 resource-pack folders/ZIPs or a Minecraft client JAR, order the stack and apply.
 Textures, JSON block models, cutouts, translucent surfaces, level-based fluids,
 biome colormaps and optional texture animation appear in orbit and flight.
@@ -76,12 +83,13 @@ by the app. See [Resource rendering](docs/RESOURCES.md) for setup and boundaries
 ## Edit and save
 
 1. The initial **Willow Bay** scene is an editable procedural sample in memory.
-   **Open world** selects a folder containing `level.dat`. The World tab can also
+   **Open world** finds known saves and lets you browse for a folder containing
+   `level.dat`. The World tab can also
    extract a Bedrock `.mcworld` archive into a new folder.
 2. Click a block and Shift-click another, or enter two inclusive corners. Choose
    a material, for example `minecraft:oak_log[axis=y]`, and fill/replace/erase.
    **Manage selection regions** combines boxes or subtracts holes. Overlaps are
-   edited once; clipboard gaps stay empty of edits. Use `.nbt` or `.mcstructure`
+   edited once; clipboard gaps stay empty of edits. Use `.construction`, `.nbt` or `.mcstructure`
    for sparse structures; `.schem` export requires a complete rectangular volume.
 3. Copy, cut, paste or repeat a selection with Clone. Block entities such as
    container inventories retain their typed NBT and relocated coordinates.
@@ -105,12 +113,13 @@ by the app. See [Resource rendering](docs/RESOURCES.md) for setup and boundaries
    preferences control autosave and its interval. Saving or closing cleanly
    clears the current checkpoint; interrupted sessions remain discoverable.
 
-Java `.nbt`, Bedrock `.mcstructure`, Sponge `.schem` v2/v3, and legacy Java
-`.schematic` interchange blocks and block NBT. Bedrock structures preserve both
+Native `.construction`, Java `.nbt`, Bedrock `.mcstructure`, Sponge `.schem` v2/v3,
+and legacy Java `.schematic` interchange blocks and block NBT. Bedrock structures preserve both
 storage layers; the editor and projects retain up to eight world storage layers.
 Moving entities, scheduled-tick structure metadata and schematic biomes are
-refused when detected. Java DataVersion and edition must match the destination;
-universal version/edition translation is unfinished.
+refused when detected. Pasting requires matching edition/version metadata; use
+**Edit → Translate clipboard** to review a supported conversion first. Complete
+version/edition translation remains unfinished.
 
 **Free transform & preview** in Paste provides arbitrary X/Y/Z angles, per-axis
 scaling/reflection, numeric destinations and nudge controls. A placement outline
@@ -170,6 +179,10 @@ PowerShell: set `$env:PYTHONPATH="src"` and `$env:FACETEDIT_GUI_TESTS="1"` first
 The optional visual-review script uses ImageMagick only to capture screenshots;
 optional independent binary validation uses native LevelDB/Snappy/LZ4/xxHash as test
 oracles. Those tools are not bundled or imported by the application.
+The optional `validate_*_reference.py` scripts run in a separate Amulet test
+environment to check interoperability. No reference implementation or translation
+table is copied into the application. Primary block metadata provenance is in
+`src/facetedit/data/registries/SOURCES.json`.
 
 The build creates a compressed zipapp, platform launchers, portable/source ZIPs,
 and SHA-256 checksums. CI definitions cover three OS families; remote runs and

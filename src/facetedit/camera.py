@@ -16,21 +16,24 @@ class Camera:
     fov: float = 65.
     speed: float = 8.
     near: float = .08
+    sensitivity: float = 1.
+    invert_y: bool = False
+    boost_factor: float = 4.
 
     def basis(self):
         sy,cy,sp,cp = math.sin(self.yaw),math.cos(self.yaw),math.sin(self.pitch),math.cos(self.pitch)
         return (cy,0.,sy),(-sy*sp,cp,cy*sp),(sy*cp,sp,-cy*cp)
 
     def look(self,dx,dy):
-        self.yaw = (self.yaw+dx*.006)%(2*math.pi)
-        self.pitch = max(-math.pi*.49,min(math.pi*.49,self.pitch-dy*.006))
+        self.yaw = (self.yaw+dx*.006*self.sensitivity)%(2*math.pi)
+        self.pitch = max(-math.pi*.49,min(math.pi*.49,self.pitch-dy*.006*self.sensitivity*(-1 if self.invert_y else 1)))
 
     def move(self,forward,right,up,seconds,boost=False,bounds=(-64,319)):
         r,_,f = self.basis()
         direction = [f[i]*forward+r[i]*right+(up if i==1 else 0) for i in range(3)]
         length = math.sqrt(dot(direction,direction))
         if not length:return False
-        amount = self.speed*(4 if boost else 1)*max(0,min(.1,seconds))/length
+        amount = self.speed*(self.boost_factor if boost else 1)*max(0,min(.1,seconds))/length
         for i in range(3):self.position[i] += direction[i]*amount
         self.position[0] = max(-30_000_000,min(30_000_000,self.position[0]))
         self.position[2] = max(-30_000_000,min(30_000_000,self.position[2]))

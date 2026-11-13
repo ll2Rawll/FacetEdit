@@ -43,6 +43,7 @@ class Clipboard:
     entities: dict = field(default_factory=dict)
     data_version: int | None = 4189
     extra_blocks: dict = field(default_factory=dict)
+    game_version: tuple | None = None
 
     def transformed(self, turns=0, mirror=False):
         if self.data_version is not None and self.edition=='Java' and self.data_version<1451 and (turns%4 or mirror):
@@ -67,7 +68,7 @@ class Clipboard:
         if mirror:ox=-ox
         for _ in range(turns%4):ox,oz=-oz,ox
         offset=(ox,oy,oz)
-        return Clipboard((depth, height, width) if turns % 2 else self.size, result, self.edition,offset,entities,self.data_version,extra)
+        return Clipboard((depth, height, width) if turns % 2 else self.size, result, self.edition,offset,entities,self.data_version,extra,self.game_version)
 
     def affine(self,rotation=(0,0,0),scale=(1,1,1),rotate_states=True):
         from .affine import transform_clipboard
@@ -285,6 +286,8 @@ class Document:
             if replace is None:
                 return True
             current = self.get(*position)
+            if hasattr(replace, 'matches'):
+                return replace.matches(current)
             if replace.state_types:
                 return current == replace
             return (current.name, current.properties) == (replace.name, replace.properties)
@@ -310,7 +313,7 @@ class Document:
             if entity is not None:
                 entities[local] = relocate(entity,local)
         bedrock = self.world.edition.startswith("Bedrock")
-        self.clipboard = Clipboard(selection.size,blocks,"Bedrock" if bedrock else "Java",entities=entities,data_version=None if bedrock else getattr(self.world,"version",4189),extra_blocks=extra)
+        self.clipboard = Clipboard(selection.size,blocks,"Bedrock" if bedrock else "Java",entities=entities,data_version=None if bedrock else getattr(self.world,"version",4189),extra_blocks=extra,game_version=getattr(self.world,'game_version',None))
         return len(blocks)
 
     def cut(self):
@@ -322,9 +325,11 @@ class Document:
             raise ValueError("Copy a selection or import a structure first")
         edition = "Bedrock" if self.world.edition.startswith("Bedrock") else "Java"
         if self.clipboard.edition != edition:
-            raise ValueError("Cross-edition clipboard translation is not implemented")
+            raise ValueError("Cross-edition paste requires translation first: Edit → Translate clipboard")
         if edition=="Java" and self.clipboard.data_version != getattr(self.world,"version",4189):
-            raise ValueError("Cross-version block translation is not implemented; the structure and world must have the same Java DataVersion")
+            raise ValueError("Cross-version paste requires translation to this Java DataVersion first: Edit → Translate clipboard")
+        if edition=='Bedrock' and self.clipboard.game_version and getattr(self.world,'game_version',None) and self.clipboard.game_version!=self.world.game_version:
+            raise ValueError('Translate the clipboard to this Bedrock release before pasting')
         origin = origin or self.require_selection().minimum
         clip = self.clipboard.transformed(turns, mirror) if rotation is None else self.clipboard.affine(rotation,scale,rotate_states)
         origin = tuple(origin[i]+clip.offset[i] for i in range(3))
