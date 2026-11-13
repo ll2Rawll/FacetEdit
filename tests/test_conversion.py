@@ -157,7 +157,7 @@ class WorldConversionTests(unittest.TestCase):
             self.assertFalse(plan.report.ok)
             examples=[p for values in plan.report.examples.values() for p in values]
             self.assertIn(('overworld',1,80,3),examples)
-            self.assertIn('Cross-edition block NBT',plan.report.summary())
+            self.assertIn('Block NBT: no cross-edition payload rule for minecraft:air',plan.report.summary())
 
     def test_cancel_changed_source_and_destination_collision(self):
         doc=plain_java(self.path/'java');target=open_world(modern_bedrock(self.path/'bedrock'))

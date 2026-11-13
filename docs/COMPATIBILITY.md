@@ -1,4 +1,4 @@
-# FacetEdit 0.6.0 — compatibility and parity ledger
+# FacetEdit 0.7.0 — compatibility and parity ledger
 
 Implemented means code and the stated tests exist, within the listed limits.
 It does not mean every Minecraft version or in-game behavior has been verified.
@@ -25,7 +25,8 @@ Full Amulet parity remains an unfinished project goal.
 | .construction v0 | Independent native Java/Bedrock codec; sparse boxes, signed palette arrays, offsets, block NBT and up to eight layers; known Java release tuples through 1.21.4. Moving entities/universal-edition data refused. Bidirectional interoperability checked with Amulet-Core 1.9.41. The earlier claim that this format requires universal translation was incorrect. |
 | Bedrock .mcworld | Bounded ZIP import to a new folder; edited archive export; unsafe paths, symlinks, duplicate-case names and oversized extraction refused |
 | Archive publishing | Atomic no-clobber hard-link publication on the destination filesystem; filesystems without hard-link support fail cleanly |
-| Cross-edition conversion | Explicit Java 1.21.4 ↔ Bedrock 1.21.50 rules, typed states, water layers, stair/door context and leaf distances; clipboard preview and template-world preflight/publication. Unsupported blocks, cross-edition block NBT, actors and ticks block output. This is partial coverage, not universal translation. |
+| Cross-edition conversion | Explicit Java 1.21.4 ↔ Bedrock 1.21.50 rules, typed states, water layers, stair/door/chest context, fence/pane connections, note instruments and leaf distances; clipboard preview and template-world preflight/publication. 922 initial palette mappings plus 118 payload-based identities; 55 of 1,095 initial Java cells remain blocked. Accepted initial cells do not imply every state or payload is covered. |
+| Cross-edition block NBT | Typed containers/inventories, paired chests, beds, banners, Shulker Boxes, pots, notes, two-sided ordinary/hanging signs and basic heads; unsupported fields, loot tables, locks, active furnace progress, custom head profiles, actors and ticks block output. Item components/variants remain partial. See CONVERSION.md. |
 | Cross-version conversion | No complete version migration registry; other release profiles remain unimplemented. Same-edition clipboard DataVersion/known Bedrock release must match the destination. |
 | Conversion metadata policy | Target template supplies settings, seed, players and untouched chunks. Source players, maps, structure starts, POI and auxiliary world/chunk metadata are not migrated. Exact biome preservation refuses incompatible resolution; sampling/default-biome alternatives are explicit. |
 
@@ -40,7 +41,7 @@ Full Amulet parity remains an unfinished project goal.
 | Copy / cut / paste / clone | Same-edition blocks, block entities and extra layers; separate air/water/lava primary-block masks; overlapping clone captures source before writes |
 | Cardinal rotations / mirror | Coordinates, offsets, common Java/Bedrock facing/axis/sign states, cardinal connections, rails, stairs, hinge/chest sides, vines and selected mushroom states; not a full versioned state registry |
 | Arbitrary transforms | XYZ angles, positive/negative per-axis scales, nearest-cell inverse sampling, sparse holes and bounded destination volume; movable outline/block-sample preview, one undoable paste; some tilted and legacy orientations are refused unless state rotation is disabled |
-| NBT transforms | Root xyz, paired-container x/z links and Rot states; typed inventories preserved; paired chests cannot be tilted into vertical links |
+| NBT transforms | Root xyz, paired-container x/z links, Rot states, Bedrock Shulker facing bytes and floor-head Rotation floats with mount context; typed inventories preserved; paired chests cannot be tilted into vertical links and tilted head mounts are refused |
 | Embedded world references | Arbitrary nested coordinates in opaque NBT are preserved verbatim, not universally translated |
 | Bedrock secondary-layer clipboard | Copy/cut/paste/clone and transforms preserve layers; ordinary fill clears extras; explicit layered fill selects overlay/underlay/game/first/second behavior |
 | Block states | Searchable schemas for 1,095 Java 1.21.4 and 1,239 Bedrock 1.21.50 blocks; Java defaults and typed Bedrock state editing. Bedrock primary metadata contains global property domains, not all per-block restrictions/default permutations. No all-version validator. |

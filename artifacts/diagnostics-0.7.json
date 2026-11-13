@@ -1,0 +1,8 @@
+{
+  "app": "FacetEdit",
+  "version": "0.7.0",
+  "python": "3.12.14",
+  "tk": 9.0,
+  "third_party_packages": [],
+  "platform": "linux"
+}

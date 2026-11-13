@@ -1,0 +1,228 @@
+{
+  "scope": "Isolated initial block cells with default or generated payloads only. This is not coverage of every state, arbitrary NBT or world context.",
+  "total_initial_types": 1095,
+  "supported_initial_types": 1040,
+  "blocked_initial_types": 55,
+  "blocked": [
+    {
+      "block": "minecraft:attached_melon_stem",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:attached_melon_stem"
+    },
+    {
+      "block": "minecraft:attached_pumpkin_stem",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:attached_pumpkin_stem"
+    },
+    {
+      "block": "minecraft:bee_nest",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:bee_nest"
+    },
+    {
+      "block": "minecraft:beehive",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:beehive"
+    },
+    {
+      "block": "minecraft:bell",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:bell"
+    },
+    {
+      "block": "minecraft:big_dripleaf",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:big_dripleaf"
+    },
+    {
+      "block": "minecraft:big_dripleaf_stem",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:big_dripleaf_stem"
+    },
+    {
+      "block": "minecraft:brown_mushroom_block",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:brown_mushroom_block"
+    },
+    {
+      "block": "minecraft:calibrated_sculk_sensor",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:calibrated_sculk_sensor"
+    },
+    {
+      "block": "minecraft:campfire",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:campfire"
+    },
+    {
+      "block": "minecraft:cave_vines",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:cave_vines"
+    },
+    {
+      "block": "minecraft:cave_vines_plant",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:cave_vines_plant"
+    },
+    {
+      "block": "minecraft:chain_command_block",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:chain_command_block"
+    },
+    {
+      "block": "minecraft:chiseled_bookshelf",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:chiseled_bookshelf"
+    },
+    {
+      "block": "minecraft:chorus_plant",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:chorus_plant"
+    },
+    {
+      "block": "minecraft:command_block",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:command_block"
+    },
+    {
+      "block": "minecraft:decorated_pot",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:decorated_pot"
+    },
+    {
+      "block": "minecraft:end_gateway",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:end_gateway"
+    },
+    {
+      "block": "minecraft:ender_chest",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:ender_chest"
+    },
+    {
+      "block": "minecraft:fire",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:fire"
+    },
+    {
+      "block": "minecraft:frogspawn",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:frogspawn"
+    },
+    {
+      "block": "minecraft:jigsaw",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:jigsaw"
+    },
+    {
+      "block": "minecraft:jukebox",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:jukebox"
+    },
+    {
+      "block": "minecraft:kelp",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:kelp"
+    },
+    {
+      "block": "minecraft:kelp_plant",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:kelp_plant"
+    },
+    {
+      "block": "minecraft:lectern",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:lectern"
+    },
+    {
+      "block": "minecraft:lever",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:lever"
+    },
+    {
+      "block": "minecraft:melon_stem",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:melon_stem"
+    },
+    {
+      "block": "minecraft:moving_piston",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:moving_piston"
+    },
+    {
+      "block": "minecraft:mushroom_stem",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:mushroom_stem"
+    },
+    {
+      "block": "minecraft:pale_hanging_moss",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:pale_hanging_moss"
+    },
+    {
+      "block": "minecraft:pale_moss_carpet",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:pale_moss_carpet"
+    },
+    {
+      "block": "minecraft:pink_petals",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:pink_petals"
+    },
+    {
+      "block": "minecraft:piston",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:piston"
+    },
+    {
+      "block": "minecraft:piston_head",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:piston_head"
+    },
+    {
+      "block": "minecraft:pitcher_crop",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:pitcher_crop"
+    },
+    {
+      "block": "minecraft:pumpkin_stem",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:pumpkin_stem"
+    },
+    {
+      "block": "minecraft:red_mushroom_block",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:red_mushroom_block"
+    },
+    {
+      "block": "minecraft:redstone_wire",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:redstone_wire"
+    },
+    {
+      "block": "minecraft:repeating_command_block",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:repeating_command_block"
+    },
+    {
+      "block": "minecraft:scaffolding",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:scaffolding"
+    },
+    {
+      "block": "minecraft:sculk_sensor",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:sculk_sensor"
+    },
+    {
+      "block": "minecraft:small_dripleaf",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:small_dripleaf"
+    },
+    {
+      "block": "minecraft:soul_campfire",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:soul_campfire"
+    },
+    {
+      "block": "minecraft:sticky_piston",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:sticky_piston"
+    },
+    {
+      "block": "minecraft:structure_block",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:structure_block"
+    },
+    {
+      "block": "minecraft:suspicious_gravel",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:suspicious_gravel"
+    },
+    {
+      "block": "minecraft:suspicious_sand",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:suspicious_sand"
+    },
+    {
+      "block": "minecraft:trial_spawner",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:trial_spawner"
+    },
+    {
+      "block": "minecraft:tripwire",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:tripwire"
+    },
+    {
+      "block": "minecraft:twisting_vines",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:twisting_vines"
+    },
+    {
+      "block": "minecraft:twisting_vines_plant",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:twisting_vines_plant"
+    },
+    {
+      "block": "minecraft:vault",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:vault"
+    },
+    {
+      "block": "minecraft:weeping_vines",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:weeping_vines"
+    },
+    {
+      "block": "minecraft:weeping_vines_plant",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:weeping_vines_plant"
+    }
+  ]
+}

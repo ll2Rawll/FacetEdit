@@ -5,6 +5,8 @@ optional development script checks our supported rules; it does not generate
 runtime mappings or establish parity for unsupported blocks/versions/NBT.
 """
 from collections import Counter
+import argparse
+import itertools
 import json
 from pathlib import Path
 import sys
@@ -33,7 +35,7 @@ def canonical(block):
     return Block(name,tuple(props))
 
 
-def run():
+def run(all_states=False):
     manager=PyMCTranslate.new_translation_manager()
     source=profile('Java 1.21.4');target=profile('Bedrock 1.21.50');translator=Translator(source,target)
     reference_java=manager.get_version('java',source.version).block
@@ -44,8 +46,12 @@ def run():
         try:translator.block(initial)
         except ValueError:unsupported.append(name);continue
         supported.append(name);cases={initial}
-        for key,(_,domain) in schema['properties'].items():
-            for value in domain:cases.add(source.block(name,{key:value},defaults=True))
+        if all_states:
+            properties=schema['properties']
+            cases={source.block(name,dict(zip(properties,values))) for values in itertools.product(*(v[1] for v in properties.values()))}
+        else:
+            for key,(_,domain) in schema['properties'].items():
+                for value in domain:cases.add(source.block(name,{key:value},defaults=True))
         for block in sorted(cases,key=str):
             try:ours,layers=translator.block(block)
             except ValueError:continue
@@ -71,9 +77,11 @@ def run():
                     'ours_layers':list(map(str,actual_extra)),'expected_layers':list(map(str,expected_extra)),'context_or_nbt_requested':bool(needs or extra)})
     return {'reference':'Amulet-Core 1.9.41 / PyMCTranslate 1.2.53','source':source.label,'target':target.label,
             'supported_initial_block_types':len(supported),'unsupported_initial_block_types':len(unsupported),
-            'state_vectors':vectors,'reference_requested_context_or_nbt':contexts,'mismatch_count':len(mismatches),
+            'state_vectors':vectors,'all_property_combinations':all_states,'reference_requested_context_or_nbt':contexts,'mismatch_count':len(mismatches),
             'normalization':'Reference Java chunk unpacker supplies waterlogged layers. Bedrock flowing_water/flowing_lava are compared to water/lava with matching depth; __version__ is checked separately as palette metadata.',
             'mismatches':mismatches,'unsupported':unsupported}
 
 
-if __name__=='__main__':print(json.dumps(run(),indent=2))
+if __name__=='__main__':
+    parser=argparse.ArgumentParser();parser.add_argument('--all-states',action='store_true');args=parser.parse_args()
+    print(json.dumps(run(args.all_states),indent=2))

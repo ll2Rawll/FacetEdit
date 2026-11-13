@@ -90,6 +90,22 @@ class ConversionDesktopTests(unittest.TestCase):
         self.assertIs(self.app.document.clipboard,original)
         self.assertIn('BLOCKED',c['report'].get('1.0','end'))
 
+    def test_payload_preview_apply_paste_and_undo_through_desktop(self):
+        from facetedit import nbt
+        from facetedit.payloads import root
+        from facetedit.registry import profile
+        from tests.test_payload_translation import item
+        target=open_world(modern_bedrock(self.path/'bedrock-payload'))
+        self.app._attach(Document(target))
+        data=root('minecraft:chest',(0,0,0),'Java',{'Items':nbt.Tag(nbt.LIST,nbt.ListValue(nbt.COMPOUND,[{**item('diamond',17),'Slot':nbt.Tag(nbt.BYTE,4)}]))})
+        self.app.document.clipboard=Clipboard((1,1,1),{(0,0,0):profile('Java 1.21.4').initial('minecraft:chest')},entities={(0,0,0):data})
+        self.app.translate_clipboard_dialog();c=self.dialog().conversion_controls
+        c['preview']();self.wait();self.assertIn('1 block payload translated',c['report'].get('1.0','end'));c['use']()
+        self.app.document.selection=Selection((1,20,1),(1,20,1));self.app.document.paste()
+        tag=nbt.loads(self.app.document.get_entity(1,20,1))[1]
+        self.assertEqual(tag.value['Items'].value.values[0]['Name'].value,'minecraft:diamond')
+        self.app.undo();self.assertIsNone(self.app.document.get_entity(1,20,1))
+
     def test_material_variables_and_traces_are_released_when_rebuilt_and_closed(self):
         self.app.material_dialog();dialog=self.dialog();c=dialog.material_controls
         c['search'].set('oak_stairs');self.app.update()

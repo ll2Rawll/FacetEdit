@@ -30,7 +30,7 @@ def validate_local(position, size, blocks, entities):
         raise ValueError("Block entity is duplicated or has no non-air block")
 
 
-def transform(data,size,turns=0,mirror=False):
+def transform(data,size,turns=0,mirror=False,block=None):
     if not turns%4 and not mirror:return data
     from .transforms import point
     name,tag=nbt.loads(data)
@@ -46,5 +46,17 @@ def transform(data,size,turns=0,mirror=False):
             old=tag.value[key]
             if old.kind in (nbt.BYTE,nbt.SHORT,nbt.INT):
                 tag.value[key]=nbt.Tag(old.kind,((-old.value if mirror else old.value)+4*turns)%16)
+    if nbt.get(tag,'id')=='ShulkerBox' and 'facing' in tag.value:
+        from .transforms import horizontal
+        order=('down','up','north','south','west','east');old=tag.value['facing']
+        if old.kind!=nbt.BYTE or not 0<=old.value<6:raise ValueError('Invalid Shulker Box facing byte')
+        tag.value['facing']=nbt.Tag(nbt.BYTE,order.index(horizontal(order[old.value],turns,mirror)))
+    if nbt.get(tag,'id')=='Skull' and 'Rotation' in tag.value:
+        if block is None:raise ValueError('Skull rotation requires its block mount state')
+        if dict(block.properties).get('facing_direction')=='1':
+            old=tag.value['Rotation']
+            if old.kind!=nbt.FLOAT:raise ValueError('Invalid skull Rotation type')
+            value=((-old.value if mirror else old.value)+90*turns)%360
+            tag.value['Rotation']=nbt.Tag(nbt.FLOAT,value if value<=180 else value-360)
     for axis,value in zip('xyz',point(position,size,turns,mirror)):tag.value[axis]=nbt.Tag(nbt.INT,value)
     return nbt.dumps(tag,name)

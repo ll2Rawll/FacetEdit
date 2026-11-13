@@ -63,7 +63,7 @@ class Clipboard:
             if source in self.extra_blocks:extra[x,y,z]=tuple(b.transform(turns,mirror,self.edition) for b in self.extra_blocks[source])
         from .entities import transform
         from .transforms import point
-        entities={point(pos,self.size,turns,mirror):transform(data,self.size,turns,mirror) for pos,data in self.entities.items()}
+        entities={point(pos,self.size,turns,mirror):transform(data,self.size,turns,mirror,self.blocks.get(pos)) for pos,data in self.entities.items()}
         ox,oy,oz=self.offset
         if mirror:ox=-ox
         for _ in range(turns%4):ox,oz=-oz,ox

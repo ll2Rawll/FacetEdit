@@ -150,6 +150,7 @@ def _audit_chunk(doc, cx, cz, report):
 def _merge_report(total, part, base, dimension):
     total.blocks += part.blocks
     total.translated += part.translated
+    total.payloads += part.payloads
     total.notes.update(part.notes)
     for reason, count in part.problems.items():
         key=total.issue(reason, count=count)
@@ -214,7 +215,10 @@ def _convert_chunk(doc, target, source_profile, target_profile, cx, cz, policy, 
         clip = Clipboard((16,16,16),blocks,source_profile.edition,entities=block_entities,data_version=source_profile.data_version,extra_blocks=extras,game_version=source_profile.version)
         def neighbour(pos):
             return doc.get(*(a+b for a,b in zip(pos,base)))
-        result, part = translate_clipboard(clip,target_profile,source_profile,neighbour,cancelled)
+        def neighbour_entity(pos):
+            data=doc.get_entity(*(a+b for a,b in zip(pos,base)))
+            return relocate(data,pos) if data is not None else None
+        result, part = translate_clipboard(clip,target_profile,source_profile,neighbour,cancelled,neighbour_entity)
         _merge_report(report,part,base,doc.dimension)
         if result is not None:
             converted[sy] = result

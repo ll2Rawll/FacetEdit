@@ -1,6 +1,6 @@
 # Conversion and native interchange
 
-FacetEdit 0.6 adds original translation and interchange code. Its runtime uses
+FacetEdit 0.7 extends original translation and interchange code. Its runtime uses
 Python's standard library and Tk only. No Amulet implementation, plugin or
 translation table is distributed with the application.
 
@@ -32,20 +32,56 @@ reported, never replaced with air. Failure leaves the original clipboard intact.
 
 Rules include stateless materials, axes, fluids, slabs, stairs, walls, signs,
 crops, rails, candles, doors/trapdoors, gates, buttons, pressure plates, torches,
-saplings, leaves and selected container block states. This does **not** cover
-every state of every block. Powered door/gate/trapdoor states, some button
-orientations and paired chest data still have explicit restrictions. Block NBT
-is retained for same-version interchange; cross-edition NBT conversion is blocked.
-The current independent reference corpus covers 723 Java initial block types
-and 2,867 supported state vectors; 372 initial types remain unsupported. A
-supported initial state does not imply every state or block payload is covered.
+saplings, leaves, containers, amethyst, anvils, coral, cauldrons, repeaters,
+comparators and additional decorative/mechanical families. This does **not**
+cover every state of every block. Powered door/gate/trapdoor/head states,
+locked repeaters, dry sea pickles and some orientations remain restricted.
 
-Door translation needs both matching halves. Stair shape uses adjacent blocks.
+Palette-only rules cover 922 initial block types; an independent exhaustive
+combination audit matches Amulet on 19,853 accepted state vectors. The cell API
+adds 118 block types whose identity/orientation needs NBT. Together these accept
+1,040 of 1,095 isolated Java initial block cells; 55 remain blocked. These counts
+do not imply every state, arbitrary existing payload or neighbour context works.
+
+Door and double-chest translation need both matching halves. Chest links are
+validated for direction, reciprocity and a single leader; each half retains its
+own typed inventory. Stair shape uses adjacent blocks. Fence/pane connections
+use primary Java face/tag predicates; note instruments use the surrounding blocks.
 Bedrock-to-Java leaf distance is calculated through up to six connected leaves
 using Minecraft's actual log/leaf tags and available neighbours. Whole-world
-conversion can inspect neighbouring chunks; a standalone structure supplies only
-its selected mask. Java cave/void air normalize to Bedrock air. Flowing fluid
+conversion can inspect neighbouring chunks and their NBT; a standalone structure
+supplies only its selected mask. Include both container halves and supporting
+blocks when copying structures with contextual states. Java cave/void air normalize to Bedrock air. Flowing fluid
 identifiers normalize with their depth retained. Reports disclose normalization.
+
+## Block NBT and inventories
+
+Supported cell payloads include single/double/trapped chests, barrels, dispensers,
+droppers, hoppers, inactive furnaces/smokers/blast furnaces, all bed colours,
+standing/wall banners, Shulker Boxes, potted plants, notes, ordinary/hanging signs
+and basic mob/player heads without custom profiles. Payload identity, coordinate
+types and every handled field are validated. New native NBT is generated when
+the target stores a block's colour, note or orientation there.
+
+Items retain explicit native identities, slots, counts from 1–99, supported
+damage/repair data, enchantments at levels 1–255, unbreakable flags, formatted names/lore,
+banner patterns, supported block-state components and nested Shulker contents.
+Unknown components are blockers with field paths; maps/potions and their world/
+variant data are not guessed. The Java codec can normalize invalid counts to one;
+FacetEdit refuses those counts instead. Nested inventories are bounded by depth
+8 and 4,096 items. Individual containers also validate their actual slot capacity.
+
+Signs preserve four lines on both sides, supported static text styles, dye colour,
+glow and wax. Dynamic/event-bearing text, unsupported formatting, custom ARGB
+colours, differing filtered text and ownership fields are refused. Text JSON is
+canonicalized; supported text/style semantics, not original JSON spelling, are
+retained. Unknown native fields, loot tables, locks, active furnace progress,
+custom player profiles, head animations and unsupported block-entity families
+still block conversion. Same-version interchange retains opaque NBT unchanged.
+
+Bedrock Shulker facing bytes and floor-head rotation floats follow clipboard
+transforms. Head transforms use the block's mount state so wall heads do not
+receive a spurious floor rotation; tilted head mounts remain restricted.
 
 ## Convert a saved world
 
@@ -56,7 +92,7 @@ files. Inspect the report, then choose a **new** output folder outside both inpu
 
 Source chunks replace matching template chunks. Template chunks outside that
 footprint remain. Source players, maps, structure starts, POI and auxiliary
-world/chunk records are not migrated. Actors, scheduled ticks, cross-edition
+world/chunk records are not migrated. Actors, scheduled ticks, unsupported
 block NBT, unknown blocks and out-of-height payloads block publication. Converted
 lighting is marked for recalculation; this has not been tested inside Minecraft.
 

@@ -124,6 +124,31 @@ before calling the project an exact feature replica.
   and tests. Streaming Bedrock journal serialization reduces temporary output
   memory; the database adapter itself still materializes logical records.
 
+## 0.7 progress — 2026-11-13
+
+- Item 6 now includes typed cell payload conversion: container inventories,
+  reciprocal/one-way chest pairs, both sign sides, beds, banner patterns,
+  Shulker Boxes, pots, note values and basic head mounts/rotations. Unknown fields
+  and components remain explicit blockers rather than disappearing during export.
+- Palette rules now accept 922 initial Java block types; the exhaustive accepted
+  state-combination corpus has 19,853 vectors and no reference mismatch. Cell
+  rules add 118 payload-based identities. The combined isolated-initial-cell
+  check accepts 1,040 of 1,095 types; 55 remain blocked. These are deliberately
+  separate measures from full state/NBT/context or in-game compatibility.
+- Primary metadata supplies face support, fence/pane predicates, note instruments,
+  dye colours and item identities. Original development reporters query the
+  official Java classes; executable game code and assets are not bundled.
+- Cross-chunk chest links, clipboard/structure relocation, rotation, undo,
+  exported native payloads and desktop preflight/apply are tested. Independent
+  native LevelDB/NBT readers check fields and numeric widths in both directions.
+  The payload oracle has five unavailable flower-pot field comparisons; these
+  limitations remain visible in the report.
+- Remaining work includes custom head profiles, active furnace/other complex
+  block entities, additional item components and variants, the remaining states,
+  all other release migrations/storage layouts, moving payloads, broader resource
+  display and native platform/game verification. This release does not complete
+  the full parity worklist.
+
 ## Reference scope and remaining acceptance matrix
 
 The interface target is the stable **0.10.67** tag. The available checkout is

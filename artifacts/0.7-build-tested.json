@@ -1,0 +1,14 @@
+{
+  "FacetEdit.pyz": {
+    "bytes": 435725,
+    "sha256": "79a7d7cf5fd7e9d3a67df7129e69b3dd51a74070c05cbdcc70f076a006203ed8"
+  },
+  "full_suite": 492,
+  "core_tests": 410,
+  "desktop_tests": 82,
+  "source": "Python 3.13.5 / Tk 8.6.16",
+  "packaged": [
+    "Python 3.13.5 / Tk 8.6.16",
+    "Python 3.12.14 / Tk 9.0"
+  ]
+}

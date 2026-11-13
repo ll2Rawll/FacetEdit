@@ -12,6 +12,7 @@ import json
 from .blocks import AIR, Block
 from .model import Clipboard
 from .registry import for_clipboard, profile
+from . import native_rules
 
 STATELESS = frozenset(json.loads(files('facetedit').joinpath('data','registries','stateless-1.21.json').read_text())['blocks'])
 TAGS=json.loads(files('facetedit').joinpath('data','registries','java-1.21.4-tags.json').read_text())
@@ -43,6 +44,7 @@ class TranslationReport:
     problems: Counter = field(default_factory=Counter)
     examples: dict = field(default_factory=dict)
     notes: set = field(default_factory=set)
+    payloads: int = 0
 
     @property
     def ok(self):
@@ -59,6 +61,7 @@ class TranslationReport:
 
     def summary(self):
         lines = [f'{self.source} → {self.target}', f'{self.translated:,} / {self.blocks:,} blocks translated']
+        if self.payloads:lines.append(f'{self.payloads:,} block payload'+('s' if self.payloads!=1 else '')+' translated or generated')
         for reason, count in self.problems.most_common():
             lines.append(f'BLOCKED · {count:,} · {reason}')
             if self.examples[reason]:
@@ -72,6 +75,12 @@ class Translator:
         self.source, self.target = source, target
         self.java, self.bedrock = profile('Java 1.21.4'), profile('Bedrock 1.21.50')
         self.cache = {}
+        self.chest_links = {}
+        self.chest_link_bytes = 0
+
+    def cell(self,block,layers=(),entity=None,position=(0,0,0),neighbour=None,neighbour_entity=None):
+        from .payloads import translate_cell
+        return translate_cell(self,block,layers,entity,position,neighbour,neighbour_entity)
 
     def block(self, block, layers=()):
         key = block, tuple(layers)
@@ -94,6 +103,8 @@ class Translator:
                 result = self.to_bedrock(native)
             else:
                 java = self.to_java(native)
+                if native.name=='minecraft:sea_pickle' and bool(layers)!=(dict(native.properties)['dead_bit']=='false'):
+                    raise ValueError('Sea-pickle death state disagrees with its secondary water layer')
                 if layers:
                     if len(layers) != 1:
                         raise ValueError('Only one source-water layer can become Java waterlogging')
@@ -101,9 +112,9 @@ class Translator:
                     if water.name != 'minecraft:water' or dict(water.properties).get('liquid_depth') != '0':
                         raise ValueError('Extra layer is not source water')
                     props = dict(java.properties)
-                    if 'waterlogged' not in props:
+                    if 'waterlogged' not in props and java.name.removeprefix('minecraft:') not in native_rules.ALWAYS_WATER:
                         raise ValueError(f'{java.name} cannot represent the extra water layer')
-                    props['waterlogged'] = 'true'
+                    if 'waterlogged' in props:props['waterlogged'] = 'true'
                     java = self.java.block(java.name, props)
                 result = java, ()
         except ValueError as exc:
@@ -120,7 +131,10 @@ class Translator:
         water = p.pop('waterlogged', 'false') == 'true'
         target = ALIASES.get(name, name)
         out = {}
-        if block.name in STATELESS:
+        extended=native_rules.to_bedrock(name,p,water)
+        if extended is not None:
+            target,out=extended
+        elif block.name in STATELESS:
             pass
         elif name in ('cave_air','void_air'):
             target = 'air'
@@ -233,7 +247,7 @@ class Translator:
         if p:
             raise ValueError(f'Untranslated Java states on {block.name}: {sorted(p)}')
         result = self.bedrock.block('minecraft:'+target, out)
-        extra = (self.bedrock.block('minecraft:water', {'liquid_depth':'0'}),) if water else ()
+        extra = (self.bedrock.block('minecraft:water', {'liquid_depth':'0'}),) if water or name in native_rules.ALWAYS_WATER else ()
         return result, extra
 
     def to_java(self, block):
@@ -241,7 +255,10 @@ class Translator:
         target = REVERSE.get(name, name)
         p = dict(block.properties)
         out = {}
-        if block.name in STATELESS or name in ('grass_path','magma','web','snow'):
+        extended=native_rules.to_java(name,p)
+        if extended is not None:
+            target,out=extended
+        elif block.name in STATELESS or name in ('grass_path','magma','web','snow'):
             pass
         elif name == 'bedrock':
             if p.pop('infiniburn_bit') != 'false':
@@ -412,7 +429,7 @@ def leaf_distances(positions, get, cancelled=lambda:False):
     return {p:distances.get(p,7) for p in positions}
 
 
-def translate_clipboard(clip, target, source=None, neighbour=None, cancelled=lambda: False):
+def translate_clipboard(clip, target, source=None, neighbour=None, cancelled=lambda: False, neighbour_entity=None):
     source = source or for_clipboard(clip)
     if source.edition != clip.edition:
         raise ValueError('Source profile does not match the clipboard edition')
@@ -422,14 +439,22 @@ def translate_clipboard(clip, target, source=None, neighbour=None, cancelled=lam
         raise ValueError('Source profile does not match the known clipboard game version')
     translator = Translator(source, target)
     report = TranslationReport(source.label, target.label, len(clip.blocks))
-    blocks, extra = {}, {}
+    blocks, extra, entities = {}, {}, {}
+    def source_at(pos):
+        return clip.blocks.get(pos) if pos in clip.blocks else neighbour(pos) if neighbour is not None else None
+    def entity_at(pos):
+        return clip.entities.get(pos) if pos in clip.blocks else neighbour_entity(pos) if neighbour_entity is not None else None
+    for pos in clip.entities.keys()-clip.blocks.keys():report.issue('Block NBT lies outside the clipboard block mask',pos)
+    for pos in clip.extra_blocks.keys()-clip.blocks.keys():report.issue('Extra block layer lies outside the clipboard block mask',pos)
     for index, (pos, block) in enumerate(clip.blocks.items()):
         if index % 256 == 0 and cancelled():
             raise InterruptedError('Translation cancelled')
         try:
-            blocks[pos], layers = translator.block(block, clip.extra_blocks.get(pos, ()))
+            blocks[pos], layers, entity = translator.cell(block, clip.extra_blocks.get(pos, ()),clip.entities.get(pos),pos,source_at,entity_at)
             if layers:
                 extra[pos] = layers
+            if entity is not None:
+                entities[pos]=entity;report.payloads+=1
             report.translated += 1
         except (ValueError, KeyError, IndexError) as exc:
             report.issue(str(exc), pos)
@@ -438,14 +463,8 @@ def translate_clipboard(clip, target, source=None, neighbour=None, cancelled=lam
         report.notes.add('Java cave/void air becomes Bedrock air; Bedrock has no separate air subtype.')
     if cross and any(b.name in ('minecraft:flowing_water','minecraft:flowing_lava') for b in clip.blocks.values()):
         report.notes.add('Bedrock flowing-fluid identifiers become Java fluid blocks with the same depth.')
-    if cross and clip.entities:
-        report.issue('Cross-edition block NBT translation is not implemented', next(iter(clip.entities)), len(clip.entities))
-    elif source.label != target.label and clip.entities:
-        report.issue('Cross-version block NBT migration is not implemented', next(iter(clip.entities)), len(clip.entities))
     if cross:
         canonical = blocks if target.edition == 'Java' else {p: source.validate(b, defaults=True) for p,b in clip.blocks.items() if p in blocks}
-        def source_at(pos):
-            return clip.blocks.get(pos) if pos in clip.blocks else neighbour(pos) if neighbour is not None else None
         def get(pos):
             if pos in canonical:
                 return canonical[pos]
@@ -457,6 +476,21 @@ def translate_clipboard(clip, target, source=None, neighbour=None, cancelled=lam
                     return translator.to_java(source.validate(other)) if source.edition == 'Bedrock' else source.validate(other, defaults=True)
             return AIR
         for pos, block in canonical.items():
+            if block.name.endswith(('_fence','_glass_pane')) or block.name in ('minecraft:glass_pane','minecraft:iron_bars'):
+                from .state_facts import connects
+                try:
+                    props=dict(block.properties)
+                    for side,delta in SIDES.items():
+                        other_pos=tuple(a+b for a,b in zip(pos,delta))
+                        other=canonical.get(other_pos)
+                        if other is None:
+                            native=source_at(other_pos)
+                            other=AIR if native is None else translator.cell(native,entity=entity_at(other_pos),position=other_pos)[0] if source.edition=='Bedrock' else source.validate(native,defaults=True)
+                        connected=str(connects(block,other,OPPOSITE[side])).lower()
+                        if target.edition=='Java':props[side]=connected
+                        elif props[side]!=connected:raise ValueError('Java '+side+' connection disagrees with neighbours; Bedrock would change it')
+                    if target.edition=='Java':blocks[pos]=target.block(block.name,props)
+                except (ValueError,KeyError,IndexError) as exc:report.issue('Connection neighbour: '+str(exc),pos)
             if block.name.endswith('_door'):
                 props=dict(block.properties);lower=pos if props['half']=='lower' else (pos[0],pos[1]-1,pos[2]);upper=(lower[0],lower[1]+1,lower[2])
                 bottom,top=source_at(lower),source_at(upper)
@@ -496,5 +530,5 @@ def translate_clipboard(clip, target, source=None, neighbour=None, cancelled=lam
                 except ValueError as exc:report.issue(str(exc))
     if not report.ok:
         return None, report
-    result = Clipboard(clip.size, blocks, target.edition, clip.offset, dict(clip.entities) if not cross else {}, target.data_version, extra, target.version)
+    result = Clipboard(clip.size, blocks, target.edition, clip.offset, entities, target.data_version, extra, target.version)
     return result, report

@@ -64,7 +64,7 @@ class Transform:
             if data or number in (23,26,27,28,29,33,34,50,53,54,61,62,63,64,65,66,67,68,69,71,75,76,77,96,106,107,108,109,114,128,130,134,135,136,143,146,154,156,158,163,164,167,180,193,194,195,196,197,198,203,218):
                 raise ValueError('Legacy metadata rotation needs a versioned state translator; disable block-state rotation to transform geometry')
             return block
-        props=dict(block.properties)
+        props=dict(block.properties);original_properties=dict(props)
         up=self.direction('up')
         horizontal=all(self.direction(key) not in ('up','down') for key in ('north','east','south','west'))
         if horizontal:
@@ -72,27 +72,30 @@ class Transform:
             mirror=self.direction('east')!=order[(turns+1)%4]
             block=block.transform(turns,mirror,edition);props=dict(block.properties)
         else:
-            complex_keys={'shape','hinge','half','type','face','rotation','ground_sign_direction','rail_direction','vine_direction_bits','direction','weirdo_direction','door_hinge_bit','huge_mushroom_bits','minecraft:cardinal_direction'}
+            complex_keys={'shape','hinge','half','type','face','rotation','ground_sign_direction','rail_direction','vine_direction_bits','direction','weirdo_direction','door_hinge_bit','huge_mushroom_bits','minecraft:cardinal_direction','coral_direction'}
             if complex_keys&props.keys() or any(k in props for k in ('north','east','south','west')):
                 raise ValueError('This block cannot represent the tilted orientation: '+str(block)+'. Disable block-state rotation to transform geometry')
         if not horizontal or up=='down':
-            for key in ('facing','block_face','torch_facing_direction','minecraft:facing_direction'):
+            for key in ('facing','block_face','torch_facing_direction','minecraft:facing_direction','minecraft:block_face'):
                 if key in props:props[key]=self.direction(props[key]) if not horizontal else ('down' if props[key]=='up' else 'up' if props[key]=='down' else props[key])
             for key in ('axis','pillar_axis'):
                 if not horizontal and props.get(key) in ('x','y','z'):
                     v=self.direction({'x':'east','y':'up','z':'south'}[props[key]])
                     props[key]='x' if v in ('east','west') else 'y' if v in ('up','down') else 'z'
             if 'facing_direction' in props:
-                order=('down','up','north','south','west','east');old=order[int(props['facing_direction'])]
+                order=('down','up','south','north','east','west') if edition=='Bedrock' and block.name=='minecraft:end_rod' else ('down','up','north','south','west','east');old=order[int(props['facing_direction'])]
                 if not horizontal:props['facing_direction']=str(order.index(self.direction(old)))
                 elif old in ('up','down'):props['facing_direction']=str(order.index('down' if old=='up' else 'up'))
+            if 'multi_face_direction_bits' in props:
+                bits=int(original_properties['multi_face_direction_bits']);order=('down','up','south','west','north','east')
+                props['multi_face_direction_bits']=str(sum(1<<order.index(self.direction(side)) for i,side in enumerate(order) if bits&(1<<i)))
             if up=='down':
                 for key in ('half','type'):
                     if props.get(key) in ('top','bottom'):props[key]='bottom' if props[key]=='top' else 'top'
                 if 'upside_down_bit' in props:props['upside_down_bit']='false' if props['upside_down_bit']=='true' else 'true'
         return Block(block.name,tuple(props.items()),block.state_types)
 
-    def entity(self,data,target,rotate_states=True):
+    def entity(self,data,target,rotate_states=True,block=None):
         _,tag=nbt.loads(data);old=tuple(nbt.get(tag,axis) for axis in 'xyz')
         if any(type(v) is not int for v in old):raise ValueError('Invalid transformed block NBT coordinates')
         center=self.target(old)
@@ -102,6 +105,20 @@ class Transform:
             for key,axis in (('pairx',0),('pairz',2)):tag.value[key]=nbt.Tag(nbt.INT,pair[axis]+target[axis]-center[axis])
         if rotate_states and 'Rot' in tag.value:
             value=tag.value['Rot'];tag.value['Rot']=nbt.Tag(value.kind,self.rotation16(value.value))
+        if rotate_states and nbt.get(tag,'id')=='ShulkerBox' and 'facing' in tag.value:
+            order=('down','up','north','south','west','east');value=tag.value['facing']
+            if value.kind!=nbt.BYTE or not 0<=value.value<6:raise ValueError('Invalid Shulker Box facing byte')
+            tag.value['facing']=nbt.Tag(nbt.BYTE,order.index(self.direction(order[value.value])))
+        if rotate_states and nbt.get(tag,'id')=='Skull' and 'Rotation' in tag.value:
+            if block is None:raise ValueError('Skull rotation requires its block mount state')
+            if self.direction('up')!='up':raise ValueError('A tilted skull needs a mount/rotation migration; disable block-state rotation')
+            if dict(block.properties).get('facing_direction')=='1':
+                value=tag.value['Rotation']
+                if value.kind!=nbt.FLOAT:raise ValueError('Invalid skull Rotation type')
+                # Native rotations may be continuous in an unconverted world.
+                angle=math.radians(value.value);x,_,z=vector(self.matrix,(-math.sin(angle),0,math.cos(angle)))
+                rotation=math.degrees(math.atan2(-x,z))
+                tag.value['Rotation']=nbt.Tag(nbt.FLOAT,integer(rotation))
         for axis,value in zip('xyz',target):tag.value[axis]=nbt.Tag(nbt.INT,value)
         return nbt.dumps(tag)
 
@@ -126,5 +143,5 @@ def transform_clipboard(clipboard,rotation=(0,0,0),scale=(1,1,1),rotate_states=T
         if source not in clipboard.blocks:continue
         blocks[position]=state(clipboard.blocks[source])
         if source in clipboard.extra_blocks:extras[position]=tuple(state(b) for b in clipboard.extra_blocks[source])
-        if source in clipboard.entities:entities[position]=transform.entity(clipboard.entities[source],position,rotate_states)
+        if source in clipboard.entities:entities[position]=transform.entity(clipboard.entities[source],position,rotate_states,clipboard.blocks[source])
     return Clipboard(transform.size,blocks,clipboard.edition,transform.offset(clipboard.offset),entities,clipboard.data_version,extras,clipboard.game_version)

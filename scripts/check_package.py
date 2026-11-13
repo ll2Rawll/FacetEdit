@@ -28,9 +28,16 @@ assert len(profiles['Bedrock 1.21.50'].blocks)==1239
 assert profiles['Bedrock 1.21.50'].palette_version==18163713
 assert len(STATELESS)==307 and 'minecraft:mushroom_stem' not in LOGS
 assert 'minecraft:oak_log' in LOGS and 'minecraft:oak_leaves' in LEAVES
+from facetedit.state_facts import catalog
+from facetedit.item_translation import JAVA_ITEMS,BEDROCK_ITEMS
+from facetedit.payload_formats import COLORS,TEXT_RGB
+facts=catalog();assert sum(len(block['states']) for block in facts['blocks'].values())==27866
+assert tuple(facts['text_colors'][name] for name in COLORS)==TEXT_RGB
+assert len(JAVA_ITEMS)==1385 and len(BEDROCK_ITEMS)==1369
 report={'version':facetedit.__version__,'module_origin':facetedit.__file__,'python_modules':len(modules),
         'third_party_imports':sorted(unsupported),'logo_assets':assets,
         'bundled_block_definitions':{name:len(value.blocks) for name,value in profiles.items()},
         'native_bedrock_palette_version':profiles['Bedrock 1.21.50'].palette_version,
+        'bundled_primary_state_facts':27866,'bundled_item_identities':{'Java':len(JAVA_ITEMS),'Bedrock':len(BEDROCK_ITEMS)},
         'bytes':archive.stat().st_size,'sha256':hashlib.sha256(archive.read_bytes()).hexdigest()}
 print(json.dumps(report,indent=2))

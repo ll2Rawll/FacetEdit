@@ -1,181 +1,150 @@
-# FacetEdit 0.6.0 — verification report
+# FacetEdit 0.7.0 — verification report
 
-Verified locally on 2026-11-13, Linux x86_64, with an Xvfb desktop and Mesa
-llvmpipe. Full Amulet parity, native Windows/macOS verification and reopening
-exports in Minecraft remain unfinished.
+Verified on 2026-11-13, Linux x86_64, Xvfb and Mesa llvmpipe. Full Amulet
+parity, native Windows/macOS execution and reopening exports in Minecraft
+remain unfinished. This report describes the tested boundaries.
 
 ## Automated results
 
-**459 tests: 378 core/workflow/graphics tests and 81 live desktop tests.**
-This release adds 57 tests to the 402-test 0.5 baseline.
+**492 tests: 410 core/workflow/graphics tests and 82 live desktop tests.**
+This release adds 33 tests to the 459-test 0.6 baseline. Many tests enumerate
+colours, rotations, mounts, property combinations and typed payload variants.
 
 | Run | Result |
 | --- | --- |
-| Python 3.13.5 / Tk 8.6.16, source with desktop tests | 459 passed, no skips, 24.926 seconds |
-| Python 3.13.5 / Tk 8.6.16, packaged executable with desktop tests | 459 passed, no skips, 25.619 seconds |
-| Python 3.12.14, core suite | 378 passed; 81 desktop tests explicitly skipped, 9.733 seconds |
-| Python 3.12.14 / Tk 9.0, packaged executable with desktop tests | 459 passed, no skips, 23.953 seconds |
+| Python 3.13.5 / Tk 8.6.16, source with desktop tests | 492 passed, no skips, 31.612 seconds |
+| Python 3.13.5 / Tk 8.6.16, packaged executable with desktop tests | 492 passed, no skips, 28.772 seconds |
+| Python 3.12.14, source core suite | 410 passed; 82 desktop tests explicitly skipped, 16.690 seconds |
+| Python 3.12.14 / Tk 9.0, packaged executable with desktop tests | 492 passed, no skips, 28.322 seconds |
 | Compilation and whitespace validation | Passed |
-| Runtime package audit | 63 Python modules, no third-party imports, three logo assets; bundled registry/tag checks pass |
+| Runtime package audit | 71 Python modules, no third-party imports, three logo assets; packaged schemas, state facts and item identities validated |
 
 [Source log](../artifacts/test-results.txt),
 [package log](../artifacts/package-tests.txt),
 [Python 3.12 core log](../artifacts/python312-tests.txt),
-[Python 3.12 / Tk 9 desktop log](../artifacts/python312-gui-tests.txt),
+[Tk 9 package log](../artifacts/python312-gui-tests.txt),
 [package audit](../artifacts/package-audit.json).
+Final automated logs contain no traceback, unraisable Tk finalizer exception or
+resource warning. The separate reference-oracle warnings are explained below.
+GUI runs execute sequentially on the shared display.
 
-The tested executable is **326,922 bytes**, SHA-256
-`4d84516bf4e21cb3c2717cd69b0c9f42ab9c610c30963bb248f942e17ab83879`.
-The documentation rebuild must retain this hash. Final ZIP hashes are in
-`dist/checksums.json`. The audit resolves imports from the zipapp, validates the
-packaged schemas/tags, and excludes Amulet, site-packages and bytecode caches.
-Python and Tk are prerequisites; the zipapp is not a bundled interpreter.
+The tested executable is **435,725 bytes**, SHA-256
+`79a7d7cf5fd7e9d3a67df7129e69b3dd51a74070c05cbdcc70f076a006203ed8`. Documentation-only rebuilds must retain this hash.
+All archive entries now use stable timestamps and file modes; unchanged inputs
+produce identical executable, portable and source archives. Final archive hashes
+are in `dist/checksums.json`. Python 3.11+ and Tk are prerequisites; the zipapp
+is not a bundled interpreter or a signed native Windows/macOS installer.
 
-## Independent interoperability
+## Independent translation and native-format checks
 
-The interface target is Amulet Map Editor **0.10.67**. Interoperability checks use
-an isolated development installation of **Amulet-Core 1.9.41**, **PyMCTranslate
-1.2.53**, **amulet-nbt 2.1.8** and native **amulet-leveldb 1.0.7** outside this
-project. Their code and translation tables are not copied into or imported by
-the application. Optional source-distribution validation scripts require that
-separate environment; they do not generate runtime mappings.
+Reference target: Amulet Map Editor **0.10.67**. Development-only oracles use
+Amulet-Core 1.9.41, PyMCTranslate 1.2.53, amulet-nbt 2.1.8 and native
+amulet-leveldb 1.0.7 in a separate environment. Their implementations and
+translation tables are not copied into or imported by the app.
 
 | Check | Result and scope |
 | --- | --- |
-| Construction, FacetEdit → Amulet → FacetEdit | Sparse Java with negative offset, typed Bedrock water layers, and a 129-entry Java palette pass |
-| Construction independently created by Amulet | Native 1.21.4 section and Unicode block NBT import correctly |
-| Java 1.21.4 → Bedrock 1.21.50 state corpus | 2,867 supported state vectors; zero mismatches after documented fluid/layer normalization |
-| Initial Java block-type coverage | 723 mapped; 372 unsupported out of 1,095 definitions |
-| Converted Java → Bedrock world | Native reader opens negative chunks and correctly oriented, waterlogged stairs |
-| Converted Bedrock → Java world | Native reader and Java palette packer recover negative chunks, facing, half and waterlogging |
-| Native Bedrock edits and mcstructure export | Both reopen with a top slab's current native property and palette version intact |
+| Palette-only Java → Bedrock rules | 922 initial block types; 19,853 accepted property combinations, zero reference mismatches after documented fluid/layer normalization |
+| Payload-based cell rules | 118 additional initial block types; 881 state/payload vectors, zero mismatches among available reference comparisons |
+| Combined isolated Java initial cells | 1,040 accepted; 55 blocked out of 1,095; default/generated payloads only |
+| Native world round trip | Independent native LevelDB/NBT reader opens 10 Bedrock payloads; independent Anvil-sector/NBT reader opens 8 restored Java payloads. Pots/notes correctly need no Java block NBT. |
+| Native field checks | Container item identifiers/counts/slots/damage/enchantments, sign text/colour/glow/wax, bed colour, banner patterns, Shulker facing, head angle, pot descriptor version, note value and cross-chunk chest links pass |
+| Desktop workflow | Preview → use translated clipboard → paste → inspect native inventory → undo passes through actual Tk callbacks |
+| Structure/export workflow | Translated payloads survive mcstructure export/import, relocation, paste, undo/redo and native world export |
 
-The state corpus varies one property at a time around supported initial states;
-it does not exhaust every combination. 299 vectors request additional context
-or NBT in the reference translator. Base-state agreement therefore does not
-establish complete context/NBT semantics. Separate tests cover paired doors,
-stair corners, leaf distance, layers and atomic failures. Cross-edition block
-NBT remains blocked.
+[Exhaustive accepted state corpus](../artifacts/translation-reference.json),
+[cell and native-world results](../artifacts/payload-reference.json),
+[initial-cell blockers](../artifacts/payload-initial-coverage.json).
 
-[Construction results](../artifacts/construction-reference.json),
-[state corpus and unsupported identifiers](../artifacts/translation-reference.json),
-[native world/structure reopening](../artifacts/conversion-reference.json).
-These are reference-reader checks, **not Minecraft game execution**.
+The state audit enumerates all property combinations for the implemented palette
+families; rejected combinations are not counted as successes. 1,262 accepted
+vectors request additional context or NBT from the reference. Palette agreement
+alone cannot establish complete context/NBT semantics. Separate tests exercise
+chest/door pairs, stairs, leaves, fence/pane connections and note instruments.
 
-## Primary metadata provenance
+Five flower-pot **field comparisons are unavailable in the reference**:
+crimson/warped fungus and roots embed historical descriptors whose declared
+version cannot translate those blocks; potted torchflower emits no PlantBlock.
+The report records these instead of counting them as matched fields. FacetEdit's
+own pinned-schema/native round trips still cover these plants. Historical
+reference descriptors that can be translated are normalized through their
+own declared version before comparison. New native descriptors use 18163713.
+[Reference warnings](../artifacts/payload-reference-notes.txt) preserve the four
+historical-schema warnings. None of these checks is Minecraft game execution.
 
-The Java schema has 1,095 block definitions from the official **1.21.4 server
-data report**, including defaults. Its server JAR SHA-1 matches Mojang's
-`4707d00eb834b446575d89a61a11b5d548d8c001`. Only the report generator was run,
-not a game server. Bedrock's 1,239 definitions come from Mojang's pinned
-**bedrock-samples v1.21.50.7** metadata. Its global property domains do not
-specify all per-block restrictions or defaults; the material browser labels
-initial choices accordingly. Log/leaf tags and biome identifiers come from
-official Java client metadata. No game executables or raw assets are bundled.
+Previous Construction, world-format, native database/compression and resource
+corpora remain in the source distribution and existing release artifacts.
+The expanded automated suites retain their regression coverage.
 
-URLs, hashes and generator instructions are in
-[SOURCES.json](../src/facetedit/data/registries/SOURCES.json). The Bedrock 1.21.50
-native palette identifier is **18163713**. It is not inferred by packing the
-game-release tuple; native reference reads check it separately from state names.
+## Primary metadata and revision evidence
 
-## Revisions from tests and visual review
+The runtime profiles use the official Java 1.21.4 report and Mojang's pinned
+Bedrock v1.21.50.7 metadata. There are 1,095 Java and 1,239 Bedrock block definitions,
+1,385 Java and 1,369 Bedrock item identities. Item identities are not a promise
+of complete component/variant migration.
 
-1. An early conversion test exposed unchanged Bedrock terrain missing from the
-   section inventory. Discovery now includes untouched sections and negative
-   coordinates; external readers verify both.
-2. An independent Construction fixture used BYTE for an empty list. The reader
-   now allows legal empty-list types while validating populated lists. Signed
-   BYTE palette indices switch to INT before index 128.
-3. The first reference harness omitted Java's waterlogged-layer unpacking;
-   correcting that removed artificial differences. Later rule expansion exposed
-   14 real pressure-plate mismatches: the pressed native value is 1, not 15.
-   The final corpus has zero mismatches. A semantic regression also corrected
-   Bedrock trapdoor rotation order.
-4. New Bedrock states previously inherited an old fallback palette tag. Known
-   current-world/structure exports now use the verified native tag; original
-   world entries keep theirs. Independent readers check top-slab outputs.
-5. Same-version Bedrock conversion now preserves individual biome voxels and
-   unknown numeric IDs under the exact policy. Cross-edition incompatible
-   resolution remains a blocker unless sampling is explicitly chosen.
-6. Block NBT in absent terrain sections is audited in both editions, preventing
-   unsupported data from disappearing outside the terrain inventory. Foreign,
-   invalid or duplicate block-NBT coordinates are also reported.
-7. Publication checks cover cancellation, altered spooled chunks, occupied
-   destinations (including empty directories), and a same-size source change
-   with its timestamp restored. Linux exclusive rename is exercised; native
-   Windows/macOS execution remains open.
-8. Visual review found clipped footer buttons and inaccessible properties on
-   blocks with many states. Layout sizing, state scrolling, keyboard focus
-   reveal and responsive wrapping now have live Tk checks. The world library
-   uses dark styling and a visible scrollbar.
-9. An intermediate passing suite still emitted Tk variable finalizer errors
-   from workers. Dialog variables/traces now have explicit main-thread disposal,
-   including rebuilt controls and direct destruction. Closing preflight also
-   releases prepared files. Final logs have no such errors.
-10. Desktop checks invalidate stale background results after option changes,
-    retain the original clipboard on failure, keep publishing unavailable until
-    a successful report, persist controls and exercise actual paste/discovery/
-    conversion callbacks. GUI suites run sequentially on the shared display.
+An original reflection reporter obtains face support, fence/pane connection
+predicates, note instruments and dye colours for all **27,866 Java states**.
+It binds the official client block tags before querying the official server
+classes. A second reporter exercises the actual item/enchantment codecs:
+invalid item counts can normalize to one, and enchantment levels outside
+1–255 are rejected. FacetEdit blocks unrepresentable counts/levels in both
+directions. No game/server session is started and no executable game code or
+raw artwork is bundled. URLs, hashes and generator details are in
+[SOURCES.json](../src/facetedit/data/registries/SOURCES.json),
+[primary state results](../artifacts/primary-state-facts.json) and
+[primary item/level results](../artifacts/primary-item-counts.txt).
 
-Intermediate source-distribution logs remain under `artifacts/0.6-*.txt`; final acceptance logs are
-linked above. The Tk cleanup problem is preserved in
-[the intermediate run](../artifacts/0.6-gc-first-pass.txt).
+The implementation underwent multiple test/review revisions:
 
-Actual application captures:
-[material studio](../artifacts/material-studio.png),
-[compact state scrolling](../artifacts/material-states-compact.png),
-[clipboard translation](../artifacts/clipboard-translation.png),
-[world conversion](../artifacts/world-conversion.png),
-[world library](../artifacts/world-library.png),
-[navigation controls](../artifacts/navigation-controls.png).
+- Reference differences corrected end-rod directions, hopper enable state and
+  torchflower growth. Bamboo pots now use the native bamboo descriptor.
+- Native chest links validate matching adjacent halves, reciprocal or valid
+  one-way links, facing, exactly one leader and coordinates across chunk borders.
+- Unknown item components, unsupported block fields, active furnace progress,
+  malformed slots/identifiers and orphan payloads block the whole conversion.
+  Tests verify unchanged sources and no published destination after failure.
+- Sign text preserves inherited supported styles across independent lines and
+  nested component arrays; unsupported dynamic/events/formatting are refused.
+- Shulker facing bytes and floor-head rotation floats follow transforms with
+  mount context. A regression fixes double rotation of multi-face attachments
+  when a turn is combined with vertical reflection.
+- Actual desktop review checks visible preflight actions and native inventory
+  inspection. A copied note block without its support correctly failed preflight;
+  copying the supporting layer supplied the required instrument context.
 
-## Performance evidence
+Intermediate evidence is retained under `artifacts/0.7-*`. Current screenshots:
+[payload conversion](../artifacts/payload-conversion.png),
+[native inventory inspector](../artifacts/payload-inspector.png).
 
-For an **8 MiB preallocated journal payload**, streaming serialization reduced
-peak additional traced allocations from **17,608,649 to 70,715 bytes**, with
-identical journal bytes. Median timing over three untraced runs was
-**854.827 ms before / 909.164 ms after**: a memory improvement, not a speed
-improvement. This measures serialization only, not total database memory.
-Bedrock still materializes logical records with a 256 MiB adapter budget.
+## Measured performance
 
-A five-chunk synthetic conversion measured **0.282 seconds preparation / 0.003
-seconds publication** on this host, before the later orphan-NBT audit. It is
-not a large-world throughput or game-startup measurement.
-[Benchmark details](../artifacts/conversion-benchmark.json).
+Benchmark: 4,096 synthetic single chests, each with a damaged enchanted sword.
+Three timed runs after warm-up plus one traced allocation run; input construction
+is excluded. This is a local conversion-kernel measurement, not large-world or
+game-startup throughput.
 
-Retained 0.5 measurements used a 1,321-surface gallery and Mesa software OpenGL:
-cropping reduced median worker rendering from 35.615 to 9.837 ms and measured
-input-to-display from 95.546 to 55.965 ms. The portable renderer used 4× enlarged
-pixels and measured 122.907 ms input-to-display. Cold loading still had a
-131.202 ms worst Tk update. These are host/scene measurements, not hardware-GPU
-or Amulet comparisons. [Details](../artifacts/textured-benchmark.json).
+| Bedrock → Java | Before | After bounded neighbour-link cache |
+| --- | --- | --- |
+| Median | 1,360.703 ms | 794.483 ms |
+| Peak additional traced allocations | 2,482,644 bytes | 3,260,859 bytes |
 
-## Retained coverage and remaining acceptance work
+The measured reverse conversion is about **42% faster**, using roughly 0.78 MB
+more traced memory. Cache admission is limited to 8,192 links and 4 MiB of NBT
+content; the content is part of the key so edits cannot reuse stale links.
+The final Java → Bedrock median is 496.141 ms; no forward-speed gain is claimed.
+[Before](../artifacts/payload-before-optimization.json),
+[after](../artifacts/payload-benchmark.json).
+Bedrock's existing database adapter still materializes records with a 256 MiB
+logical-data budget; it is not a fully streaming large-world engine.
 
-Earlier suites still cover all NBT types, numeric/paletted Anvil, database and
-compression codecs, layers/biomes, chunks, sparse selections, affine transforms,
-typed block NBT, projects, archives, operations, undo, retained backups, locks,
-injected I/O failures and abrupt-process recovery. Graphics checks cover PNG/
-model/resource decoding, texture-aware picking, native/software agreement,
-stale-frame prevention and bounded workers.
+## Remaining acceptance work
 
-Earlier external evidence includes **eight published world fixtures** (selected
-Java 1.12.2–1.18 and Bedrock 1.16/1.18 layouts), unchanged source hashes, and
-**7,018 Java 1.21.4 model references** baked without parse failures. Neither is
-a complete version matrix or a game-rendering oracle. Their manifests/audits
-remain in the distribution.
-
-Full parity still needs remaining block/state/biome/NBT mappings, release
-migrations, storage layouts and structure payloads; broader terrain streaming
-and specialized/Bedrock models; large-world/filesystem tests; native platforms
-and actual Minecraft reopening. Signed standalone installers, HiDPI hardware
-and accessibility audits remain open. No test count closes these gaps.
-See [the worklist](FULL_PARITY_WORKLIST.md) and
-[compatibility ledger](COMPATIBILITY.md).
-
-```sh
-DISPLAY=:100 FACETEDIT_GUI_TESTS=1 PYTHONPATH=src python3 -m unittest discover -v
-DISPLAY=:100 FACETEDIT_GUI_TESTS=1 PYTHONPATH=dist/FacetEdit.pyz python3 -m unittest discover -v
-python3 scripts/check_package.py
-# Optional: scripts/validate_*_reference.py in a separate reference environment.
-```
+Only Java 1.21.4 ↔ Bedrock 1.21.50 conversion profiles are bundled. Remaining
+initial block families, additional state combinations, complex block entities,
+custom head profiles, active animations/furnace recipes, item components and
+variants, moving payloads, other releases/storage layouts and complete resource
+semantics remain open. Source players/maps/POI/structure metadata are not migrated
+by the template-world converter. Native Windows/macOS and Minecraft in-game
+reopening are unverified. See [the compatibility ledger](COMPATIBILITY.md),
+[conversion guide](CONVERSION.md) and [full worklist](FULL_PARITY_WORKLIST.md).

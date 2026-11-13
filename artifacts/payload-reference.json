@@ -1,0 +1,55 @@
+{
+  "cell_reference": {
+    "identity_block_types": 118,
+    "state_and_payload_vectors": 881,
+    "mismatch_count": 0,
+    "mismatches": [],
+    "unavailable_reference_field_checks": [
+      {
+        "block": "minecraft:potted_crimson_fungus",
+        "field": "PlantBlock",
+        "reason": "The reference historical descriptor cannot translate through its own declared version."
+      },
+      {
+        "block": "minecraft:potted_crimson_roots",
+        "field": "PlantBlock",
+        "reason": "The reference historical descriptor cannot translate through its own declared version."
+      },
+      {
+        "block": "minecraft:potted_torchflower",
+        "field": "PlantBlock",
+        "reason": "The reference emitted no plant descriptor for this source block."
+      },
+      {
+        "block": "minecraft:potted_warped_fungus",
+        "field": "PlantBlock",
+        "reason": "The reference historical descriptor cannot translate through its own declared version."
+      },
+      {
+        "block": "minecraft:potted_warped_roots",
+        "field": "PlantBlock",
+        "reason": "The reference historical descriptor cannot translate through its own declared version."
+      }
+    ],
+    "historical_reference_plant_versions": [
+      17629184,
+      17760256,
+      17879555,
+      17959425,
+      18042891,
+      18108419,
+      18153475,
+      18158598,
+      18163713
+    ],
+    "output_plant_version": 18163713
+  },
+  "native_worlds": {
+    "bedrock_payloads_read": 10,
+    "java_payloads_read": 8,
+    "typed_inventory_sign_color_pattern_direction_note_and_pair_checks": "pass",
+    "bedrock_reader": "native amulet-leveldb 1.0.7 + amulet-nbt 2.1.8",
+    "java_reader": "independent Anvil sector reader + amulet-nbt 2.1.8"
+  },
+  "game_execution": false
+}

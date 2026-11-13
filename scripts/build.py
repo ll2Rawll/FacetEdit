@@ -8,7 +8,16 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 DIST.mkdir(exist_ok=True)
-VERSION = "0.6.0"
+VERSION = "0.7.0"
+
+
+def add_file(archive,path,name):
+    """Stable ZIP metadata for both downloadable bundles as well as the app."""
+    path=Path(path)
+    entry=zipfile.ZipInfo(name,(2026,1,1,0,0,0));entry.compress_type=zipfile.ZIP_DEFLATED
+    entry.create_system=3
+    entry.external_attr=(0o100755 if path.stat().st_mode&0o111 else 0o100644)<<16
+    archive.writestr(entry,path.read_bytes())
 
 stage = DIST / "stage"
 if stage.exists():
@@ -43,20 +52,24 @@ for name, content in launchers.items():
 portable = DIST / f"FacetEdit-{VERSION}-portable.zip"
 with zipfile.ZipFile(portable, "w", zipfile.ZIP_DEFLATED) as archive:
     for name in ["FacetEdit.pyz", *launchers]:
-        archive.write(DIST / name, "FacetEdit/" + name)
+        add_file(archive,DIST / name, "FacetEdit/" + name)
     for name in ("README.md", "LICENSE", "docs/COMPATIBILITY.md", "docs/IMPLEMENTATION_PLAN.md", "docs/REDESIGN_PLAN.md", "docs/TEST_REPORT.md", "artifacts/workspace.png", "artifacts/selection.png", "artifacts/compact.png", "artifacts/world-tools.png", "artifacts/history.png", "artifacts/facetedit-logo-master.png", "artifacts/benchmarks.json", "artifacts/renderer-benchmark.json", "artifacts/renderer-before-optimization.json", "artifacts/independent-validation.json", "artifacts/test-results.txt", "artifacts/package-tests.txt"):
-        archive.write(ROOT / name, "FacetEdit/" + name)
+        add_file(archive,ROOT / name, "FacetEdit/" + name)
 
     for name in ('docs/PARITY_0_3_PLAN.md','artifacts/flight.png','artifacts/chunks.png','artifacts/regions.png','artifacts/recovery.png','artifacts/flight-compact.png','artifacts/0.3-flight-before-optimization.json','artifacts/0.3-flight-after-optimization.json','artifacts/chunk-benchmark.json','artifacts/independent-lz4.txt','artifacts/package-audit.json','artifacts/python312-tests.txt'):
-        archive.write(ROOT/name,'FacetEdit/'+name)
+        add_file(archive,ROOT/name,'FacetEdit/'+name)
     for name in ('docs/FULL_PARITY_WORKLIST.md','docs/OPERATIONS.md','artifacts/transform.png','artifacts/transform-preview.png','artifacts/operations.png','artifacts/world-save.png','artifacts/world-corpus-results.json','artifacts/world-fixture-manifest.json','artifacts/streaming-benchmark.json','artifacts/streaming-before-optimization.json'):
-        archive.write(ROOT/name,'FacetEdit/'+name)
+        add_file(archive,ROOT/name,'FacetEdit/'+name)
     for name in ('docs/PARITY_RENDERING_PLAN.md','docs/RESOURCES.md','artifacts/textured-workspace.png','artifacts/model-gallery.png','artifacts/textured-selection.png','artifacts/textured-flight.png','artifacts/textured-compact.png','artifacts/textured-software.png','artifacts/resource-studio.png','artifacts/textured-benchmark.json','artifacts/textured-before-cropping.json','artifacts/resource-corpus.json','artifacts/resource-validation.txt','artifacts/shared-display-test-conflict.txt'):
-        archive.write(ROOT/name,'FacetEdit/'+name)
+        add_file(archive,ROOT/name,'FacetEdit/'+name)
     for name in ('docs/PARITY_CONVERSION_PLAN.md','docs/CONVERSION.md','artifacts/material-studio.png','artifacts/material-workspace.png','artifacts/material-states-compact.png','artifacts/clipboard-translation.png','artifacts/world-conversion.png','artifacts/world-library.png','artifacts/navigation-controls.png','artifacts/construction-reference.json','artifacts/translation-reference.json','artifacts/conversion-reference.json','artifacts/conversion-benchmark.json'):
-        archive.write(ROOT/name,'FacetEdit/'+name)
+        add_file(archive,ROOT/name,'FacetEdit/'+name)
     for name in ('artifacts/python312-gui-tests.txt','artifacts/diagnostics-0.6.json','artifacts/0.6-gc-first-pass.txt','src/facetedit/data/registries/SOURCES.json'):
-        archive.write(ROOT/name,'FacetEdit/'+name)
+        add_file(archive,ROOT/name,'FacetEdit/'+name)
+    for name in ('docs/PARITY_PAYLOAD_PLAN.md','artifacts/payload-conversion.png','artifacts/payload-inspector.png','artifacts/payload-reference.json',
+                 'artifacts/payload-initial-coverage.json','artifacts/payload-benchmark.json','artifacts/payload-before-optimization.json',
+                 'artifacts/primary-state-facts.json','artifacts/primary-item-counts.txt','artifacts/payload-reference-notes.txt'):
+        add_file(archive,ROOT/name,'FacetEdit/'+name)
 
 source = DIST / f"FacetEdit-{VERSION}-source.zip"
 with zipfile.ZipFile(source, "w", zipfile.ZIP_DEFLATED) as archive:
@@ -65,7 +78,7 @@ with zipfile.ZipFile(source, "w", zipfile.ZIP_DEFLATED) as archive:
         if any(part in (".git", ".venv", "__pycache__", "dist") for part in relative.parts):
             continue
         if file.is_file() and file.suffix not in (".pyc", ".log"):
-            archive.write(file, "facetedit/" + str(relative))
+            add_file(archive,file, "facetedit/" + relative.as_posix())
 
 manifest = {file.name: {"bytes": file.stat().st_size, "sha256": hashlib.sha256(file.read_bytes()).hexdigest()} for file in (DIST / "FacetEdit.pyz", portable, source)}
 (DIST / "checksums.json").write_text(json.dumps(manifest, indent=2)+"\n")

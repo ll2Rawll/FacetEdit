@@ -20,7 +20,7 @@ def point(position,size,turns=0,mirror=False):
 def state_properties(block,turns=0,mirror=False,edition='Java'):
     props=dict(block.properties);turns%=4
     direction=lambda value:horizontal(value,turns,mirror)
-    for key in ('facing','block_face','torch_facing_direction','minecraft:cardinal_direction','minecraft:facing_direction'):
+    for key in ('facing','block_face','torch_facing_direction','minecraft:cardinal_direction','minecraft:facing_direction','minecraft:block_face'):
         if key in props:props[key]=direction(props[key])
     for key in ('axis','pillar_axis'):
         if turns%2 and props.get(key) in ('x','z'):props[key]='z' if props[key]=='x' else 'x'
@@ -46,7 +46,8 @@ def state_properties(block,turns=0,mirror=False,edition='Java'):
                 index=int(props[key])
                 if not 0<=index<len(values):raise ValueError('Invalid directional block state '+key)
                 props[key]=str(values.index(direction(values[index])))
-        numeric('facing_direction',('down','up','north','south','west','east'))
+        numeric('facing_direction',('down','up','south','north','east','west') if block.name=='minecraft:end_rod' else ('down','up','north','south','west','east'))
+        numeric('coral_direction',('west','east','north','south'))
         numeric('weirdo_direction',('east','west','south','north'))
         # Doors and trapdoors expose a different numeric order from repeaters.
         order=('east','south','west','north') if block.name.endswith('_door') else ('south','west','north','east')
@@ -61,6 +62,9 @@ def state_properties(block,turns=0,mirror=False,edition='Java'):
             for i,d in enumerate(order):
                 if value&(1<<i):result|=1<<order.index(direction(d))
             props['vine_direction_bits']=str(result)
+        if 'multi_face_direction_bits' in props:
+            value=int(props['multi_face_direction_bits']);order=('down','up','south','west','north','east')
+            props['multi_face_direction_bits']=str(sum(1<<order.index(direction(side)) for i,side in enumerate(order) if value&(1<<i)))
         if mirror and 'door_hinge_bit' in props:props['door_hinge_bit']='false' if props['door_hinge_bit']=='true' else 'true'
         if 'huge_mushroom_bits' in props and 1<=int(props['huge_mushroom_bits'])<=9:
             i=int(props['huge_mushroom_bits'])-1;x,z=i%3,i//3
