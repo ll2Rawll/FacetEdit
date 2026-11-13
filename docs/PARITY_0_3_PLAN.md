@@ -32,6 +32,11 @@ without importing or copying its implementation.
    selection algebra/overlap cases, chunk metadata preservation, undo and project
    export/reopen, corrupt/failed inputs and actual Tk actions. Inspect revised
    screens and rerun the final packaged app. Keep source worlds byte-identical.
+7. **Perspective navigation:** switch between the existing orbit cutaway and a
+   bounded perspective volume. Add WASD, vertical flight, speed/boost, mouse look,
+   clipped faces/selection lines and real block picking. Stop movement on focus
+   loss and use cached geometry while looking around. Verify underground views,
+   near-plane crossings, typing isolation and actual keyboard/pointer actions.
 
 ## Implementation order
 
@@ -46,6 +51,6 @@ without importing or copying its implementation.
 
 This milestone advances the requested full editor, not a claim that every
 Amulet capability is already reproduced. Universal translation, all Minecraft
-versions, complete resource-pack/perspective rendering and third-party plugin
+versions, complete resource-pack rendering and third-party plugin
 compatibility still require their own implementation and evidence. Windows/macOS
 and Minecraft-game behavior cannot be claimed from Linux synthetic tests.

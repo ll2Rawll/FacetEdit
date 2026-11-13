@@ -85,6 +85,8 @@ def save_schematic(clipboard, path, version=3):
     if clipboard.edition != "Java" or version not in (2,3):
         raise ValueError("Sponge schematic export requires a Java clipboard and version 2 or 3")
     width, height, depth = clipboard.size
+    if len(clipboard.blocks)!=width*height*depth:
+        raise ValueError('Sponge schematics cannot preserve selection gaps here; export sparse selections as .nbt')
     if width * height * depth > MAX_OPERATION or any(not 0 < n <= 65535 for n in clipboard.size):
         raise ValueError("Schematic dimensions exceed the export limits")
     palette = {}

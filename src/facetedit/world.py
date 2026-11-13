@@ -16,7 +16,8 @@ from .blocks import AIR, Block
 from . import nbt
 from .formats import decode_bedrock, decode_java_section, encode_bedrock, encode_java_section, decode_java_biomes, encode_java_biomes
 from .leveldb import load_database, write_database
-from .region import Region
+from .region import Region,decode_payload
+from . import chunks
 
 
 class Cache(OrderedDict):
@@ -82,6 +83,13 @@ class World:
     def export(self, destination, edits, progress=lambda message: None, **metadata):
         raise ValueError("Save the sample as a FacetEdit project or export a structure")
 
+    def chunk_positions(self,dimension):
+        raise ValueError('Chunk management requires an opened Java or Bedrock world')
+
+    def with_chunks(self,overrides):
+        if overrides:raise ValueError('The sample does not store disk chunks')
+        return self
+
 
 class SampleWorld(World):
     name = "Willow Bay"
@@ -138,7 +146,7 @@ class DiskWorld(World):
         self.path = Path(path).expanduser().resolve()
         self.signature = snapshot(self.path)
 
-    def export(self, destination, edits, progress=lambda message: None, entity_edits=None, biome_edits=None):
+    def export(self, destination, edits, progress=lambda message: None, entity_edits=None, biome_edits=None,chunk_edits=None):
         destination = Path(destination).expanduser().resolve()
         if destination.exists():
             raise FileExistsError("Choose a new folder; FacetEdit never overwrites an existing world")
@@ -160,7 +168,10 @@ class DiskWorld(World):
                 if file_hash(a) != file_hash(b):
                     raise ValueError("Source changed during snapshot verification")
             progress("Writing edited chunks…")
-            self._write_edits(stage, edits, entity_edits or {}, biome_edits or {})
+            writer = self.with_chunks(chunk_edits or {})
+            if chunk_edits and isinstance(self,JavaWorld):
+                chunks.write_java_chunks(self,stage,chunk_edits)
+            writer._write_edits(stage, edits, entity_edits or {}, biome_edits or {})
             if snapshot(self.path) != self.signature:
                 raise ValueError("Source changed during export; close Minecraft before retrying")
             if destination.exists():
@@ -218,6 +229,38 @@ class JavaWorld(DiskWorld):
         self.cache = Cache(96)
         self.regions = Cache(4)
         self.entity_cache = Cache(96)
+        self.chunk_overrides = {}
+        self.inventory_cache = {}
+
+    def chunk_positions(self,dimension):
+        if dimension not in self.dimensions:raise ValueError('Unknown dimension')
+        if dimension not in self.inventory_cache:
+            positions = set()
+            for file in sorted((self.path/self.dimension_paths[dimension]).glob('r.*.*.mca')):
+                positions.update(Region.coordinates(file))
+            self.inventory_cache[dimension] = frozenset(positions)
+        result = set(self.inventory_cache[dimension])
+        for (dim,cx,cz),state in self.chunk_overrides.items():
+            if dim==dimension:
+                if state.kind=='deleted':result.discard((cx,cz))
+                else:result.add((cx,cz))
+        return result
+
+    def chunk_snapshot(self,cx,cz,dimension):
+        state = self.chunk_overrides.get((dimension,cx,cz))
+        return state if state is not None else chunks.java_chunk_snapshot(self,cx,cz,dimension)
+
+    def empty_chunk(self,cx,cz,dimension):return chunks.empty_java(self,cx,cz,dimension)
+
+    def with_chunks(self,overrides):
+        if not overrides:return self
+        clone = copy.copy(self)
+        clone.chunk_overrides = dict(overrides)
+        clone.cache,clone.entity_cache = Cache(96),Cache(96)
+        for (dimension,cx,cz),state in overrides.items():
+            if dimension not in self.dimensions:raise ValueError('Unknown chunk dimension')
+            chunks.validate_java_state(state,cx,cz)
+        return clone
 
     def _region(self, cx, cz, dimension):
         relative = self.dimension_paths[dimension] / f"r.{cx // 32}.{cz // 32}.mca"
@@ -228,7 +271,12 @@ class JavaWorld(DiskWorld):
 
     def _chunk(self, cx, cz, dimension):
         def load():
-            raw = self._region(cx, cz, dimension).get(cx, cz)
+            state = self.chunk_overrides.get((dimension,cx,cz))
+            if state is not None:
+                if state.kind=='deleted':return None
+                records = dict(state.records)
+                raw = decode_payload(records[b'region'],records.get(b'region.mcc'))
+            else:raw = self._region(cx, cz, dimension).get(cx, cz)
             if raw is None:
                 return None
             name, root = nbt.loads(raw)
@@ -258,7 +306,7 @@ class JavaWorld(DiskWorld):
     def validate_edit(self, pos, dimension):
         super().validate_edit(pos, dimension)
         if self._chunk(pos[0] // 16, pos[2] // 16, dimension) is None:
-            raise ValueError("This chunk has not been generated. FacetEdit edits existing chunks only")
+            raise ValueError("This chunk does not exist. Create it in the chunk manager first")
 
     def get_block_entity(self,x,y,z,dimension="overworld"):
         def load():
@@ -340,10 +388,10 @@ class JavaWorld(DiskWorld):
                 level.value.pop("HeightMap", None)
             relative = self.dimension_paths[dimension] / f"r.{cx // 32}.{cz // 32}.mca"
             if relative not in regions:
-                regions[relative] = Region.read(stage / relative)
+                regions[relative] = Region.read(stage / relative) if (stage/relative).exists() else Region(path=stage/relative)
             regions[relative].put(cx, cz, nbt.dumps(root, name))
         for relative, region in regions.items():
-            (stage / relative).write_bytes(region.dumps())
+            region.write(stage/relative)
 
 
 class BedrockWorld(DiskWorld):
@@ -359,12 +407,48 @@ class BedrockWorld(DiskWorld):
         if size != len(raw) - 8:
             raise nbt.FormatError("Bedrock level.dat length mismatch")
         _, data = nbt.loads(raw[8:], little=True)
+        opened_version = nbt.get(data,'lastOpenedWithVersion')
+        self.game_version = tuple(opened_version.values[:3]) if isinstance(opened_version,nbt.ListValue) and len(opened_version.values)>=3 else None
+        if self.game_version is not None and any(type(v) is not int or v<0 for v in self.game_version):
+            raise nbt.FormatError('Invalid Bedrock lastOpenedWithVersion metadata')
+        if self.game_version is not None and self.game_version<(1,18,0):
+            self.minimum_y,self.maximum_y = 0,255
         self.name = nbt.get(data, "LevelName", self.path.name)
         self.spawn = tuple(nbt.get(data, "Spawn" + axis, default) for axis, default in zip("XYZ", (0, 70, 0)))
         self.values = load_database(self.path / "db")
         self.dimensions = tuple(self.dimension_ids)
         self.cache = Cache(96)
         self.entity_cache = Cache(96)
+        self.inventory_cache = None
+        self.chunk_record_index = None
+
+    def chunk_positions(self,dimension):
+        if dimension not in self.dimensions:raise ValueError('Unknown dimension')
+        if self.inventory_cache is None:
+            inventory = {did:set() for did in self.dimension_ids.values()}
+            records=defaultdict(list)
+            for key in self.values:
+                parsed = chunks.bedrock_key(key)
+                if parsed:
+                    did,cx,cz,_ = parsed
+                    records[did,cx,cz].append(key)
+                    if parsed[3] in (b',',b'v') or parsed[3].startswith(b'/'):inventory[did].add((cx,cz))
+            self.chunk_record_index=dict(records)
+            self.inventory_cache = inventory
+        return set(self.inventory_cache[self.dimension_ids[dimension]])
+
+    def chunk_snapshot(self,cx,cz,dimension):return chunks.bedrock_chunk_snapshot(self,cx,cz,dimension)
+
+    def empty_chunk(self,cx,cz,dimension):return chunks.empty_bedrock(self,cx,cz,dimension)
+
+    def with_chunks(self,overrides):
+        if not overrides:return self
+        clone = chunks.bedrock_with_chunks(self,overrides)
+        clone.cache,clone.entity_cache = Cache(96),Cache(96)
+        clone.inventory_cache = None
+        clone.chunk_record_index = None
+        clone.empty_templates = {}
+        return clone
 
     def prefix(self, cx, cz, dimension):
         did = self.dimension_ids[dimension]

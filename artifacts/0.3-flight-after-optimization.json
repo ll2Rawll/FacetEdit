@@ -1,0 +1,17 @@
+{
+  "perspective_cached_draw_ms": [
+    29.84126600131276,
+    21.901954998611473,
+    18.869152998377103,
+    22.30356800282607,
+    31.877704001090024,
+    19.414117999986047,
+    18.543943002441665,
+    19.987475003290456,
+    19.823621998511953,
+    25.221250001777662
+  ],
+  "median_ms": 20.944715000950964,
+  "faces_last_frame": 317,
+  "scope": "Same camera, radius and ten yaw changes as 0.3-flight-before-optimization.json; this host only."
+}

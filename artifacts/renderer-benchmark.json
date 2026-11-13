@@ -4,13 +4,21 @@
   "tk": "8.6.16",
   "window": "1440x900",
   "radius": 12,
-  "window_ready_ms": 308.082,
-  "visible_faces": 1365,
-  "warm_redraw_ms": {
-    "median": 15.512,
-    "min": 14.507,
-    "max": 16.507,
-    "iterations": 12
+  "window_ready_ms": 299.468,
+  "orbit_warm_redraw_ms": {
+    "median": 15.518,
+    "min": 14.335,
+    "max": 16.702,
+    "iterations": 12,
+    "last_visible_faces": 1365
   },
-  "scope": "Synthetic sample, CPU Tk Canvas, this Linux host only. No comparison with Amulet or native Windows/macOS."
+  "scope": "Synthetic sample, CPU Tk Canvas, this Linux host only. No Amulet or native Windows/macOS comparison.",
+  "perspective_warm_redraw_ms": {
+    "median": 22.084,
+    "min": 21.056,
+    "max": 24.53,
+    "iterations": 12,
+    "last_visible_faces": 533
+  },
+  "perspective_new_volume_draw_ms": 51.784
 }

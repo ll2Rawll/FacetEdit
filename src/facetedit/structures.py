@@ -9,7 +9,8 @@ import tempfile
 from . import nbt
 from .blocks import Block
 from .formats import java_block, java_entry, bedrock_block, bedrock_entry
-from .model import Clipboard, Document, MAX_OPERATION
+from .model import Clipboard, Document, MAX_OPERATION,Selection,SelectionGroup
+from .chunks import ChunkState,MAX_PAYLOAD,MAX_CHUNK_COUNT
 from .world import SampleWorld, open_world
 from .entities import relocate, validate_local
 
@@ -31,6 +32,9 @@ def atomic_write(path, data):
 def export_structure(clipboard, path):
     if any(clipboard.offset):
         raise ValueError("This format cannot preserve schematic offsets; export as .schem")
+    width,height,depth = clipboard.size
+    if width*height*depth>MAX_OPERATION:
+        raise ValueError('Structure bounding volume exceeds 65,536 blocks; export closer regions separately')
     if clipboard.edition == "Bedrock":
         return export_mcstructure(clipboard, path)
     palette = list(dict.fromkeys(clipboard.blocks.values()))
@@ -168,10 +172,13 @@ def import_mcstructure(path):
     return Clipboard(dims, blocks, "Bedrock",entities=entities,data_version=None)
 
 
-def save_project(document, path):
+MAX_PROJECT_BYTES = 64*1024*1024
+
+
+def project_data(document):
     world = document.world
     data = {
-        "format": "facetedit-project", "version": 2,
+        "format": "facetedit-project", "version": 3,
         "source": str(world.path) if world.path else None,
         "source_signature": getattr(world, "signature", None),
         "sample_generator": world.generator if world.path is None else None,
@@ -179,16 +186,27 @@ def save_project(document, path):
         "edits": [[dimension, x, y, z, {"name": block.name, "properties": list(block.properties), "state_types": list(block.state_types)}] for (dimension, x, y, z), block in sorted(document.edits.items())],
         "block_entities": [[*key,base64.b64encode(value).decode("ascii") if value is not None else None] for key,value in sorted(document.entity_edits.items())],
         "biomes": [[*key,value] for key,value in sorted(document.biome_edits.items())],
+        "chunks": [[*key,state.kind,[[base64.b64encode(k).decode('ascii'),base64.b64encode(v).decode('ascii')] for k,v in state.records]] for key,state in sorted(document.chunk_edits.items())],
+        "selection": [[list(box.a),list(box.b)] for box in document.selection.boxes] if document.selection else [],
     }
-    atomic_write(path, json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8"))
+    return data
+
+
+def write_project_data(data,path):
+    raw = json.dumps(data,ensure_ascii=False,separators=(',',':')).encode('utf-8')
+    if len(raw)>MAX_PROJECT_BYTES:raise ValueError('Project exceeds 64 MiB; export an edited world copy instead')
+    atomic_write(path,raw)
+
+
+def save_project(document,path):write_project_data(project_data(document),path)
 
 
 def load_project(path):
     path = Path(path)
-    if path.stat().st_size > 32 * 1024 * 1024:
-        raise ValueError("Project file exceeds 32 MiB")
+    if path.stat().st_size > MAX_PROJECT_BYTES:
+        raise ValueError("Project file exceeds 64 MiB")
     data = json.loads(path.read_text("utf-8"))
-    if data.get("format") not in ("facetedit-project","luma-project") or data.get("version") not in (1,2):
+    if data.get("format") not in ("facetedit-project","luma-project") or data.get("version") not in (1,2,3):
         raise ValueError("Unsupported FacetEdit project format")
     if data.get("source") is not None:
         world = open_world(data["source"])
@@ -200,6 +218,22 @@ def load_project(path):
             raise ValueError("Unknown sample world generator")
         world = SampleWorld(data["sample_generator"])
     document = Document(world)
+    chunk_rows = data.get('chunks',[])
+    if not isinstance(chunk_rows,list) or len(chunk_rows)>MAX_CHUNK_COUNT:raise ValueError('Too many project chunks')
+    total = 0
+    for row in chunk_rows:
+        if not isinstance(row,list) or len(row)!=5:raise ValueError('Invalid project chunk')
+        dim,cx,cz,kind,records = row
+        if dim not in world.dimensions or any(type(v) is not int or abs(v)>1_875_000 for v in (cx,cz)):
+            raise ValueError('Invalid project chunk coordinate')
+        if kind not in ('deleted','replace') or not isinstance(records,list):raise ValueError('Invalid chunk state')
+        key = (dim,cx,cz)
+        if key in document.chunk_edits:raise ValueError('Duplicate project chunk')
+        state = ChunkState(kind,tuple((base64.b64decode(k,validate=True),base64.b64decode(v,validate=True)) for k,v in records))
+        total += state.size
+        if total>MAX_PAYLOAD:raise ValueError('Project chunk payload exceeds 32 MiB')
+        document.chunk_edits[key] = state
+    view = document.view_world
     edits = data.get("edits", [])
     if not isinstance(edits, list) or len(edits) > 262144:
         raise ValueError("Project contains too many edits")
@@ -209,7 +243,7 @@ def load_project(path):
         dim, x, y, z, text = row[:5]
         if any(type(n) is not int for n in (x, y, z)):
             raise ValueError("Project coordinates must be integers")
-        world.validate_edit((x, y, z), dim)
+        view.validate_edit((x, y, z), dim)
         key = (dim, x, y, z)
         if key in document.edits:
             raise ValueError("Duplicate project coordinate")
@@ -219,7 +253,7 @@ def load_project(path):
             block = Block.parse(text)
         if len(row) == 6:
             block = Block(block.name, block.properties, tuple(tuple(item) for item in row[5]))
-        if block != world.get_block(x, y, z, dim):
+        if block != view.get_block(x, y, z, dim):
             document.edits[key] = block
     if data.get("dimension") not in world.dimensions:
         raise ValueError("Invalid project dimension")
@@ -233,7 +267,7 @@ def load_project(path):
             dim,x,y,z,value = row
             if any(type(v) is not int for v in (x,y,z)):
                 raise ValueError("Metadata coordinates must be integers")
-            world.validate_edit((x,y,z),dim)
+            view.validate_edit((x,y,z),dim)
             key = (dim,x,y,z)
             if key in target:
                 raise ValueError("Duplicate metadata coordinate")
@@ -242,13 +276,19 @@ def load_project(path):
                 if value is not None:
                     value = base64.b64decode(value,validate=True)
                     validate_entity(value,(x,y,z))
-                baseline = world.get_block_entity(x,y,z,dim)
+                baseline = view.get_block_entity(x,y,z,dim)
             else:
                 if any(v%4 for v in (x,y,z)):
                     raise ValueError("Biome coordinates must be aligned to 4-block cells")
                 value = Block(value).name
-                baseline = world.get_biome(x,y,z,dim)
+                baseline = view.get_biome(x,y,z,dim)
             if value != baseline or (field == "block_entities" and value is not None and key in document.edits):
                 target[key] = value
     document.dimension = data["dimension"]
+    boxes = data.get('selection',[])
+    if not isinstance(boxes,list) or len(boxes)>256:raise ValueError('Invalid project selection')
+    if boxes:
+        group = SelectionGroup(Selection(tuple(a),tuple(b)) for a,b in boxes)
+        document.selection = group.boxes[0] if len(group.boxes)==1 else group
+    if document.pending_count>262144:raise ValueError('Project exceeds its pending edit budget')
     return document

@@ -201,7 +201,7 @@ passed without evidence.
 The task remains a full independent editor project. Any remaining work belongs
 in the parity ledger with its current evidence, not hidden behind placeholder UI.
 
-## 9. Milestone status after the 0.2 revision
+## 9. Milestone status after the 0.3 expansion
 
 The detailed evidence lives in TEST_REPORT.md and COMPATIBILITY.md. This table
 separates the completed implementation work from the full-parity target.
@@ -210,15 +210,17 @@ separates the completed implementation work from the full-parity target.
 | --- | --- | --- |
 | Independent codecs and source-safe export | Implemented with bounded scope | Broader real-world corpus and in-game reopening |
 | Default-dark custom studio and original logo | Implemented, visually revised | Native Windows/macOS, HiDPI, screen readers |
-| Core edit/clipboard/history workflows | Implemented | Complex block transforms, disjoint selections |
+| Core edit/clipboard/history workflows | Implemented, including disjoint selections | Complex block transforms and full-size workload testing |
 | Block NBT preservation and editing | Implemented in both editions | Game-generated inventories, signs, spawners, references |
 | Biomes and waterlogging | Partial: modern Java | Older Java and Bedrock formats/registries |
 | Archive/structure formats | Partial: .mcworld, .nbt, .mcstructure, .schem | Legacy .schematic, .construction, entities/biomes/ticks |
 | Universal version/edition translation | Unimplemented | Independent mapping database and game-tested migration corpus |
-| Chunk/world generation and pruning | Unimplemented | Consistent terrain/entity/POI/actor metadata edits and regeneration tests |
-| Full renderer/navigation/resource packs | Unimplemented | Perspective streaming, visibility, textures, models, lighting, entities |
+| Chunk management | Implemented: create empty, delete, prune, same-coordinate import with metadata | In-game regeneration, chunk relocation, large-world workloads |
+| Terrain generation | Unimplemented | Independent generator and game behavior tests |
+| Renderer/navigation/resource packs | Orbit and perspective flight implemented | Asynchronous streaming, textures, models, lighting, entities |
 | Operations ecosystem | Unimplemented | Stable independent API, errors/cancellation and operation tests |
-| Autosave/recovery and in-place saves | Unimplemented | Durable journals, fault injection and explicit recovery flows |
+| Autosave/recovery | Implemented: atomic session checkpoints and restore/discard | Process-kill/disk-failure testing on all target platforms |
+| In-place saves | Unimplemented | Durable rollback journals and world/OS lock integration |
 | Native releases and parity certification | Unfinished | All target platforms, signed installers and workflow-by-workflow comparison |
 
 ### Full-parity execution order
@@ -226,14 +228,15 @@ separates the completed implementation work from the full-parity target.
 1. Build a version matrix with independently sourced, game-generated fixtures;
    keep immutable originals and expected semantic inventories. Pin every format
    and block/state translation rule to a source version and target version.
-2. Extend world adapters for legacy Java numeric IDs, current Java compression,
+2. Extend world adapters for legacy Java numeric IDs and versions beyond 1.21.4,
    older Bedrock encodings and all biome formats. Reject unknown layouts before
    writing. Test mixed-version chunks as well as fresh worlds.
 3. Extend the edit transaction to additional storage layers, moving entities,
-   chunk existence and disjoint regions. Validate overlap, coordinate transforms,
+   translated chunk positions and richer selection tools. Validate overlap, coordinate transforms,
    undo/redo, history eviction, project persistence and failure atomicity.
-4. Implement chunk pruning consistently across terrain, POI, entities, actor
-   indices, heightmaps and lighting. Reopen in-game and verify regeneration.
+4. Validate implemented chunk creation/deletion/pruning/import against terrain,
+   POI, entities, actor indices, heightmaps and lighting in game-generated worlds.
+   Reopen in-game and verify regeneration.
 5. Implement version/edition translation with complete block defaults, typed
    states, paired-block rules, fluid layers, inventories and biome semantics.
    Do not substitute matching names for semantic conversion.
@@ -243,8 +246,8 @@ separates the completed implementation work from the full-parity target.
    memory, picking and responsiveness at each view-distance tier.
 8. Define an independent operations API and document compatibility boundaries;
    an Amulet plugin that imports Amulet cannot run without its dependencies.
-9. Add durable recovery, resumable/cancellable long tasks, autosave and optional
-   in-place saves with crash-injection tests and recoverable checkpoints.
+9. Extend recovery with resumable/cancellable long tasks and optional in-place
+   saves with crash-injection tests and recoverable checkpoints.
 10. Run a complete feature-by-feature comparison on real Windows, macOS and
     Linux, including shortcuts, selection tools, exports, errors and recovery.
     Only a passed matrix can justify calling the result full parity.

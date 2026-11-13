@@ -8,7 +8,7 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 DIST.mkdir(exist_ok=True)
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 
 stage = DIST / "stage"
 if stage.exists():
@@ -46,6 +46,9 @@ with zipfile.ZipFile(portable, "w", zipfile.ZIP_DEFLATED) as archive:
         archive.write(DIST / name, "FacetEdit/" + name)
     for name in ("README.md", "LICENSE", "docs/COMPATIBILITY.md", "docs/IMPLEMENTATION_PLAN.md", "docs/REDESIGN_PLAN.md", "docs/TEST_REPORT.md", "artifacts/workspace.png", "artifacts/selection.png", "artifacts/compact.png", "artifacts/world-tools.png", "artifacts/history.png", "artifacts/facetedit-logo-master.png", "artifacts/benchmarks.json", "artifacts/renderer-benchmark.json", "artifacts/renderer-before-optimization.json", "artifacts/independent-validation.json", "artifacts/test-results.txt", "artifacts/package-tests.txt"):
         archive.write(ROOT / name, "FacetEdit/" + name)
+
+    for name in ('docs/PARITY_0_3_PLAN.md','artifacts/flight.png','artifacts/chunks.png','artifacts/regions.png','artifacts/recovery.png','artifacts/flight-compact.png','artifacts/0.3-flight-before-optimization.json','artifacts/0.3-flight-after-optimization.json','artifacts/chunk-benchmark.json','artifacts/independent-lz4.txt','artifacts/package-audit.json','artifacts/python312-tests.txt'):
+        archive.write(ROOT/name,'FacetEdit/'+name)
 
 source = DIST / f"FacetEdit-{VERSION}-source.zip"
 with zipfile.ZipFile(source, "w", zipfile.ZIP_DEFLATED) as archive:

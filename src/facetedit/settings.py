@@ -21,7 +21,7 @@ def config_path():
 class Settings:
     def __init__(self, path=None):
         self.path = Path(path) if path else config_path()
-        self.data = {"version": 1, "recent": [], "radius": 12, "grid": True, "theme": "midnight", "glass": True}
+        self.data = {"version": 1, "recent": [], "radius": 12, "grid": True, "theme": "midnight", "glass": True,"autosave":True,"autosave_seconds":30}
         self.warning = None
         try:
             source = self.path
@@ -39,6 +39,9 @@ class Settings:
                     self.data["grid"] = raw["grid"]
                 if type(raw.get("glass")) is bool:
                     self.data["glass"] = raw["glass"]
+                if type(raw.get('autosave')) is bool:self.data['autosave'] = raw['autosave']
+                if type(raw.get('autosave_seconds')) is int and 15<=raw['autosave_seconds']<=600:
+                    self.data['autosave_seconds'] = raw['autosave_seconds']
         except FileNotFoundError:
             pass
         except (OSError, ValueError, TypeError, AttributeError) as exc:

@@ -66,12 +66,14 @@ class StudioLayout:
         label(self.scene_badge,"WORLD STUDIO",8,True,BLUE).pack(anchor="w")
         self.view_label = label(self.scene_badge,"OVERWORLD  /  ORBIT",10,color=MUTED)
         self.view_label.pack(anchor="w",pady=(6,0))
+        self.camera_button=Pill(self.scene_badge,'Enter flight  ·  F5',self.toggle_camera,width=167,height=29)
+        self.camera_button.pack(anchor='w',pady=(10,0))
         self.scene_badge.place(x=110,y=24)
-        self.tool_rail = GlassPanel(self.workspace,70,394)
+        self.tool_rail = GlassPanel(self.workspace,70,450)
         self.tool_rail.place(x=21,y=24)
         rail = self.tool_rail.body
         self.rail_buttons = []
-        for symbol,text,callback in (("⌖","Select",lambda:self.inspector_tabs.select(0)),("▦","Blocks",self.material_dialog),("⧉","Clone",self.clone_dialog),("≈","Biome",self.biome_dialog),("{ }","NBT",self.nbt_dialog),("◷","History",lambda:self.inspector_tabs.select(3))):
+        for symbol,text,callback in (("⌖","Select",lambda:self.inspector_tabs.select(0)),("▦","Blocks",self.material_dialog),("⧉","Clone",self.clone_dialog),("⊞","Chunks",self.chunks_dialog),("≈","Biome",self.biome_dialog),("{ }","NBT",self.nbt_dialog),("◷","History",lambda:self.inspector_tabs.select(3))):
             button = Pill(rail,symbol,callback,width=36,height=33)
             button.pack(pady=(0,1))
             label(rail,text,7,color=MUTED).pack(pady=(0,8))
@@ -105,7 +107,7 @@ class StudioLayout:
         self.view_controls.place(x=w-198,y=h-90)
         self.preferences_button.place(x=22,y=h-52)
         if w>=1200 and h>=620:
-            self.material_tray.place(x=22,y=h-304,width=240,height=230)
+            self.material_tray.place(x=22,y=h-275,width=240,height=201)
         else:
             self.material_tray.place_forget()
         self.viewport.stage_right = 330
@@ -188,6 +190,7 @@ class StudioLayout:
         self.block_var.trace_add("write",lambda *_:self._refresh_material())
         Pill(select,"Browse materials…",self.material_dialog,width=218,height=33).pack(fill="x",pady=(2,7))
         label(select,"Custom states: oak_log[axis=y]",8,color=MUTED).pack(anchor="w")
+        Pill(select,'Manage selection regions…',self.regions_dialog,width=218,height=36).pack(fill='x',pady=12)
         paste,_ = self._scroll_tab("Paste")
         self._section_label(paste,"CLIPBOARD")
         row = tk.Frame(paste,bg=SURFACE)
@@ -212,6 +215,7 @@ class StudioLayout:
         self.dimension_box = ttk.Combobox(world,textvariable=self.dimension_var,values=self.document.world.dimensions,state="readonly",width=16)
         self.dimension_box.pack(fill="x",pady=(0,9))
         self.dimension_box.bind("<<ComboboxSelected>>",self.change_dimension)
+        Pill(world,'Manage chunks…',self.chunks_dialog,width=218,height=36).pack(fill='x',pady=4)
         for text,fn in (("Go to coordinates…",self.goto_dialog),("Set selection biome…",self.biome_dialog),("Inspect block NBT…",self.nbt_dialog),("Waterlog selection",lambda:self.waterlog(True)),("Remove waterlogging",lambda:self.waterlog(False))):
             Pill(world,text,fn,width=218,height=36).pack(fill="x",pady=4)
         self._section_label(world,"WORLD ARCHIVES")
@@ -226,6 +230,7 @@ class StudioLayout:
         self.history_list.bind("<Double-Button-1>",lambda _:self.history_restore())
         Pill(history,"Return to selected step",self.history_restore,width=218,height=36).pack(fill="x",pady=12)
         label(history,"Double-click a step to undo back to it.\nRedo remains available.",8,color=MUTED,justify="left").pack(anchor="w")
+        Pill(history,'Recovery workspaces…',self.recovery_dialog,width=218,height=36).pack(fill='x',pady=12)
 
     def _build_action_dock(self):
         self.action_dock = GlassPanel(self.workspace,500,72)

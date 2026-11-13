@@ -1,46 +1,17 @@
 """Transactional editing, bounded history and coordinate-correct clipboard."""
 
 from dataclasses import dataclass, field
+import copy
 
 from .blocks import AIR
 from . import nbt
 from .entities import relocate
+from .selection import Selection, SelectionGroup
+from .chunks import SOURCE,DELETED,MAX_PAYLOAD,MAX_CHUNK_COUNT
 
 MAX_OPERATION = 65_536
 MAX_HISTORY = 262_144
 MAX_PENDING = 262_144
-
-
-@dataclass(frozen=True)
-class Selection:
-    a: tuple[int, int, int]
-    b: tuple[int, int, int]
-
-    @property
-    def minimum(self):
-        return tuple(min(a, b) for a, b in zip(self.a, self.b))
-
-    @property
-    def maximum(self):
-        return tuple(max(a, b) for a, b in zip(self.a, self.b))
-
-    @property
-    def size(self):
-        return tuple(b - a + 1 for a, b in zip(self.minimum, self.maximum))
-
-    @property
-    def volume(self):
-        x, y, z = self.size
-        return x * y * z
-
-    def positions(self):
-        if self.volume > MAX_OPERATION:
-            raise ValueError(f"Select at most {MAX_OPERATION:,} blocks per operation")
-        lo, hi = self.minimum, self.maximum
-        for y in range(lo[1], hi[1] + 1):
-            for z in range(lo[2], hi[2] + 1):
-                for x in range(lo[0], hi[0] + 1):
-                    yield x, y, z
 
 
 @dataclass
@@ -50,10 +21,16 @@ class Transaction:
     changes: list
     entity_changes: list = field(default_factory=list)
     biome_changes: list = field(default_factory=list)
+    chunk_changes: list = field(default_factory=list)
+    cleared_edits: list = field(default_factory=list)
 
     @property
     def count(self):
-        return len(self.changes) + len(self.entity_changes) + len(self.biome_changes)
+        return len(self.changes)+len(self.entity_changes)+len(self.biome_changes)+len(self.chunk_changes)+len(self.cleared_edits)
+
+    @property
+    def payload_bytes(self):
+        return sum(before.size+after.size for _,before,after in self.chunk_changes)
 
 
 @dataclass
@@ -90,6 +67,8 @@ class Document:
         self.edits = {}
         self.entity_edits = {}
         self.biome_edits = {}
+        self.chunk_edits = {}
+        self._view_world = None
         self.undo_stack = []
         self.redo_stack = []
         self.clipboard = None
@@ -98,7 +77,22 @@ class Document:
 
     @property
     def pending_count(self):
-        return len(self.edits) + len(self.entity_edits) + len(self.biome_edits)
+        return len(self.edits)+len(self.entity_edits)+len(self.biome_edits)+len(self.chunk_edits)
+
+    @property
+    def view_world(self):
+        if self._view_world is None:self._view_world = self.world.with_chunks(self.chunk_edits)
+        return self._view_world
+
+    def export_metadata(self):
+        return {'entity_edits':dict(self.entity_edits),'biome_edits':dict(self.biome_edits),'chunk_edits':dict(self.chunk_edits)}
+
+    def snapshot(self):
+        result = copy.copy(self)
+        for name in ('edits','entity_edits','biome_edits','chunk_edits'):
+            setattr(result,name,dict(getattr(self,name)))
+        result.undo_stack,result.redo_stack = [],[]
+        return result
 
     def get_entity(self, x, y, z):
         key = (self.dimension,x,y,z)
@@ -106,18 +100,18 @@ class Document:
             return self.entity_edits[key]
         if key in self.edits:
             return None
-        return self.world.get_block_entity(x,y,z,self.dimension)
+        return self.view_world.get_block_entity(x,y,z,self.dimension)
 
     def get_biome(self, x, y, z):
         x,y,z = (v//4*4 for v in (x,y,z))
         key = (self.dimension,x,y,z)
-        return self.biome_edits[key] if key in self.biome_edits else self.world.get_biome(x,y,z,self.dimension)
+        return self.biome_edits[key] if key in self.biome_edits else self.view_world.get_biome(x,y,z,self.dimension)
 
     def get(self, x, y, z):
         key = (self.dimension, x, y, z)
         if key in self.edits:
             return self.edits[key]
-        return self.world.get_block(x, y, z, self.dimension)
+        return self.view_world.get_block(x, y, z, self.dimension)
 
     def apply(self, label, requested, entity_updates=()):
         changes = []
@@ -128,7 +122,7 @@ class Document:
             if position in seen:
                 raise ValueError("Duplicate coordinate in transaction")
             seen.add(position)
-            self.world.validate_edit(position, self.dimension)
+            self.view_world.validate_edit(position, self.dimension)
             before = self.get(*position)
             if not after.state_types and (after.name, after.properties) == (before.name, before.properties):
                 after = before  # Preserve Bedrock's typed metadata for a textual no-op.
@@ -157,21 +151,27 @@ class Document:
     def _commit(self, transaction):
         if transaction.count == 0:
             return 0
+        if transaction.count > MAX_HISTORY or transaction.payload_bytes > 2*MAX_PAYLOAD:
+            raise ValueError('This operation exceeds the undo budget; select a smaller batch')
         self._apply(transaction, forward=True)
         self.undo_stack.append(transaction)
         self.redo_stack.clear()
-        while sum(t.count for t in self.undo_stack) > MAX_HISTORY:
+        while sum(t.count for t in self.undo_stack)>MAX_HISTORY or sum(t.payload_bytes for t in self.undo_stack)>2*MAX_PAYLOAD:
             self.undo_stack.pop(0)
-        return len(transaction.changes) or len(transaction.entity_changes) or len(transaction.biome_changes)
+        return len(transaction.changes) or len(transaction.entity_changes) or len(transaction.biome_changes) or len(transaction.chunk_changes)
 
     def _apply(self, transaction, forward):
+        if transaction.chunk_changes:
+            self._apply_chunks(transaction,forward)
+            self.revision += 1
+            return
         # Baselines are loaded before changing the edit map, keeping undo atomic.
         updates = []
         final_blocks = {}
         explicit_entity = object()
-        for changes,target,getter in ((transaction.changes,self.edits,self.world.get_block),
-                                      (transaction.entity_changes,self.entity_edits,self.world.get_block_entity),
-                                      (transaction.biome_changes,self.biome_edits,self.world.get_biome)):
+        for changes,target,getter in ((transaction.changes,self.edits,self.view_world.get_block),
+                                      (transaction.entity_changes,self.entity_edits,self.view_world.get_block_entity),
+                                      (transaction.biome_changes,self.biome_edits,self.view_world.get_biome)):
             for pos, before, after in changes:
                 value = after if forward else before
                 baseline = getter(*pos, transaction.dimension)
@@ -214,7 +214,7 @@ class Document:
         return transaction.label
 
     def require_selection(self):
-        if self.selection is None:
+        if not self.selection:
             raise ValueError("Select two corners in the viewport or enter coordinates first")
         return self.selection
 
@@ -240,7 +240,7 @@ class Document:
         blocks,entities = {},{}
         for p in selection.positions():
             if (self.dimension,*p) not in self.edits:
-                self.world.validate_copy(p,self.dimension)
+                self.view_world.validate_copy(p,self.dimension)
             local = tuple(p[i]-origin[i] for i in range(3))
             blocks[local] = self.get(*p)
             entity = self.get_entity(*p)
@@ -277,7 +277,7 @@ class Document:
         return self.apply("Paste structure",blocks,entities)
 
     def set_entity(self, position, tag):
-        self.world.validate_edit(position,self.dimension)
+        self.view_world.validate_edit(position,self.dimension)
         if tag is None:
             data = None
         else:
@@ -298,15 +298,17 @@ class Document:
         selection = self.require_selection()
         if selection.volume > MAX_OPERATION:
             raise ValueError(f"Select at most {MAX_OPERATION:,} blocks per operation")
-        lo,hi = selection.minimum,selection.maximum
+        cells = set()
+        for box in selection.boxes:
+            lo,hi = box.minimum,box.maximum
+            for y in range(lo[1]//4*4,hi[1]//4*4+1,4):
+                for z in range(lo[2]//4*4,hi[2]//4*4+1,4):
+                    for x in range(lo[0]//4*4,hi[0]//4*4+1,4):cells.add((x,y,z))
         changes = []
-        for y in range(lo[1]//4*4,hi[1]//4*4+1,4):
-            for z in range(lo[2]//4*4,hi[2]//4*4+1,4):
-                for x in range(lo[0]//4*4,hi[0]//4*4+1,4):
-                    self.world.validate_edit((x,y,z),self.dimension)
-                    before = self.get_biome(x,y,z)
-                    if before != name:
-                        changes.append(((x,y,z),before,name))
+        for x,y,z in sorted(cells):
+            self.view_world.validate_edit((x,y,z),self.dimension)
+            before = self.get_biome(x,y,z)
+            if before!=name:changes.append(((x,y,z),before,name))
         return self._commit(Transaction("Set biome",self.dimension,[],biome_changes=changes))
 
     def waterlog(self, enabled=True):
@@ -332,7 +334,7 @@ class Document:
         source = []
         for pos in selection.positions():
             if (self.dimension,*pos) not in self.edits:
-                self.world.validate_copy(pos,self.dimension)
+                self.view_world.validate_copy(pos,self.dimension)
             source.append((pos,self.get(*pos),self.get_entity(*pos)))
         changes,entities = {},{}
         for repeat in range(1,repeats+1):
@@ -345,12 +347,114 @@ class Document:
 
     def nudge_selection(self, offset):
         selection = self.require_selection()
-        self.selection = Selection(tuple(selection.a[i]+offset[i] for i in range(3)),tuple(selection.b[i]+offset[i] for i in range(3)))
+        if len(offset)!=3 or any(type(n) is not int for n in offset):raise ValueError('Nudge requires three integers')
+        boxes = [Selection(tuple(box.a[i]+offset[i] for i in range(3)),tuple(box.b[i]+offset[i] for i in range(3))) for box in selection.boxes]
+        self.selection = boxes[0] if len(boxes)==1 else SelectionGroup(boxes)
 
     def expand_selection(self, amount):
         selection = self.require_selection()
-        lo = tuple(v-amount for v in selection.minimum)
-        hi = tuple(v+amount for v in selection.maximum)
-        if any(a>b for a,b in zip(lo,hi)):
-            raise ValueError("Selection cannot shrink below one block")
-        self.selection = Selection(lo,hi)
+        boxes = []
+        for box in selection.boxes:
+            lo = tuple(v-amount for v in box.minimum)
+            hi = tuple(v+amount for v in box.maximum)
+            if any(a>b for a,b in zip(lo,hi)):raise ValueError("Selection cannot shrink below one block")
+            boxes.append(Selection(lo,hi))
+        self.selection = boxes[0] if len(boxes)==1 else SelectionGroup(boxes)
+
+    def combine_selection(self,box,mode='add'):
+        current = SelectionGroup(self.selection.boxes if self.selection else ())
+        if mode=='add':result = current.union(box)
+        elif mode=='subtract':result = current.subtract(box)
+        else:raise ValueError('Unknown selection combination')
+        self.selection = result if result else None
+
+    def chunk_positions(self):return self.view_world.chunk_positions(self.dimension)
+
+    def _chunk_transaction(self,label,requested):
+        requested = dict(requested)
+        if len(requested)>MAX_CHUNK_COUNT:raise ValueError(f'Operation exceeds {MAX_CHUNK_COUNT:,} chunks')
+        changes = []
+        overlaid = {(dim,x//16,z//16) for target in (self.edits,self.entity_edits,self.biome_edits) for dim,x,y,z in target}
+        for (cx,cz),after in requested.items():
+            if any(type(n) is not int or abs(n)>1_875_000 for n in (cx,cz)):
+                raise ValueError('Chunk coordinates are outside world bounds')
+            key = (self.dimension,cx,cz)
+            before = self.chunk_edits.get(key,SOURCE)
+            if before!=after or key in overlaid:changes.append(((cx,cz),before,after))
+        targets = {(self.dimension,cx,cz) for (cx,cz),_,_ in changes}
+        cleared = []
+        for name in ('edits','entity_edits','biome_edits'):
+            for key,value in getattr(self,name).items():
+                dim,x,y,z = key
+                if (dim,x//16,z//16) in targets:cleared.append((name,key,value))
+        return self._commit(Transaction(label,self.dimension,[],chunk_changes=changes,cleared_edits=cleared))
+
+    def _apply_chunks(self,transaction,forward):
+        overrides = dict(self.chunk_edits)
+        for (cx,cz),before,after in transaction.chunk_changes:
+            key = (transaction.dimension,cx,cz);state = after if forward else before
+            if state==SOURCE:overrides.pop(key,None)
+            else:overrides[key] = state
+        if len(overrides)>MAX_CHUNK_COUNT or sum(s.size for s in overrides.values())>MAX_PAYLOAD:
+            raise ValueError('Pending chunk snapshots exceed 65,536 chunks or 32 MiB; export and reopen to continue')
+        count = self.pending_count-len(self.chunk_edits)+len(overrides)
+        for name,key,value in transaction.cleared_edits:
+            count += -int(key in getattr(self,name)) if forward else int(key not in getattr(self,name))
+        if count>MAX_PENDING:raise ValueError('Undo would exceed the pending edit limit')
+        # Build and validate the view before changing any document map. Actor-ID
+        # collisions or malformed imported NBT leave the entire edit untouched.
+        view = self.world.with_chunks(overrides)
+        for name,key,value in transaction.cleared_edits:
+            target = getattr(self,name)
+            if forward:target.pop(key,None)
+            else:target[key] = value
+        self.chunk_edits,self._view_world = overrides,view
+
+    def create_chunks(self):
+        return self._chunk_transaction('Create empty chunks',self.prepare_create_chunks())
+
+    def prepare_create_chunks(self):
+        selected = self.require_selection().chunks()
+        existing = self.chunk_positions()
+        requested = []
+        total = 0
+        for cx,cz in sorted(selected-existing):
+            state = self.view_world.empty_chunk(cx,cz,self.dimension)
+            total += state.size
+            if total>MAX_PAYLOAD:raise ValueError('Empty-chunk snapshots exceed 32 MiB')
+            requested.append(((cx,cz),state))
+        return requested
+
+    def delete_chunks(self,prune=False):
+        return self._chunk_transaction('Prune outside selection' if prune else 'Delete selected chunks',self.prepare_delete_chunks(prune))
+
+    def prepare_delete_chunks(self,prune=False):
+        selected = self.require_selection().chunks()
+        existing = self.chunk_positions()
+        targets = existing-selected if prune else existing&selected
+        if len(targets)>MAX_CHUNK_COUNT:raise ValueError(f'Operation exceeds {MAX_CHUNK_COUNT:,} chunks; select a smaller batch')
+        return [(pos,DELETED) for pos in sorted(targets)]
+
+    def import_chunks(self,source):
+        return self._chunk_transaction('Import chunks',self.prepare_import_chunks(source))
+
+    def prepare_import_chunks(self,source):
+        if self.world.edition.split(' · ')[0]!=source.edition.split(' · ')[0]:
+            raise ValueError('Chunk import requires the same edition')
+        if getattr(self.world,'version',None)!=getattr(source,'version',None):
+            raise ValueError('Chunk import requires the same Java DataVersion')
+        if self.world.edition.startswith('Bedrock') and (getattr(self.world,'game_version',None) is None or self.world.game_version!=getattr(source,'game_version',None)):
+            raise ValueError('Bedrock chunk import requires matching lastOpenedWithVersion metadata')
+        if self.dimension not in source.dimensions:raise ValueError('Source world does not contain this dimension')
+        selected = self.require_selection().chunks()&source.chunk_positions(self.dimension)
+        requested = [];total = 0
+        for cx,cz in sorted(selected):
+            state = source.chunk_snapshot(cx,cz,self.dimension)
+            total += state.size
+            if total>MAX_PAYLOAD:raise ValueError('Imported chunk snapshots exceed 32 MiB')
+            requested.append(((cx,cz),state))
+        if not requested:raise ValueError('No source chunks intersect this selection')
+        if source.path is not None:
+            from .world import snapshot
+            if snapshot(source.path)!=source.signature:raise ValueError('Source world changed during chunk import; close Minecraft and reopen it')
+        return requested

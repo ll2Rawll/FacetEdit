@@ -6,7 +6,7 @@ Written from scratch in Python's standard library and Tk. No Amulet code,
 translation tables, plugins, third-party Python packages, webview, account,
 telemetry, or network service is used by the application.
 
-**Version 0.2.0 is experimental. Full Amulet feature parity is unfinished.**
+**Version 0.3.0 is experimental. Full Amulet feature parity is unfinished.**
 The editor performs real Java and Bedrock edits; the exact boundaries are in
 [Compatibility](docs/COMPATIBILITY.md). Synthetic tests and independent database
 validation do not establish that exported worlds have been validated in Minecraft.
@@ -29,7 +29,7 @@ Windows:
 py -3 launch.py
 ```
 
-Or extract `FacetEdit-0.2.0-portable.zip` and open the matching platform launcher.
+Or extract `FacetEdit-0.3.0-portable.zip` and open the matching platform launcher.
 The portable app is a Python zipapp, not a self-contained `.exe` or signed `.app`:
 
 ```sh
@@ -47,8 +47,10 @@ Native Windows/macOS execution has not been verified in this environment.
 
 - **World stage:** full-width voxel cutaway with orbit, zoom, pan, block picking,
   construction grid and cyan selection bounds. Drag to orbit, right-drag to pan,
-  and scroll to zoom. Go to coordinates changes the center and Y ceiling.
-- **Tool rail:** select, materials, clone, biomes, block NBT and history.
+  and scroll to zoom. F5 switches to perspective flight: WASD moves, Q/E moves
+  down/up, Shift boosts speed, drag looks around, and scroll adjusts speed.
+  Go to coordinates changes the orbit center/Y ceiling or the flight position.
+- **Tool rail:** select, materials, clone, chunks, biomes, block NBT and history.
 - **Floating inspector:** segmented Select / Paste / World / History pages.
   Enter numeric corners, adjust bounds, transform a clipboard, change dimension,
   edit metadata, or rewind to an earlier available step.
@@ -68,6 +70,9 @@ Tk does not provide Apple's native backdrop-refraction material.
    extract a Bedrock `.mcworld` archive into a new folder.
 2. Click a block and Shift-click another, or enter two inclusive corners. Choose
    a material, for example `minecraft:oak_log[axis=y]`, and fill/replace/erase.
+   **Manage selection regions** combines boxes or subtracts holes. Overlaps are
+   edited once; clipboard gaps stay empty of edits. Use `.nbt` or `.mcstructure`
+   for sparse structures; `.schem` export requires a complete rectangular volume.
 3. Copy, cut, paste or repeat a selection with Clone. Block entities such as
    container inventories retain their typed NBT and relocated coordinates.
    Biome and NBT edits participate in undo, redo, projects and edited-world export.
@@ -78,6 +83,16 @@ Tk does not provide Apple's native backdrop-refraction material.
    original source folder. Keep that source at its recorded path and unchanged.
    Sample projects preserve the sample generator and changes without an external
    world folder.
+6. **Manage chunks** opens a map for creation of empty chunks, deletion, pruning
+   outside the selection, and import from another matching-edition/version world.
+   Imports keep their coordinates. Java terrain, POI, entity and external-chunk
+   payloads travel together; Bedrock actor references are preserved. Chunk edits
+   support undo and projects. Empty chunks do not generate terrain; Bedrock needs
+   known game-version metadata and an existing same-dimension biome template.
+7. Unsaved work gets a **recovery checkpoint every 30 seconds** outside the source
+   world. File → Recovery workspaces restores or discards these copies. Studio
+   preferences control autosave and its interval. Saving or closing cleanly
+   clears the current checkpoint; interrupted sessions remain discoverable.
 
 Java `.nbt`, Bedrock `.mcstructure` and Sponge `.schem` v2/v3 interchange blocks
 and block NBT. Moving entities, scheduled-tick structure metadata, schematic
@@ -105,6 +120,9 @@ Use Ctrl on Windows/Linux and Command on macOS.
 | K | Command search |
 | Delete / Escape | Erase / clear selection |
 
+F5 switches orbit/flight without a modifier. Flight controls only act while the
+viewport has keyboard focus; clicking a field or opening a dialog stops movement.
+
 Text fields retain normal text editing. Buttons accept Tab focus, Return and
 Space. Inspector pages scroll in compact windows. Recent worlds are under File.
 
@@ -112,7 +130,7 @@ Space. Inspector pages scroll in compact windows. Recent worlds are under File.
 
 ```sh
 PYTHONPATH=src python3 -m unittest discover -v
-PYTHONPATH=src FACETEDIT_GUI_TESTS=1 python3 -m unittest tests.test_ui -v
+PYTHONPATH=src FACETEDIT_GUI_TESTS=1 python3 -m unittest discover -v
 python3 scripts/benchmark.py
 python3 scripts/build.py
 ```
@@ -120,7 +138,7 @@ python3 scripts/build.py
 GUI tests require a desktop or X display. Headless Linux can use `xvfb-run -a`.
 PowerShell: set `$env:PYTHONPATH="src"` and `$env:FACETEDIT_GUI_TESTS="1"` first.
 The optional visual-review script uses ImageMagick only to capture screenshots;
-optional independent database validation uses native LevelDB/Snappy as test
+optional independent binary validation uses native LevelDB/Snappy/LZ4/xxHash as test
 oracles. Those tools are not bundled or imported by the application.
 
 The build creates a compressed zipapp, platform launchers, portable/source ZIPs,
@@ -129,6 +147,7 @@ native platform release signing remain unverified.
 
 Read the [implementation plan](docs/IMPLEMENTATION_PLAN.md),
 [redesign plan](docs/REDESIGN_PLAN.md), [compatibility ledger](docs/COMPATIBILITY.md),
-and [test report](docs/TEST_REPORT.md). The application source is MIT-licensed.
+[0.3 expansion plan](docs/PARITY_0_3_PLAN.md) and [test report](docs/TEST_REPORT.md).
+The application source is MIT-licensed.
 FacetEdit is independent of Amulet, Mojang and Microsoft; their names identify
 reference software and file formats, not ownership or endorsement.

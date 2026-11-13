@@ -1,0 +1,11 @@
+{
+  "perspective_cached_draw_ms": [33.854880999570014,34.48545299761463,32.04950600047596,31.923284001095453,31.862092000665143,31.930895998812048,33.20102699944982,32.184762003453216,31.91796599639929,32.308500001818174],
+  "median_ms": 32.11713400196459,
+  "faces_last_frame": 317,
+  "camera_initial": [5.515432893,12.8,5.515432893],
+  "yaw_initial": -0.7853981633974483,
+  "pitch": -0.7853981633974483,
+  "radius": 12,
+  "window": "1440x900",
+  "scope": "Synthetic sample. Ten draws with a 0.03 radian yaw change per draw. Linux CPU Tk Canvas only. Not an Amulet performance comparison."
+}

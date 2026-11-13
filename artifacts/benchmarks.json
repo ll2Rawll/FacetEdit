@@ -5,33 +5,33 @@
     "machine": "x86_64"
   },
   "nbt_decode_65536_longs": {
-    "median_ms": 1.183,
-    "min_ms": 1.148,
-    "max_ms": 9.161,
+    "median_ms": 1.455,
+    "min_ms": 1.3,
+    "max_ms": 5.451,
     "iterations": 7
   },
   "palette_decode_4096_blocks_37_states": {
-    "median_ms": 0.693,
-    "min_ms": 0.587,
-    "max_ms": 0.961,
+    "median_ms": 0.636,
+    "min_ms": 0.553,
+    "max_ms": 0.659,
     "iterations": 7
   },
   "palette_encode_4096_blocks_37_states": {
-    "median_ms": 3.699,
-    "min_ms": 3.543,
-    "max_ms": 3.83,
+    "median_ms": 2.583,
+    "min_ms": 2.316,
+    "max_ms": 2.787,
     "iterations": 7
   },
   "crc32c_1MiB": {
-    "median_ms": 106.403,
-    "min_ms": 94.58,
-    "max_ms": 134.147,
+    "median_ms": 104.73,
+    "min_ms": 102.028,
+    "max_ms": 109.988,
     "iterations": 3
   },
   "fill_undo_redo_32768_blocks": {
-    "median_ms": 182.943,
-    "min_ms": 177.221,
-    "max_ms": 190.909,
+    "median_ms": 198.872,
+    "min_ms": 191.514,
+    "max_ms": 223.943,
     "iterations": 3
   }
 }

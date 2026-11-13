@@ -1,4 +1,4 @@
-"""Original, event-driven orthographic voxel renderer using only Tk Canvas."""
+"""Original orthographic and perspective voxel renderer using only Tk Canvas."""
 
 import math
 import time
@@ -6,6 +6,7 @@ import tkinter as tk
 
 from .blocks import color, shade
 from .chrome import rounded
+from .camera import Camera
 
 SKY = "#080f1d"
 
@@ -16,6 +17,12 @@ class VoxelView(tk.Canvas):
         self.document = document
         self.on_pick, self.on_error = on_pick, on_error
         self.radius = 12
+        self.mode = 'orbit'
+        self.camera = Camera()
+        self._keys = set()
+        self._key_releases = {}
+        self._flight_id = None
+        self._last_move = 0
         self.grid = True
         self.glass = True
         self.stage_right = 330
@@ -47,13 +54,21 @@ class VoxelView(tk.Canvas):
         self.bind("<MouseWheel>", lambda e: self.zoom(1.1 if e.delta > 0 else 1 / 1.1))
         self.bind("<Button-4>", lambda _: self.zoom(1.1))
         self.bind("<Button-5>", lambda _: self.zoom(1 / 1.1))
+        self.bind('<KeyPress>',self._key_press)
+        self.bind('<KeyRelease>',self._key_release)
+        self.bind('<FocusOut>',lambda _:self.stop_flight())
+        self.bind('<Escape>',lambda _:self.stop_flight())
 
     def attach(self, document):
+        self.stop_flight()
         self.document = document
         self.center_x, _, self.center_z = document.world.spawn
         self.ceiling = document.world.maximum_y
         self.pan_x = self.pan_y = 0
         self._geometry_key = None
+        if self.mode=='fly':
+            x,y,z=document.world.spawn
+            self.camera.position=[float(x),float(y)+8,float(z)+8]
         self.schedule()
 
     def schedule(self):
@@ -61,19 +76,97 @@ class VoxelView(tk.Canvas):
             self._pending = self.after(20, self.draw)
 
     def zoom(self, factor):
+        if self.mode=='fly':
+            self.camera.speed=min(64,max(1,self.camera.speed*factor))
+            self.schedule()
+            return
         self.auto_fit = False
         self.scale = min(52, max(6, self.scale * factor))
         self.schedule()
 
     def reset(self):
+        self.stop_flight()
+        if self.mode=='fly':
+            self.camera.yaw,self.camera.pitch,self.camera.speed=0.,-.3,8.
+            self.schedule()
+            return
         self.auto_fit = True
         self.angle, self.elevation, self.scale = math.pi / 4, .65, 19
         self.pan_x = self.pan_y = 0
         self.schedule()
 
+    def set_mode(self,mode):
+        if mode not in ('orbit','fly'):raise ValueError('Unknown camera mode')
+        if mode==self.mode:return
+        self.stop_flight()
+        if mode=='fly':
+            self._geometry()
+            distance=self.radius*.65
+            self.camera.position=[self.center_x+math.sin(self.angle)*distance,
+                                  self.height_origin+distance+6,self.center_z+math.cos(self.angle)*distance]
+            self.camera.yaw=-self.angle
+            self.camera.pitch=-.6
+        else:
+            self.center_x,self.center_z=math.floor(self.camera.position[0]),math.floor(self.camera.position[2])
+            self.pan_x=self.pan_y=0
+        self.mode=mode
+        self._geometry_key=None
+        self.schedule()
+
+    def go_to(self,x,y,z):
+        self.stop_flight()
+        self.center_x,self.center_z=x,z
+        if self.mode=='fly':self.camera.position=[float(x),float(y),float(z)]
+        else:self.ceiling=y
+        self.pan_x=self.pan_y=0
+        self.schedule()
+
+    def _key_press(self,event):
+        key=event.keysym.lower()
+        if self.mode!='fly' or key not in ('w','a','s','d','q','e','space','shift_l','shift_r') or event.state&12:return
+        if key in self._key_releases:self.after_cancel(self._key_releases.pop(key))
+        self._keys.add(key)
+        if self._flight_id is None:
+            self._last_move=time.monotonic()
+            self._flight_id=self.after(16,self._flight_tick)
+        return 'break'
+
+    def _key_release(self,event):
+        key=event.keysym.lower()
+        if key in self._keys:
+            if key in self._key_releases:self.after_cancel(self._key_releases.pop(key))
+            def release():
+                self._keys.discard(key);self._key_releases.pop(key,None)
+                if not self._keys:self.stop_flight()
+            # X11 autorepeat emits release/press pairs. Wait for the paired press.
+            self._key_releases[key]=self.after_idle(release)
+            return 'break'
+
+    def stop_flight(self):
+        self._keys.clear()
+        if self._flight_id is not None:self.after_cancel(self._flight_id)
+        self._flight_id=None
+        for pending in self._key_releases.values():self.after_cancel(pending)
+        self._key_releases.clear()
+
+    def _flight_tick(self):
+        self._flight_id=None
+        if self.mode!='fly' or self.focus_get() is not self or not self._keys:
+            self.stop_flight();return
+        now=time.monotonic();elapsed=now-self._last_move;self._last_move=now
+        keys=self._keys
+        changed=self.camera.move(int('w' in keys)-int('s' in keys),int('d' in keys)-int('a' in keys),
+                                 int(bool(keys&{'e','space'}))-int('q' in keys),elapsed,
+                                 bool(keys&{'shift_l','shift_r'}),self.document.world.bounds(self.document.dimension))
+        if changed:
+            self.center_x,self.center_z=math.floor(self.camera.position[0]),math.floor(self.camera.position[2])
+            self.schedule()
+        self._flight_id=self.after(16,self._flight_tick)
+
     def _press(self, event):
         self.focus_set()
-        self._drag = (event.x, event.y, self.angle, self.elevation, self.pan_x, self.pan_y)
+        self._drag = (event.x, event.y, self.camera.yaw if self.mode=='fly' else self.angle,
+                      self.camera.pitch if self.mode=='fly' else self.elevation,self.pan_x,self.pan_y)
         self._moved = False
 
     def _motion(self, event):
@@ -81,11 +174,18 @@ class VoxelView(tk.Canvas):
             x, y, angle, elevation, _, _ = self._drag
             if abs(event.x - x) + abs(event.y - y) > 5:
                 self._moved = True
-                self.angle = angle + (event.x - x) * .008
-                self.elevation = min(1.2, max(.25, elevation + (event.y - y) * .004))
+                if self.mode=='fly':
+                    self.camera.yaw,self.camera.pitch=angle,elevation
+                    self.camera.look(event.x-x,event.y-y)
+                else:
+                    self.angle = angle + (event.x - x) * .008
+                    self.elevation = min(1.2, max(.25, elevation + (event.y - y) * .004))
                 self.schedule()
 
     def _pan(self, event):
+        if self.mode=='fly':
+            self._motion(event)
+            return
         if self._drag:
             x, y, _, _, px, py = self._drag
             self.pan_x, self.pan_y = px + event.x - x, py + event.y - y
@@ -121,6 +221,7 @@ class VoxelView(tk.Canvas):
         return project
 
     def _geometry(self):
+        if self.mode=='fly':return self._flight_geometry()
         doc = self.document
         key = (id(doc), doc.revision, doc.dimension, self.center_x, self.center_z, self.radius, self.ceiling)
         if key == self._geometry_key:
@@ -148,12 +249,33 @@ class VoxelView(tk.Canvas):
                 if not block.air:
                     voxels[(x, y, z)] = block
         self.height_origin = sorted(heights.values())[len(heights) // 2] - 2
+        self._mesh(voxels)
+        self._geometry_key=key
+
+    def _flight_geometry(self):
+        doc=self.document
+        center=tuple(math.floor(v/4)*4 for v in self.camera.position)
+        key=('fly',id(doc),doc.revision,doc.dimension,center,self.radius)
+        if key==self._geometry_key:return
+        x,y,z=center;r=self.radius+3
+        lo,hi=doc.world.bounds(doc.dimension)
+        voxels={}
+        for bx in range(x-r,x+r+1):
+            for bz in range(z-r,z+r+1):
+                for by in range(max(lo,y-r),min(hi,y+r)+1):
+                    block=doc.get(bx,by,bz)
+                    if not block.air:voxels[(bx,by,bz)]=block
+        self._mesh(voxels)
+        self._geometry_key=key
+
+    def _mesh(self,voxels):
         face_defs = (
             ((0, 1, 0), ((0, 1, 0), (1, 1, 0), (1, 1, 1), (0, 1, 1)), 1.08),
             ((1, 0, 0), ((1, 0, 0), (1, 0, 1), (1, 1, 1), (1, 1, 0)), .86),
             ((-1, 0, 0), ((0, 0, 1), (0, 0, 0), (0, 1, 0), (0, 1, 1)), .82),
             ((0, 0, 1), ((1, 0, 1), (0, 0, 1), (0, 1, 1), (1, 1, 1)), .94),
             ((0, 0, -1), ((0, 0, 0), (1, 0, 0), (1, 1, 0), (0, 1, 0)), .90),
+            ((0,-1,0), ((0,0,1),(1,0,1),(1,0,0),(0,0,0)), .65),
         )
         faces = []
         colors = {}
@@ -167,7 +289,7 @@ class VoxelView(tk.Canvas):
                     colors[(block,light)] = shade(color(block),light)
                 tint = colors[(block,light)]
                 faces.append((position, normal, tuple((x + ox, y + oy, z + oz) for ox, oy, oz in offsets), tint))
-        self.faces, self._geometry_key = faces, key
+        self.faces=faces
 
     def draw(self):
         if self._pending is not None:
@@ -188,6 +310,10 @@ class VoxelView(tk.Canvas):
         width, height = self.winfo_width(), self.winfo_height()
         project = self._projector()
         self._draw_background(width,height)
+        if self.mode=='fly':
+            self._draw_flight(width,height)
+            self.last_ms=(time.perf_counter()-start)*1000
+            return
         # Fine construction grid on the plane below the bounded terrain.
         floor = self.height_origin-9
         radius = self.radius+8
@@ -210,15 +336,15 @@ class VoxelView(tk.Canvas):
                 points.extend(projected[vertex])
             if max(points[0::2]) < -40 or min(points[0::2]) > width + 40 or max(points[1::2]) < -40 or min(points[1::2]) > height + 40:
                 continue
-            selected = lo is not None and all(lo[i] <= pos[i] <= hi[i] for i in range(3))
+            selected = lo is not None and all(lo[i] <= pos[i] <= hi[i] for i in range(3)) and selection.contains(pos)
             if tint not in outlines:
                 outlines[tint] = shade(tint,.95) if self.grid else tint
             outline = "#86eff2" if selected else outlines[tint]
             item = self.create_polygon(points, fill=tint, outline=outline, width=1.5 if selected else .5)
             self.picks[item] = pos
         self.face_count = len(self.picks)
-        if selection:
-            a, b = selection.minimum, tuple(v + 1 for v in selection.maximum)
+        for box in selection.boxes if selection else ():
+            a, b = box.minimum, tuple(v + 1 for v in box.maximum)
             corners = [(x, y, z) for x in (a[0], b[0]) for y in (a[1], b[1]) for z in (a[2], b[2])]
             for i, point in enumerate(corners):
                 for bit in (1, 2, 4):
@@ -232,6 +358,38 @@ class VoxelView(tk.Canvas):
         rounded(self,hint_x-220,hint_y-12,hint_x+220,hint_y+12,12,fill="#0c1728",outline="#1e3046")
         self.create_text(hint_x,hint_y,anchor="center",text="DRAG TO ORBIT   ·   SCROLL TO ZOOM   ·   SHIFT-CLICK TO SELECT",font=("Helvetica",8),fill="#9cafcb")
         self.last_ms = (time.perf_counter() - start) * 1000
+
+    def _draw_flight(self,width,height):
+        frame=self.camera.frame(width,height,((width-self.stage_right)/2+35,height*.5))
+        selection=self.document.selection
+        visible=[face for face in self.faces if frame.visible(face[0],face[1])]
+        visible.sort(key=lambda face:frame.depth(face[0],face[1]),reverse=True)
+        outlines={}
+        for position,normal,vertices,tint in visible:
+            points=frame.polygon(vertices)
+            if len(points)<6:continue
+            selected=selection and selection.contains(position)
+            if tint not in outlines:outlines[tint]=shade(tint,.95) if self.grid else tint
+            item=self.create_polygon(points,fill=tint,outline='#86eff2' if selected else outlines[tint],width=1.5 if selected else .5)
+            self.picks[item]=position
+        self.face_count=len(self.picks)
+        for box in selection.boxes if selection else ():
+            a,b=box.minimum,tuple(v+1 for v in box.maximum)
+            corners=[(x,y,z) for x in (a[0],b[0]) for y in (a[1],b[1]) for z in (a[2],b[2])]
+            for i,point in enumerate(corners):
+                for bit in (1,2,4):
+                    j=i^bit
+                    if j>i:
+                        segment=frame.segment(point,corners[j])
+                        if segment:
+                            self.create_line(*segment,fill='#325e79',width=4)
+                            self.create_line(*segment,fill='#9af5f2',width=1.5)
+        x,y=frame.cx,height-128
+        rounded(self,x-250,y-21,x+250,y+22,12,fill='#0c1728',outline='#284259')
+        self.create_text(x,y-8,text='W A S D  MOVE   ·   Q / E  DOWN / UP   ·   SHIFT  FASTER',font=('Helvetica',8),fill='#b9cede')
+        self.create_text(x,y+9,text=f'DRAG TO LOOK  ·  SCROLL SPEED  {self.camera.speed:.0f}  ·  '+', '.join(f'{v:.1f}' for v in self.camera.position),font=('Helvetica',8),fill='#83e1e8')
+        if not self.picks:
+            self.create_text(frame.cx,height*.5,text='No blocks within the display radius\nFly toward terrain or use Go to coordinates.',font=('Helvetica',11),fill='#8296b0',justify='center')
 
     def _draw_background(self,width,height):
         if not self.glass:
@@ -254,6 +412,7 @@ class VoxelView(tk.Canvas):
         self.create_image(0,0,image=self._background_image,anchor="nw")
 
     def destroy(self):
+        self.stop_flight()
         if self._pending is not None:
             self.after_cancel(self._pending)
         super().destroy()

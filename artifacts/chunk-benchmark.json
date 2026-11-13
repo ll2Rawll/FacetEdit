@@ -1,0 +1,15 @@
+{
+  "java_import_undo_redo_64_empty_chunks": {
+    "median_ms": 76.469,
+    "min_ms": 75.855,
+    "max_ms": 84.87,
+    "runs": 5
+  },
+  "bedrock_import_undo_redo_64_chunks_20000_unrelated_source_records": {
+    "median_ms": 0.887,
+    "min_ms": 0.872,
+    "max_ms": 2.964,
+    "runs": 5
+  },
+  "scope": "Synthetic fixtures, matching game metadata, this Linux host. Small cached-region/index measurements; not large-world throughput or Minecraft validation."
+}

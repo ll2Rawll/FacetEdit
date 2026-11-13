@@ -13,8 +13,9 @@ from .structures import export_structure,import_structure,import_mcstructure,loa
 from .world import SampleWorld,open_world
 from .chrome import BG,SURFACE,INK,MUTED,LINE,BLUE,PALE,FONT,GlassPanel,Pill,label,rounded
 from .studio import StudioLayout
+from .managers import EditorManagers
 
-class FacetEditApp(StudioLayout,tk.Tk):
+class FacetEditApp(EditorManagers,StudioLayout,tk.Tk):
     def __init__(self,settings_path=None):
         super().__init__()
         global FONT
@@ -41,6 +42,7 @@ class FacetEditApp(StudioLayout,tk.Tk):
         self.mirror = tk.BooleanVar(value=False)
         self.include_air = tk.BooleanVar(value=False)
         self._poll_id = None
+        self._initialize_managers()
         self.app_logo = chrome.logo(self,64)
         self.iconphoto(True,self.app_logo)
         self._build_style()
@@ -52,6 +54,8 @@ class FacetEditApp(StudioLayout,tk.Tk):
         self.protocol('WM_DELETE_WINDOW',self.close_app)
         self._poll_id = self.after(80,self._poll)
         self.refresh()
+        recovered = len(self.recovery.entries())
+        if recovered:self.status_var.set(f'{recovered} recovery copies available · File → Recovery workspaces')
 
     def _build_menus(self):
         menu = tk.Menu(self)
@@ -68,6 +72,7 @@ class FacetEditApp(StudioLayout,tk.Tk):
         file.add_command(label="Export selection as structure…", command=self.export_dialog)
         file.add_command(label="Import .mcworld archive…", command=self.import_world_archive)
         file.add_command(label="Export .mcworld archive…", command=self.export_world_archive)
+        file.add_command(label="Recovery workspaces…",command=self.recovery_dialog)
         file.add_separator()
         file.add_command(label="Quit", command=self.close_app)
         menu.add_cascade(label="File", menu=file)
@@ -75,10 +80,13 @@ class FacetEditApp(StudioLayout,tk.Tk):
         for text, shortcut, fn in (("Undo", "Ctrl+Z", self.undo), ("Redo", "Ctrl+Y", self.redo), ("Copy", "Ctrl+C", self.copy), ("Cut", "Ctrl+X", self.cut), ("Paste", "Ctrl+V", self.paste), ("Delete selection", "Delete", self.delete)):
             edit.add_command(label=text, accelerator=shortcut, command=fn)
         edit.add_separator()
+        edit.add_command(label='Manage selection regions…',command=self.regions_dialog)
+        edit.add_command(label='Manage chunks…',command=self.chunks_dialog)
         for text,fn in (("Clone / repeat…",self.clone_dialog),("Nudge selection…",self.nudge_dialog),("Set biome…",self.biome_dialog),("Inspect block NBT…",self.nbt_dialog)):
             edit.add_command(label=text,command=fn)
         menu.add_cascade(label="Edit", menu=edit)
         view = tk.Menu(menu, tearoff=False)
+        view.add_command(label='Switch orbit / flight',accelerator='F5',command=self.toggle_camera)
         view.add_command(label="Reset camera", command=lambda: self.viewport.reset())
         view.add_command(label="Go to coordinates…", command=self.goto_dialog)
         view.add_command(label="Preferences…", command=self.preferences)
@@ -106,6 +114,7 @@ class FacetEditApp(StudioLayout,tk.Tk):
         self.bind(f"<{modifier}-Shift-Z>", lambda e: self._shortcut(e, self.redo, "z"))
         self.bind("<Delete>", lambda e: self._shortcut(e, self.delete, "delete"))
         self.bind("<Escape>", lambda e: self.clear_selection() if not isinstance(e.widget, (tk.Entry, ttk.Entry)) else None)
+        self.bind('<F5>',lambda e:self._shortcut(e,self.toggle_camera,'f5'))
 
     def _shortcut(self, event, fn, key):
         if key in ("c", "x", "v", "z", "y", "delete") and isinstance(event.widget, (tk.Entry, ttk.Entry, tk.Text, ttk.Combobox)):
@@ -167,9 +176,11 @@ class FacetEditApp(StudioLayout,tk.Tk):
         self.save_button.state(not self.busy)
         self.dimension_box.configure(values=doc.world.dimensions)
         self.dimension_var.set(doc.dimension)
-        self.view_label.configure(text=doc.dimension.upper().replace("_", " ") + "  /  ISOMETRIC")
+        self.view_label.configure(text=doc.dimension.upper().replace("_", " ") + '  /  '+('PERSPECTIVE' if self.viewport.mode=='fly' else 'ORBIT'))
+        self.camera_button.text='Return to orbit  ·  F5' if self.viewport.mode=='fly' else 'Enter flight  ·  F5'
+        self.camera_button.draw()
         if doc.selection:
-            self.selection_label.configure(text=f"{doc.selection.volume:,} blocks  ·  " + " × ".join(map(str, doc.selection.size)))
+            self.selection_label.configure(text=f'{len(doc.selection.boxes)} regions · {doc.selection.volume:,} blocks' if len(doc.selection.boxes)>1 else f"{doc.selection.volume:,} blocks  ·  " + " × ".join(map(str, doc.selection.size)))
         else:
             self.selection_label.configure(text="No blocks selected")
         self.history_label.configure(text=(doc.undo_stack[-1].label + f"\n{doc.pending_count:,} pending changes") if doc.undo_stack else f"{doc.pending_count:,} pending changes" if doc.pending_count else "A fresh start.")
@@ -182,6 +193,7 @@ class FacetEditApp(StudioLayout,tk.Tk):
         self.clip_label.configure(text=(" × ".join(map(str,doc.clipboard.size))+" blocks copied"+(f"\n{len(doc.clipboard.entities)} block entities preserved" if doc.clipboard.entities else "")) if doc.clipboard else "Nothing copied yet")
         self._refresh_material()
         self.viewport.schedule()
+        self._refresh_managers()
 
     def _pick(self, position, extend):
         if self.busy:
@@ -283,10 +295,14 @@ class FacetEditApp(StudioLayout,tk.Tk):
             return False
         return self.save_project_dialog() if choice else True
 
-    def _attach(self, document):
+    def _attach(self, document,preserve_recovery=False):
+        self._forget_recovery(preserve_current=preserve_recovery)
+        self._close_managers()
         self.document = document
         self._saved_revision = document.revision
         self.viewport.attach(document)
+        if document.selection:
+            for variable,value in zip(self.selection_vars,(*document.selection.a,*document.selection.b)):variable.set(value)
         self.refresh()
 
     def open_sample(self):
@@ -331,6 +347,7 @@ class FacetEditApp(StudioLayout,tk.Tk):
         try:
             save_project(self.document, path)
             self._saved_revision = self.document.revision
+            self._forget_recovery()
             self.status_var.set("Project saved · " + path)
             self.refresh()
             return True
@@ -349,12 +366,13 @@ class FacetEditApp(StudioLayout,tk.Tk):
         if not destination:
             return
         world, edits = self.document.world, dict(self.document.edits)
-        entities,biomes = dict(self.document.entity_edits),dict(self.document.biome_edits)
+        metadata = self.document.export_metadata()
         def complete(_):
             self._saved_revision = self.document.revision
+            self._forget_recovery()
             self.status_var.set("Saved edited world copy · " + destination)
             self.refresh()
-        self.worker(lambda: world.export(destination, edits, lambda msg: self.messages.put(("progress", msg)),entity_edits=entities,biome_edits=biomes), complete, "Preparing a separate world copy…")
+        self.worker(lambda: world.export(destination, edits, lambda msg: self.messages.put(("progress", msg)),**metadata), complete, "Preparing a separate world copy…")
 
     def import_dialog(self):
         if self.busy:
@@ -403,6 +421,8 @@ class FacetEditApp(StudioLayout,tk.Tk):
                 message = self.messages.get_nowait()
                 if message[0] == "progress":
                     self.status_var.set(message[1])
+                elif message[0] in ('recovery_saved','recovery_error'):
+                    self._handle_recovery_message(message)
                 elif message[0] == "complete":
                     self.busy = False
                     message[1](message[2])
@@ -415,12 +435,20 @@ class FacetEditApp(StudioLayout,tk.Tk):
             pass
         self._poll_id = self.after(80, self._poll)
 
+    def toggle_camera(self):
+        try:
+            self.viewport.set_mode('fly' if self.viewport.mode=='orbit' else 'orbit')
+            self.viewport.focus_set()
+            self.refresh()
+        except Exception as exc:self.show_error(exc)
+
     def goto_dialog(self):
         dialog, content = self._dialog("Go to coordinates")
-        label(content, "Center the view at X / Z. Optional Y clips terrain above it.", 9, color=MUTED, wraplength=380, justify="left").pack(anchor="w")
+        label(content, 'Fly directly to X / Y / Z.' if self.viewport.mode=='fly' else "Center the view at X / Z. Y clips terrain above it.", 9, color=MUTED, wraplength=380, justify="left").pack(anchor="w")
         row = tk.Frame(content, bg=SURFACE)
         row.pack(fill="x", pady=12)
-        values = [tk.StringVar(value=str(v)) for v in (self.viewport.center_x, self.viewport.ceiling, self.viewport.center_z)]
+        location=self.viewport.camera.position if self.viewport.mode=='fly' else (self.viewport.center_x,self.viewport.ceiling,self.viewport.center_z)
+        values = [tk.StringVar(value=str(round(v))) for v in location]
         for axis, var in zip("XYZ", values):
             label(row, axis, 9, color=MUTED).pack(side="left", padx=(0, 5))
             ttk.Entry(row, textvariable=var, width=7).pack(side="left", padx=(0, 10))
@@ -429,16 +457,14 @@ class FacetEditApp(StudioLayout,tk.Tk):
                 x, y, z = (int(v.get()) for v in values)
                 if max(abs(x), abs(z)) > 30_000_000 or not self.document.world.minimum_y <= y <= self.document.world.maximum_y:
                     raise ValueError("Coordinates are outside world bounds")
-                self.viewport.center_x, self.viewport.ceiling, self.viewport.center_z = x, y, z
-                self.viewport.pan_x = self.viewport.pan_y = 0
-                self.viewport.schedule()
+                self.viewport.go_to(x,y,z)
                 dialog.destroy()
             except ValueError as exc:
                 self.show_error(exc)
         Pill(content, "Go to location", go, True, 150).pack(anchor="e")
 
     def preferences(self):
-        dialog, content = self._dialog("Make yourself at home",450,350)
+        dialog, content = self._dialog("Make yourself at home",450,460)
         label(content,"MIDNIGHT GLASS  ·  DEFAULT DARK",9,True,BLUE).pack(anchor="w",pady=(0,10))
         label(content, "Display radius · smaller uses less CPU", 10, color=MUTED).pack(anchor="w")
         radius = tk.IntVar(value=self.viewport.radius)
@@ -447,13 +473,21 @@ class FacetEditApp(StudioLayout,tk.Tk):
         ttk.Checkbutton(content, text="Show subtle block outlines", variable=grid).pack(anchor="w")
         glass = tk.BooleanVar(value=self.viewport.glass)
         ttk.Checkbutton(content,text="Atmospheric glass lighting",variable=glass).pack(anchor="w",pady=7)
+        autosave=tk.BooleanVar(value=self.settings.data['autosave'])
+        ttk.Checkbutton(content,text='Save recovery copies automatically',variable=autosave).pack(anchor='w',pady=(12,6))
+        interval=tk.StringVar(value=str(self.settings.data['autosave_seconds']))
+        row=tk.Frame(content,bg=SURFACE);row.pack(fill='x',pady=5)
+        label(row,'Checkpoint interval · seconds',9,color=MUTED).pack(side='left')
+        ttk.Combobox(row,textvariable=interval,values=(15,30,60,120,300,600),state='readonly',width=8).pack(side='right')
         def apply():
             self.viewport.radius, self.viewport.grid = radius.get(), grid.get()
-            self.settings.data.update(radius=radius.get(), grid=grid.get(),glass=glass.get())
+            self.settings.data.update(radius=radius.get(),grid=grid.get(),glass=glass.get(),autosave=autosave.get(),autosave_seconds=int(interval.get()))
             self.viewport.glass = glass.get()
             try:
                 self.settings.save()
                 self.viewport.schedule()
+                if self._recovery_id is not None:self.after_cancel(self._recovery_id)
+                self._recovery_id=self.after(self.settings.data['autosave_seconds']*1000,self._autosave_tick)
                 dialog.destroy()
             except OSError as exc:
                 self.show_error(exc)
@@ -468,6 +502,7 @@ class FacetEditApp(StudioLayout,tk.Tk):
         options.pack(fill="both", expand=True)
         commands = [("Open Minecraft world", self.open_dialog), ("Save edited world copy", self.save_copy), ("Save FacetEdit project", self.save_project_dialog), ("Open FacetEdit project", self.open_project_dialog), ("Fill selection", self.fill), ("Replace blocks", self.replace_dialog), ("Delete selection", self.delete), ("Copy selection", self.copy), ("Paste clipboard", self.paste), ("Undo last change", self.undo), ("Redo change", self.redo), ("Go to coordinates", self.goto_dialog), ("Import structure", self.import_dialog), ("Export structure", self.export_dialog), ("Reset camera", self.viewport.reset), ("Preferences", self.preferences), ("Help and compatibility", self.help_dialog)]
         commands += [("Clone / repeat selection",self.clone_dialog),("Set biome",self.biome_dialog),("Inspect / edit block NBT",self.nbt_dialog),("Import .mcworld",self.import_world_archive),("Export .mcworld",self.export_world_archive),("Nudge selection",self.nudge_dialog),("Waterlog selection",lambda:self.waterlog(True))]
+        commands += [('Manage selection regions',self.regions_dialog),('Manage chunks',self.chunks_dialog),('Restore recovery workspace',self.recovery_dialog),('Switch orbit / flight camera',self.toggle_camera)]
         matches = []
         def search(*_):
             matches[:] = [(name, fn) for name, fn in commands if query.get().lower() in name.lower()]
@@ -658,9 +693,10 @@ class FacetEditApp(StudioLayout,tk.Tk):
             return
         from .archives import export_mcworld
         world,edits = self.document.world,dict(self.document.edits)
-        metadata = {"entity_edits":dict(self.document.entity_edits),"biome_edits":dict(self.document.biome_edits)}
+        metadata = self.document.export_metadata()
         def complete(_):
             self._saved_revision = self.document.revision
+            self._forget_recovery()
             self.status_var.set("Bedrock archive saved · "+destination)
             self.refresh()
         self.worker(lambda:export_mcworld(world,destination,edits,lambda msg:self.messages.put(("progress",msg)),**metadata),complete,"Preparing the edited world archive…")
@@ -668,10 +704,10 @@ class FacetEditApp(StudioLayout,tk.Tk):
     def help_dialog(self):
         dialog, content = self._dialog("A little guidance",590,600)
         text = (
-            "LOOK AROUND\nDrag to orbit. Scroll to zoom. Right-drag to pan.\nUse Go to coordinates to move through the world or clip the Y level.\n\n"
+            "LOOK AROUND\nOrbit: drag to orbit, scroll to zoom, right-drag to pan.\nF5 switches to flight: WASD moves, Q/E goes down/up, Shift moves faster.\nDrag to look; scroll changes speed. Click a block to select it.\nFlight stops when another control receives focus. Go to coordinates\nmoves the camera; in orbit, Y clips the terrain.\n\n"
             "SELECT & EDIT\nClick a block, then Shift-click a second corner. Or enter both corners.\nChoose a material; fill, replace, delete, copy or paste. Undo with Ctrl/Cmd+Z.\nPaste rotation supports common Java facing/axis/rotation states.\n\n"
-            "SAVE YOUR WORK\nCtrl/Cmd+S exports a separate world copy, or a project for the sample.\nProjects retain a reference to the original world; keep that folder unchanged.\nSource worlds are never edited. Close Minecraft before exporting a copy.\n\n"
-            "DEEPER EDITING\nThe World tab includes modern Java biomes, block-entity NBT editing,\nwaterlogging, and Bedrock archives. Paste includes clone/repeat.\nStructures: Java .nbt, Bedrock .mcstructure, Sponge .schem v2/v3.\n\n"
+            "SAVE YOUR WORK\nCtrl/Cmd+S exports a separate world copy, or a project for the sample.\nProjects reference the original world; keep that folder unchanged.\nClose Minecraft before exporting a copy. Source worlds are never edited.\nUnsaved edits get recovery copies every 30 seconds by default.\nFile → Recovery workspaces restores or discards checkpoints.\n\n"
+            "DEEPER EDITING\nThe World tab includes modern Java biomes, block-entity NBT editing,\nwaterlogging, and Bedrock archives. Paste includes clone/repeat.\nStructures: Java .nbt, Bedrock .mcstructure, Sponge .schem v2/v3.\nManage selection regions adds boxes or subtracts holes. The chunk map\ncreates empty chunks, deletes, prunes and imports matching versions.\nChunk actions are staged and undoable, including associated metadata.\n\n"
             "CURRENT COMPATIBILITY\nJava DataVersion 1451–4189 (1.13–1.21.4). Bedrock subchunks v8/v9.\nBedrock export remains experimental; database budget is 256 MiB.\nCross-edition conversion, moving entities, automatic lighting, full\nversion coverage and Amulet plugins remain unfinished. No in-game\nvalidation is claimed. Structures retain block NBT; moving entities are unsupported.\n\n"
             "INDEPENDENT BY DESIGN\nOriginal code and art. Python + Tk only. No Amulet code or runtime.\nNo accounts, network requests, analytics or third-party Python packages."
         )
@@ -683,9 +719,13 @@ class FacetEditApp(StudioLayout,tk.Tk):
 
     def close_app(self):
         if self._confirm_discard():
+            self._forget_recovery()
             self.destroy()
 
     def destroy(self):
+        if self._recovery_id is not None:
+            self.after_cancel(self._recovery_id)
+            self._recovery_id = None
         if self._poll_id is not None:
             self.after_cancel(self._poll_id)
             self._poll_id = None
