@@ -1,0 +1,481 @@
+"""Read-only world adapters and transactional export to a separate folder."""
+
+from __future__ import annotations
+
+from collections import OrderedDict, defaultdict
+import copy
+import hashlib
+import math
+from pathlib import Path
+import shutil
+import struct
+import tempfile
+import threading
+
+from .blocks import AIR, Block
+from . import nbt
+from .formats import decode_bedrock, decode_java_section, encode_bedrock, encode_java_section, decode_java_biomes, encode_java_biomes
+from .leveldb import load_database, write_database
+from .region import Region
+
+
+class Cache(OrderedDict):
+    def __init__(self, limit=96):
+        super().__init__()
+        self.limit = limit
+        self._lock = threading.RLock()
+
+    def obtain(self, key, loader):
+        with self._lock:
+            if key in self:
+                self.move_to_end(key)
+                return self[key]
+            value = loader()
+            self[key] = value
+            if len(self) > self.limit:
+                self.popitem(last=False)
+            return value
+
+
+def snapshot(path):
+    result = {}
+    for file in sorted(Path(path).rglob("*")):
+        if file.is_symlink():
+            raise ValueError("World folders with symbolic links are not supported")
+        if file.is_file():
+            stat = file.stat()
+            result[str(file.relative_to(path))] = (stat.st_size, stat.st_mtime_ns)
+    return result
+
+
+class World:
+    name = "Untitled"
+    edition = "Sample"
+    dimensions = ("overworld",)
+    minimum_y, maximum_y = -64, 319
+    spawn = (0, 70, 0)
+    path = None
+
+    def get_block_entity(self, x,y,z,dimension="overworld"):
+        return None
+
+    def get_biome(self,x,y,z,dimension="overworld"):
+        raise ValueError("Biome editing currently supports modern Java worlds and the sample")
+
+    def validate_copy(self,position,dimension):
+        """Refuse payloads the clipboard cannot preserve."""
+
+    def bounds(self, dimension):
+        if dimension == "the_nether":
+            return 0, 127
+        if dimension == "the_end":
+            return 0, 255
+        return self.minimum_y, self.maximum_y
+
+    def validate_edit(self, pos, dimension):
+        if dimension not in self.dimensions:
+            raise ValueError("Unknown world dimension")
+        minimum, maximum = self.bounds(dimension)
+        if not minimum <= pos[1] <= maximum:
+            raise ValueError(f"Y must be between {minimum} and {maximum} in {dimension}")
+
+    def export(self, destination, edits, progress=lambda message: None, **metadata):
+        raise ValueError("Save the sample as a FacetEdit project or export a structure")
+
+
+class SampleWorld(World):
+    name = "Willow Bay"
+    minimum_y, maximum_y = 0, 95
+    spawn = (0, 14, 0)
+
+    def get_biome(self,x,y,z,dimension="overworld"):
+        return "minecraft:plains"
+
+    def __init__(self,generator=2):
+        self.generator = generator
+        self.heights = {}
+        self.materials = {name: Block(name) for name in ("sand", "water", "grass_block", "dirt", "stone")}
+        self.log = Block("oak_log", (("axis", "y"),))
+        self.leaves = Block("oak_leaves", (("persistent", "true"),))
+        self.tree_columns = {}
+        trees = ((-9,-6),(10,4),(-10,10),(12,-10),(-19,-16),(18,19)) if generator==1 else ((-8,-6),(8,5),(-8,8),(8,-8),(-19,-16),(18,19))
+        for tx, tz in trees:
+            base = self.height(tx, tz)
+            for x in range(tx - 2, tx + 3):
+                for z in range(tz - 2, tz + 3):
+                    if abs(x-tx) + abs(z-tz) < 4:
+                        self.tree_columns.setdefault((x,z), []).append((tx, tz, base))
+
+    def height(self, x, z):
+        key = (x, z)
+        if key not in self.heights:
+            self.heights[key] = round(8 + 2.5 * math.sin(x * .14) + 2 * math.cos(z * .18) + 1.6 * math.sin((x + z) * .22))
+        return self.heights[key]
+
+    def get_block(self, x, y, z, dimension="overworld"):
+        h = self.height(x, z)
+        if y < 0 or y > 95:
+            return AIR
+        # Original procedural terrain, with a river and stylised trees.
+        river = abs(x - 7 * math.sin(z * .10)) < 3
+        if river:
+            if y <= 4:
+                return self.materials["sand"]
+            return self.materials["water"] if y <= 7 else AIR
+        if y <= h:
+            return self.materials["grass_block" if y == h else "dirt" if y > h - 3 else "stone"]
+        for tx, tz, base in self.tree_columns.get((x, z), ()):
+            if x == tx and z == tz and base < y <= base + 4:
+                return self.log
+            if abs(x - tx) <= 2 and abs(z - tz) <= 2 and base + 3 <= y <= base + 5:
+                if abs(x - tx) + abs(z - tz) < 4:
+                    return self.leaves
+        return AIR
+
+
+class DiskWorld(World):
+    def __init__(self, path):
+        self.path = Path(path).expanduser().resolve()
+        self.signature = snapshot(self.path)
+
+    def export(self, destination, edits, progress=lambda message: None, entity_edits=None, biome_edits=None):
+        destination = Path(destination).expanduser().resolve()
+        if destination.exists():
+            raise FileExistsError("Choose a new folder; FacetEdit never overwrites an existing world")
+        if self.path == destination or self.path in destination.parents:
+            raise ValueError("Export outside the source world folder")
+        if not destination.parent.is_dir():
+            raise ValueError("The destination's parent folder must exist")
+        if snapshot(self.path) != self.signature:
+            raise ValueError("The source world changed. Close Minecraft and reopen the world in FacetEdit")
+        stage = Path(tempfile.mkdtemp(prefix=".facetedit-export-", dir=destination.parent))
+        try:
+            progress("Copying the source world…")
+            shutil.copytree(self.path, stage, dirs_exist_ok=True)
+            if snapshot(self.path) != self.signature:
+                raise ValueError("The source changed during copying; export was cancelled")
+            # Verify copied bytes against the source; timestamps alone are insufficient.
+            for relative in self.signature:
+                a, b = self.path / relative, stage / relative
+                if file_hash(a) != file_hash(b):
+                    raise ValueError("Source changed during snapshot verification")
+            progress("Writing edited chunks…")
+            self._write_edits(stage, edits, entity_edits or {}, biome_edits or {})
+            if snapshot(self.path) != self.signature:
+                raise ValueError("Source changed during export; close Minecraft before retrying")
+            if destination.exists():
+                raise FileExistsError("Destination appeared during export")
+            stage.rename(destination)
+            progress("World copy saved")
+        finally:
+            if stage.exists():
+                shutil.rmtree(stage)
+
+
+def file_hash(path):
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.digest()
+
+
+def read_metadata(path):
+    if path.stat().st_size > nbt.MAX_BYTES:
+        raise nbt.FormatError("World metadata exceeds 64 MiB")
+    return path.read_bytes()
+
+
+class JavaWorld(DiskWorld):
+    edition = "Java"
+
+    def bounds(self, dimension):
+        # Java permits construction above the Nether roof, up to Y=255.
+        if dimension == "the_nether":
+            return 0, 255
+        return super().bounds(dimension)
+
+    def __init__(self, path):
+        super().__init__(path)
+        _, root = nbt.loads(read_metadata(self.path / "level.dat"), compressed=True)
+        data = root.value.get("Data", root)
+        self.version = nbt.get(data, "DataVersion", 0)
+        if not 1451 <= self.version <= 4189:
+            raise nbt.FormatError(f"Java DataVersion {self.version} is outside the implemented range 1451–4189 (1.13–1.21.4)")
+        self.minimum_y, self.maximum_y = (-64, 319) if self.version >= 2834 else (0, 255)
+        self.name = nbt.get(data, "LevelName", self.path.name)
+        self.spawn = tuple(nbt.get(data, "Spawn" + axis, default) for axis, default in zip("XYZ", (0, 70, 0)))
+        self.dimension_paths = {"overworld": Path("region")}
+        for name, folder in (("the_nether", "DIM-1"), ("the_end", "DIM1")):
+            if (self.path / folder / "region").is_dir():
+                self.dimension_paths[name] = Path(folder) / "region"
+        dimensions = self.path / "dimensions"
+        if dimensions.is_dir():
+            for region in dimensions.rglob("region"):
+                if region.is_dir():
+                    self.dimension_paths[str(region.parent.relative_to(dimensions))] = region.relative_to(self.path)
+        self.dimensions = tuple(self.dimension_paths)
+        self.cache = Cache(96)
+        self.regions = Cache(4)
+        self.entity_cache = Cache(96)
+
+    def _region(self, cx, cz, dimension):
+        relative = self.dimension_paths[dimension] / f"r.{cx // 32}.{cz // 32}.mca"
+        def load():
+            file = self.path / relative
+            return Region.read(file) if file.exists() else Region()
+        return self.regions.obtain(str(relative), load)
+
+    def _chunk(self, cx, cz, dimension):
+        def load():
+            raw = self._region(cx, cz, dimension).get(cx, cz)
+            if raw is None:
+                return None
+            name, root = nbt.loads(raw)
+            version = nbt.get(root, "DataVersion", self.version)
+            if not 1451 <= version <= 4189:
+                raise nbt.FormatError(f"Chunk DataVersion {version} is unsupported")
+            level = root.value.get("Level", root)
+            section_list = nbt.get(level, "sections" if version >= 2834 else "Sections", nbt.ListValue(nbt.COMPOUND, []))
+            sections = {}
+            raw_sections = {}
+            for section in section_list.values:
+                sy = section["Y"].value
+                raw_sections[sy] = section
+                sections[sy] = decode_java_section(section, version)
+            return name, root, level, version, sections, raw_sections
+        return self.cache.obtain((dimension, cx, cz), load)
+
+    def get_block(self, x, y, z, dimension="overworld"):
+        if not self.minimum_y <= y <= self.maximum_y:
+            return AIR
+        chunk = self._chunk(x // 16, z // 16, dimension)
+        if chunk is None:
+            return AIR
+        section = chunk[4].get(y // 16)
+        return AIR if section is None else section[(x & 15) | ((z & 15) << 4) | ((y & 15) << 8)]
+
+    def validate_edit(self, pos, dimension):
+        super().validate_edit(pos, dimension)
+        if self._chunk(pos[0] // 16, pos[2] // 16, dimension) is None:
+            raise ValueError("This chunk has not been generated. FacetEdit edits existing chunks only")
+
+    def get_block_entity(self,x,y,z,dimension="overworld"):
+        def load():
+            chunk = self._chunk(x//16,z//16,dimension)
+            entries = {}
+            if chunk is not None:
+                entities = nbt.get(chunk[2],"block_entities" if chunk[3]>=2834 else "TileEntities")
+                for entity in entities.values if entities else ():
+                    tag = nbt.Tag(nbt.COMPOUND,entity)
+                    entries[tuple(nbt.get(tag,axis) for axis in "xyz")] = nbt.dumps(tag)
+            return entries
+        return self.entity_cache.obtain((dimension,x//16,z//16),load).get((x,y,z))
+
+    def get_biome(self,x,y,z,dimension="overworld"):
+        chunk = self._chunk(x//16,z//16,dimension)
+        if chunk is None:
+            raise ValueError("Cannot inspect a biome in an ungenerated chunk")
+        if chunk[3] < 2834:
+            raise ValueError("Biome editing requires Java 1.18+ paletted biomes")
+        section = chunk[5].get(y//16,{})
+        biomes = decode_java_biomes(section)
+        return biomes[((x//4)&3) | (((z//4)&3)<<2) | (((y//4)&3)<<4)]
+
+    def _write_edits(self, stage, edits, entity_edits=None, biome_edits=None):
+        entity_edits,biome_edits = entity_edits or {},biome_edits or {}
+        groups = defaultdict(dict)
+        for (dimension, x, y, z), block in edits.items():
+            groups[(dimension, x // 16, z // 16)][(x, y, z)] = block
+        entity_groups,biome_groups = defaultdict(dict),defaultdict(dict)
+        for source,target in ((entity_edits,entity_groups),(biome_edits,biome_groups)):
+            for (dimension,x,y,z),value in source.items():
+                key = (dimension,x//16,z//16)
+                groups.setdefault(key,{})
+                target[key][(x,y,z)] = value
+        regions = {}
+        for (dimension, cx, cz), changes in groups.items():
+            name, root, level, version, sections, raw_sections = copy.deepcopy(self._chunk(cx, cz, dimension))
+            touched = set()
+            for (x, y, z), block in changes.items():
+                sy = y // 16
+                section = sections.setdefault(sy, [AIR] * 4096)
+                section[(x & 15) | ((z & 15) << 4) | ((y & 15) << 8)] = block
+                touched.add(sy)
+            for sy in touched:
+                raw = raw_sections.setdefault(sy, {"Y": nbt.Tag(nbt.BYTE, sy)})
+                if version >= 2834 and "biomes" not in raw:
+                    raw["biomes"] = nbt.Tag(nbt.COMPOUND, {"palette": nbt.Tag(nbt.LIST, nbt.ListValue(nbt.STRING, ["minecraft:plains"]))})
+                encode_java_section(raw, sections[sy], version)
+            biome_sections = {}
+            for (x,y,z),biome in biome_groups[(dimension,cx,cz)].items():
+                if version < 2834:
+                    raise ValueError("Biome export requires Java 1.18+")
+                raw = raw_sections.setdefault(y//16,{"Y":nbt.Tag(nbt.BYTE,y//16)})
+                if y//16 not in biome_sections:
+                    biome_sections[y//16] = decode_java_biomes(raw)
+                cells = biome_sections[y//16]
+                cells[((x//4)&3)|(((z//4)&3)<<2)|(((y//4)&3)<<4)] = biome
+            for sy,cells in biome_sections.items():
+                encode_java_biomes(raw_sections[sy],cells)
+            section_key = "sections" if version >= 2834 else "Sections"
+            level.value[section_key] = nbt.Tag(nbt.LIST, nbt.ListValue(nbt.COMPOUND, [raw_sections[k] for k in sorted(raw_sections)]))
+            # Clear stale block entity data only at positions whose block changed.
+            entity_key = "block_entities" if version >= 2834 else "TileEntities"
+            entity_list = nbt.get(level, entity_key)
+            if entity_list:
+                entity_list.values[:] = [e for e in entity_list.values if tuple(e.get(axis, nbt.Tag(nbt.INT, 0)).value for axis in "xyz") not in changes]
+            replacements = entity_groups[(dimension,cx,cz)]
+            if replacements:
+                old = entity_list.values if entity_list else []
+                entries = [e for e in old if tuple(nbt.get(nbt.Tag(nbt.COMPOUND,e),axis) for axis in "xyz") not in replacements]
+                for position,value in replacements.items():
+                    if value is not None:
+                        tag = validate_entity(value,position)
+                        entries.append(tag.value)
+                level.value[entity_key] = nbt.Tag(nbt.LIST,nbt.ListValue(nbt.COMPOUND,entries))
+            if changes:
+                level.value["isLightOn"] = nbt.Tag(nbt.BYTE, 0)
+                level.value.pop("Heightmaps", None)
+                level.value.pop("HeightMap", None)
+            relative = self.dimension_paths[dimension] / f"r.{cx // 32}.{cz // 32}.mca"
+            if relative not in regions:
+                regions[relative] = Region.read(stage / relative)
+            regions[relative].put(cx, cz, nbt.dumps(root, name))
+        for relative, region in regions.items():
+            (stage / relative).write_bytes(region.dumps())
+
+
+class BedrockWorld(DiskWorld):
+    edition = "Bedrock · experimental export"
+    dimension_ids = {"overworld": 0, "the_nether": 1, "the_end": 2}
+
+    def __init__(self, path):
+        super().__init__(path)
+        raw = read_metadata(self.path / "level.dat")
+        if len(raw) < 8:
+            raise nbt.FormatError("Truncated Bedrock level.dat")
+        _, size = struct.unpack_from("<II", raw)
+        if size != len(raw) - 8:
+            raise nbt.FormatError("Bedrock level.dat length mismatch")
+        _, data = nbt.loads(raw[8:], little=True)
+        self.name = nbt.get(data, "LevelName", self.path.name)
+        self.spawn = tuple(nbt.get(data, "Spawn" + axis, default) for axis, default in zip("XYZ", (0, 70, 0)))
+        self.values = load_database(self.path / "db")
+        self.dimensions = tuple(self.dimension_ids)
+        self.cache = Cache(96)
+        self.entity_cache = Cache(96)
+
+    def prefix(self, cx, cz, dimension):
+        did = self.dimension_ids[dimension]
+        return struct.pack("<ii", cx, cz) + (struct.pack("<i", did) if did else b"")
+
+    def _section(self, cx, sy, cz, dimension):
+        def load():
+            raw = self.values.get(self.prefix(cx, cz, dimension) + b"/" + struct.pack("b", sy))
+            if raw is None:
+                return None
+            section = decode_bedrock(raw)
+            if section[0] == 9 and section[1] != sy:
+                raise nbt.FormatError("Bedrock subchunk Y disagrees with its key")
+            return section
+        return self.cache.obtain((dimension, cx, sy, cz), load)
+
+    def get_block(self, x, y, z, dimension="overworld"):
+        if not self.minimum_y <= y <= self.maximum_y:
+            return AIR
+        section = self._section(x // 16, y // 16, z // 16, dimension)
+        if section is None:
+            return AIR
+        index = ((x & 15) << 8) | ((z & 15) << 4) | (y & 15)
+        return section[2][0][index]
+
+    def validate_copy(self,position,dimension):
+        x,y,z = position
+        if not self.minimum_y <= y <= self.maximum_y:
+            return
+        section = self._section(x//16,y//16,z//16,dimension)
+        index = ((x&15)<<8)|((z&15)<<4)|(y&15)
+        if section and any(not layer[index].air for layer in section[2][1:]):
+            raise ValueError("This selection contains secondary Bedrock layers; clipboard interchange cannot yet preserve them")
+
+    def validate_edit(self, pos, dimension):
+        super().validate_edit(pos, dimension)
+        prefix = self.prefix(pos[0] // 16, pos[2] // 16, dimension)
+        if not any(prefix + suffix in self.values for suffix in (b",", b"v")) and not any(
+            prefix + b"/" + struct.pack("b", sy) in self.values for sy in range(-4, 20)
+        ):
+            raise ValueError("This Bedrock chunk has not been generated")
+
+    def get_block_entity(self,x,y,z,dimension="overworld"):
+        prefix = self.prefix(x//16,z//16,dimension)
+        def load():
+            raw = self.values.get(prefix+b"1",b"")
+            reader = nbt.Reader(raw,little=True)
+            entries = {}
+            while reader.pos < len(raw):
+                _,tag = reader.root()
+                entries[tuple(nbt.get(tag,axis) for axis in "xyz")] = nbt.dumps(tag)
+            return entries
+        return self.entity_cache.obtain(prefix,load).get((x,y,z))
+
+    def _write_edits(self, stage, edits, entity_edits=None, biome_edits=None):
+        if biome_edits:
+            raise ValueError("Bedrock biome editing is not implemented")
+        entity_edits = entity_edits or {}
+        values = dict(self.values)
+        groups = defaultdict(dict)
+        for (dimension, x, y, z), block in edits.items():
+            groups[(dimension, x // 16, y // 16, z // 16)][(x, y, z)] = block
+        changed_chunks = defaultdict(set)
+        for (dimension, cx, sy, cz), changes in groups.items():
+            section = copy.deepcopy(self._section(cx, sy, cz, dimension))
+            version, _, layers, palettes = section if section else (9, sy, [[AIR] * 4096], [])
+            for (x, y, z), block in changes.items():
+                index = ((x & 15) << 8) | ((z & 15) << 4) | (y & 15)
+                layers[0][index] = block
+                # Do not leave water/secondary storage inside a replaced block.
+                for layer in layers[1:]:
+                    layer[index] = AIR
+            prefix = self.prefix(cx, cz, dimension)
+            values[prefix + b"/" + struct.pack("b", sy)] = encode_bedrock(version, sy, layers, palettes)
+            changed_chunks[prefix].update(changes)
+        replacements = defaultdict(dict)
+        for (dimension,x,y,z),value in entity_edits.items():
+            prefix = self.prefix(x//16,z//16,dimension)
+            changed_chunks[prefix].add((x,y,z))
+            replacements[prefix][(x,y,z)] = value
+        for prefix, positions in changed_chunks.items():
+            key = prefix + b"1"  # concatenated block entity NBT roots
+            kept = bytearray()
+            if key in values:
+                reader = nbt.Reader(values[key], little=True)
+                while reader.pos < len(reader.data):
+                    name, tag = reader.root()
+                    position = tuple(nbt.get(tag, axis, 0) for axis in "xyz")
+                    if position not in positions:
+                        kept.extend(nbt.dumps(tag, name, little=True))
+            for position,value in replacements[prefix].items():
+                if value is not None:
+                    kept.extend(nbt.dumps(validate_entity(value,position),little=True))
+            values[key] = bytes(kept)
+        shutil.rmtree(stage / "db")
+        write_database(stage / "db", values)
+
+
+def open_world(path):
+    path = Path(path).expanduser().resolve()
+    if not (path / "level.dat").is_file():
+        raise ValueError("Choose a world folder containing level.dat")
+    if (path / "db" / "CURRENT").is_file():
+        return BedrockWorld(path)
+    return JavaWorld(path)
+
+
+def validate_entity(value,position):
+    _,tag = nbt.loads(value)
+    if tag.kind != nbt.COMPOUND or not isinstance(nbt.get(tag,"id"),str):
+        raise ValueError("Invalid block entity NBT")
+    if tuple(nbt.get(tag,axis) for axis in "xyz") != tuple(position):
+        raise ValueError("Block entity coordinates disagree with their target")
+    return tag

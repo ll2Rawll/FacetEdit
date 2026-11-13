@@ -1,0 +1,37 @@
+{
+  "machine": {
+    "python": "3.13.5",
+    "system": "Linux",
+    "machine": "x86_64"
+  },
+  "nbt_decode_65536_longs": {
+    "median_ms": 1.183,
+    "min_ms": 1.148,
+    "max_ms": 9.161,
+    "iterations": 7
+  },
+  "palette_decode_4096_blocks_37_states": {
+    "median_ms": 0.693,
+    "min_ms": 0.587,
+    "max_ms": 0.961,
+    "iterations": 7
+  },
+  "palette_encode_4096_blocks_37_states": {
+    "median_ms": 3.699,
+    "min_ms": 3.543,
+    "max_ms": 3.83,
+    "iterations": 7
+  },
+  "crc32c_1MiB": {
+    "median_ms": 106.403,
+    "min_ms": 94.58,
+    "max_ms": 134.147,
+    "iterations": 3
+  },
+  "fill_undo_redo_32768_blocks": {
+    "median_ms": 182.943,
+    "min_ms": 177.221,
+    "max_ms": 190.909,
+    "iterations": 3
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "facetedit_snapshot_read_by_native_leveldb": {
+    "keys_verified": 1001,
+    "result": "pass"
+  },
+  "native_snappy_sst_and_tombstones_read_by_facetedit": {
+    "keys_verified": 901,
+    "result": "pass"
+  },
+  "native_snappy_streams_read_by_facetedit": {
+    "corpora": 5,
+    "result": "pass"
+  },
+  "scope": "Independent Debian LevelDB 1.23 / system Snappy verification only; not Minecraft-game validation. Native libraries are not application dependencies or bundled in FacetEdit."
+}

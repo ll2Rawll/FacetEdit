@@ -1,0 +1,16 @@
+{
+  "python": "3.13.5",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "tk": "8.6.16",
+  "window": "1440x900",
+  "radius": 12,
+  "window_ready_ms": 308.082,
+  "visible_faces": 1365,
+  "warm_redraw_ms": {
+    "median": 15.512,
+    "min": 14.507,
+    "max": 16.507,
+    "iterations": 12
+  },
+  "scope": "Synthetic sample, CPU Tk Canvas, this Linux host only. No comparison with Amulet or native Windows/macOS."
+}
