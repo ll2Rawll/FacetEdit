@@ -1,0 +1,28 @@
+{
+  "python": "3.13.5",
+  "world": "1.17_custom_height",
+  "edition": "Java",
+  "radius": 12,
+  "ui_enqueue_ms": [
+    20.48795200244058,
+    39.062086998455925,
+    52.23125600241474,
+    20.758023998496355,
+    16.77481500155409,
+    18.425563001073897
+  ],
+  "visible_completion_ms": [
+    132.12485600161017,
+    198.9247349993093,
+    185.92940000235103,
+    28.165428000647807,
+    28.80815499884193,
+    27.749568998842733
+  ],
+  "median_ui_enqueue_ms": 20.622988000468467,
+  "builds": 3,
+  "cache_hits": 3,
+  "cached_meshes": 2,
+  "idle_poll_stopped": true,
+  "scope": "Linux Tk on this host. Disk-backed geometry, six camera requests; includes cached draws. No Amulet comparison or large-world throughput claim."
+}

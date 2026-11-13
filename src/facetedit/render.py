@@ -35,10 +35,16 @@ class VoxelView(tk.Canvas):
         self.scale = 19.0
         self.auto_fit = True
         self.pan_x = self.pan_y = 0
-        self.ceiling = document.world.maximum_y
+        self.ceiling = document.world.bounds(document.dimension)[1]
         self.faces = []
+        self.preview = None
         self.picks = {}
         self._geometry_key = None
+        self._geometry_error = None
+        self._requested_geometry = None
+        self._geometry_stream = None
+        self._geometry_poll = None
+        self._display_scope = None
         self._pending = None
         self._drag = None
         self.last_ms = 0
@@ -61,9 +67,13 @@ class VoxelView(tk.Canvas):
 
     def attach(self, document):
         self.stop_flight()
+        self._stop_geometry()
+        self.faces=[];self.picks.clear()
+        self.preview=None
         self.document = document
         self.center_x, _, self.center_z = document.world.spawn
-        self.ceiling = document.world.maximum_y
+        self.height_origin=document.world.spawn[1]-2
+        self.ceiling = document.world.bounds(document.dimension)[1]
         self.pan_x = self.pan_y = 0
         self._geometry_key = None
         if self.mode=='fly':
@@ -221,75 +231,50 @@ class VoxelView(tk.Canvas):
         return project
 
     def _geometry(self):
-        if self.mode=='fly':return self._flight_geometry()
-        doc = self.document
-        key = (id(doc), doc.revision, doc.dimension, self.center_x, self.center_z, self.radius, self.ceiling)
-        if key == self._geometry_key:
-            return
-        voxels = {}
-        heights = {}
-        world = doc.world
-        cx, cz, radius = self.center_x, self.center_z, self.radius
-        for x in range(cx - radius, cx + radius):
-            for z in range(cz - radius, cz + radius):
-                for y in range(min(world.maximum_y, self.ceiling), world.minimum_y - 1, -1):
-                    if not doc.get(x, y, z).air:
-                        heights[(x, z)] = y
-                        break
-        if not heights:
-            self.faces = []
-            self.height_origin = 0
-            self._geometry_key = key
-            return
-        floor = max(world.minimum_y, min(heights.values()) - 3)
-        # A bounded cutaway keeps Canvas work predictable even on tall terrain.
-        for (x, z), top in heights.items():
-            for y in range(max(floor, top - 24), top + 1):
-                block = doc.get(x, y, z)
-                if not block.air:
-                    voxels[(x, y, z)] = block
-        self.height_origin = sorted(heights.values())[len(heights) // 2] - 2
-        self._mesh(voxels)
-        self._geometry_key=key
-
-    def _flight_geometry(self):
+        from .geometry import build,GeometryStream
+        import threading
         doc=self.document
-        center=tuple(math.floor(v/4)*4 for v in self.camera.position)
-        key=('fly',id(doc),doc.revision,doc.dimension,center,self.radius)
-        if key==self._geometry_key:return
-        x,y,z=center;r=self.radius+3
-        lo,hi=doc.world.bounds(doc.dimension)
-        voxels={}
-        for bx in range(x-r,x+r+1):
-            for bz in range(z-r,z+r+1):
-                for by in range(max(lo,y-r),min(hi,y+r)+1):
-                    block=doc.get(bx,by,bz)
-                    if not block.air:voxels[(bx,by,bz)]=block
-        self._mesh(voxels)
-        self._geometry_key=key
+        center=tuple(math.floor(v/4)*4 for v in self.camera.position) if self.mode=='fly' else (self.center_x,self.center_z)
+        key=(self.mode,id(doc),doc.revision,doc.dimension,center,self.radius,self.ceiling)
+        if key==self._geometry_key:
+            if self._geometry_error:raise ValueError(self._geometry_error)
+            return
+        if doc.world.path is None:
+            value=build(doc,self.mode,center,self.radius,self.ceiling,threading.Event())
+            self.faces,self.height_origin=value.faces,value.height_origin
+            self._geometry_key=key;self._geometry_error=None
+            return
+        if key!=self._requested_geometry:
+            if self._display_scope!=(id(doc),doc.dimension):self.faces=[];self.picks.clear()
+            self._display_scope=(id(doc),doc.dimension)
+            if self._geometry_stream is None:self._geometry_stream=GeometryStream()
+            snapshot=doc.snapshot();mode,radius,ceiling=self.mode,self.radius,self.ceiling
+            self._requested_geometry=key;self._geometry_error=None
+            self._geometry_stream.request(key,lambda cancel:build(snapshot,mode,center,radius,ceiling,cancel))
+        if self._geometry_poll is None:self._geometry_poll=self.after(25,self._poll_geometry)
+
+    def _poll_geometry(self):
+        self._geometry_poll=None
+        if self._geometry_stream is None:return
+        result=self._geometry_stream.poll()
+        if result is not None:
+            key,value,error=result
+            if key==self._requested_geometry:
+                self._geometry_key=key
+                if error is None:self.faces,self.height_origin=value.faces,value.height_origin
+                else:self.faces=[];self._geometry_error=str(error)
+                self.schedule()
+        if self._geometry_key!=self._requested_geometry:self._geometry_poll=self.after(25,self._poll_geometry)
 
     def _mesh(self,voxels):
-        face_defs = (
-            ((0, 1, 0), ((0, 1, 0), (1, 1, 0), (1, 1, 1), (0, 1, 1)), 1.08),
-            ((1, 0, 0), ((1, 0, 0), (1, 0, 1), (1, 1, 1), (1, 1, 0)), .86),
-            ((-1, 0, 0), ((0, 0, 1), (0, 0, 0), (0, 1, 0), (0, 1, 1)), .82),
-            ((0, 0, 1), ((1, 0, 1), (0, 0, 1), (0, 1, 1), (1, 1, 1)), .94),
-            ((0, 0, -1), ((0, 0, 0), (1, 0, 0), (1, 1, 0), (0, 1, 0)), .90),
-            ((0,-1,0), ((0,0,1),(1,0,1),(1,0,0),(0,0,0)), .65),
-        )
-        faces = []
-        colors = {}
-        for position, block in voxels.items():
-            x, y, z = position
-            for normal, offsets, light in face_defs:
-                neighbor = (x + normal[0], y + normal[1], z + normal[2])
-                if neighbor in voxels:
-                    continue
-                if (block,light) not in colors:
-                    colors[(block,light)] = shade(color(block),light)
-                tint = colors[(block,light)]
-                faces.append((position, normal, tuple((x + ox, y + oy, z + oz) for ox, oy, oz in offsets), tint))
-        self.faces=faces
+        from .geometry import mesh
+        self.faces=mesh(voxels)
+
+    def _stop_geometry(self):
+        if self._geometry_stream is not None:self._geometry_stream.close()
+        self._geometry_stream=None
+        if self._geometry_poll is not None:self.after_cancel(self._geometry_poll)
+        self._geometry_poll=None;self._requested_geometry=None;self._geometry_error=None
 
     def draw(self):
         if self._pending is not None:
@@ -310,6 +295,8 @@ class VoxelView(tk.Canvas):
         width, height = self.winfo_width(), self.winfo_height()
         project = self._projector()
         self._draw_background(width,height)
+        if self._requested_geometry is not None and self._requested_geometry!=self._geometry_key:
+            self.create_text(28,100,text='Loading terrain…',anchor='nw',fill='#9cafcb',font=('Helvetica',10))
         if self.mode=='fly':
             self._draw_flight(width,height)
             self.last_ms=(time.perf_counter()-start)*1000
@@ -354,6 +341,7 @@ class VoxelView(tk.Canvas):
                         self.create_line(*project(*point), *project(*corners[j]), fill="#9af5f2", width=1.5)
         if not visible:
             self.create_text(width / 2, height / 2, text="No blocks in this view\nUse Go to coordinates to find generated terrain.", font=("Helvetica", 12), fill="#68768d", justify="center")
+        self._draw_preview(project)
         hint_x,hint_y = (width-self.stage_right)/2+35,height-112
         rounded(self,hint_x-220,hint_y-12,hint_x+220,hint_y+12,12,fill="#0c1728",outline="#1e3046")
         self.create_text(hint_x,hint_y,anchor="center",text="DRAG TO ORBIT   ·   SCROLL TO ZOOM   ·   SHIFT-CLICK TO SELECT",font=("Helvetica",8),fill="#9cafcb")
@@ -390,6 +378,25 @@ class VoxelView(tk.Canvas):
         self.create_text(x,y+9,text=f'DRAG TO LOOK  ·  SCROLL SPEED  {self.camera.speed:.0f}  ·  '+', '.join(f'{v:.1f}' for v in self.camera.position),font=('Helvetica',8),fill='#83e1e8')
         if not self.picks:
             self.create_text(frame.cx,height*.5,text='No blocks within the display radius\nFly toward terrain or use Go to coordinates.',font=('Helvetica',11),fill='#8296b0',justify='center')
+        self._draw_preview(frame=frame)
+
+    def _draw_preview(self,project=None,frame=None):
+        if self.preview is None:return
+        clip,origin=self.preview
+        def box(a,b,color,width):
+            corners=[(x,y,z) for x in (a[0],b[0]) for y in (a[1],b[1]) for z in (a[2],b[2])]
+            for i,point in enumerate(corners):
+                for bit in (1,2,4):
+                    j=i^bit
+                    if j<=i:continue
+                    segment=frame.segment(point,corners[j]) if frame else (*project(*point),*project(*corners[j]))
+                    if segment:self.create_line(*segment,fill=color,width=width,tags=('paste-preview',))
+        box(origin,tuple(origin[i]+clip.size[i] for i in range(3)),'#d0b1ff',2)
+        stride=max(1,math.ceil(len(clip.blocks)/256))
+        for index,(pos,block) in enumerate(clip.blocks.items()):
+            if index%stride or block.air:continue
+            target=tuple(pos[i]+origin[i] for i in range(3))
+            box(target,tuple(v+1 for v in target),'#8f83b7',.5)
 
     def _draw_background(self,width,height):
         if not self.glass:
@@ -413,6 +420,7 @@ class VoxelView(tk.Canvas):
 
     def destroy(self):
         self.stop_flight()
+        self._stop_geometry()
         if self._pending is not None:
             self.after_cancel(self._pending)
         super().destroy()

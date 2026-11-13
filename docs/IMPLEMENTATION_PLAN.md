@@ -251,3 +251,21 @@ separates the completed implementation work from the full-parity target.
 10. Run a complete feature-by-feature comparison on real Windows, macOS and
     Linux, including shortcuts, selection tools, exports, errors and recovery.
     Only a passed matrix can justify calling the result full parity.
+
+## 10. Implemented in 0.4; remaining endpoint
+
+The table above records the 0.3 checkpoint. Version 0.4 adds layered blocks and
+waterlogging, legacy/Bedrock biomes, original-world saving with retained backups
+and recovery journals, a documented independent operation API, numeric Java
+Anvil/Alpha schematics, arbitrary affine paste with placement preview, custom
+dimension heights and background disk terrain loading.
+
+The source and packaged suites each pass 344 tests, including 60 desktop tests.
+Eight published world fixtures pass read/edit/export/reopen and source-hash
+checks. Save tests include distinct-process game locks and abrupt process exits.
+These do not replace in-game or native Windows/macOS verification.
+
+The [full parity worklist](FULL_PARITY_WORKLIST.md) and
+[current compatibility ledger](COMPATIBILITY.md) supersede older status tables.
+Universal translation, all remaining formats/versions, entity interchange,
+resource-pack rendering and complete acceptance evidence remain open.

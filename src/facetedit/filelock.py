@@ -1,0 +1,56 @@
+"""Nonblocking process and OS file locks, with Windows rename sharing."""
+from contextlib import contextmanager
+from pathlib import Path
+import os
+import threading
+
+_guard=threading.Lock()
+_locks={}
+
+
+@contextmanager
+def file_lock(path,create=False):
+    path=Path(path)
+    if path.is_symlink():raise ValueError('Refusing a symbolic-link lock file')
+    with _guard:local=_locks.setdefault(str(path.resolve()),threading.Lock())
+    if not local.acquire(False):raise OSError('This world is already being saved in this process')
+    try:
+        if os.name=='nt':
+            import ctypes
+            from ctypes import wintypes as W
+            class Overlapped(ctypes.Structure):
+                _fields_=[('Internal',ctypes.c_size_t),('InternalHigh',ctypes.c_size_t),('Offset',W.DWORD),('OffsetHigh',W.DWORD),('hEvent',W.HANDLE)]
+            kernel=ctypes.WinDLL('kernel32',use_last_error=True)
+            kernel.CreateFileW.argtypes=[W.LPCWSTR,W.DWORD,W.DWORD,ctypes.c_void_p,W.DWORD,W.DWORD,W.HANDLE];kernel.CreateFileW.restype=W.HANDLE
+            kernel.LockFileEx.argtypes=[W.HANDLE,W.DWORD,W.DWORD,W.DWORD,W.DWORD,ctypes.POINTER(Overlapped)];kernel.LockFileEx.restype=W.BOOL
+            kernel.UnlockFileEx.argtypes=[W.HANDLE,W.DWORD,W.DWORD,W.DWORD,ctypes.POINTER(Overlapped)];kernel.UnlockFileEx.restype=W.BOOL
+            kernel.CloseHandle.argtypes=[W.HANDLE];kernel.CloseHandle.restype=W.BOOL
+            handle=kernel.CreateFileW(str(path),0xc0000000,7,None,4 if create else 3,128,None)
+            if handle==W.HANDLE(-1).value:raise ctypes.WinError(ctypes.get_last_error())
+            overlap=Overlapped()
+            try:
+                if not kernel.LockFileEx(handle,3,0,1,0,ctypes.byref(overlap)):raise OSError('World lock is held by another process')
+                try:yield
+                finally:kernel.UnlockFileEx(handle,0,1,0,ctypes.byref(overlap))
+            finally:kernel.CloseHandle(handle)
+        else:
+            import fcntl
+            with path.open('a+b' if create else 'r+b') as file:
+                # Linux open-file-description locks remain held when hashing
+                # or copying opens/closes another descriptor for this file.
+                # They conflict with Minecraft's ordinary POSIX record locks.
+                if hasattr(fcntl,'F_OFD_SETLK'):
+                    import ctypes
+                    class Flock(ctypes.Structure):
+                        _fields_=[('type',ctypes.c_short),('whence',ctypes.c_short),('start',ctypes.c_longlong),('length',ctypes.c_longlong),('pid',ctypes.c_int)]
+                    def change(kind):fcntl.fcntl(file.fileno(),fcntl.F_OFD_SETLK,bytes(Flock(kind,os.SEEK_SET,0,0,0)))
+                    acquire=lambda:change(fcntl.F_WRLCK)
+                    release=lambda:change(fcntl.F_UNLCK)
+                else:
+                    acquire=lambda:fcntl.lockf(file,fcntl.LOCK_EX|fcntl.LOCK_NB)
+                    release=lambda:fcntl.lockf(file,fcntl.LOCK_UN)
+                try:acquire()
+                except BlockingIOError as exc:raise OSError('World lock is held by another process') from exc
+                try:yield
+                finally:release()
+    finally:local.release()

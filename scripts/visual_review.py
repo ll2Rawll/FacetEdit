@@ -17,6 +17,7 @@ from facetedit.ui import FacetEditApp
 from facetedit.model import Document,Selection,SelectionGroup
 from facetedit.world import open_world
 from tests.fixtures import java_world
+from facetedit.chrome import Pill
 
 
 def capture(widget,name):
@@ -50,6 +51,14 @@ with tempfile.TemporaryDirectory() as temporary:
     app.geometry('1440x900');app.update()
     app._pick((-6,8,-4),False);app._pick((-3,11,-1),True)
     app.block_var.set('minecraft:gold_block');app.fill();app.update();app.viewport.draw();capture(app,'selection.png')
+    app.copy();app.transform_dialog();app.update()
+    app.transform_vars['rotation'][1].set('30');app.transform_vars['scale'][0].set('1.5')
+    def widgets(parent):
+        for child in parent.winfo_children():yield child;yield from widgets(child)
+    dialog=next(w for w in app.winfo_children() if w.winfo_class()=='Toplevel')
+    next(w for w in widgets(dialog) if isinstance(w,Pill) and w.text=='Preview').invoke()
+    app.viewport.draw();capture(dialog,'transform.png');capture(app,'transform-preview.png');dialog.destroy()
+    app.operations_dialog();app.update();dialog=app.operation_list.winfo_toplevel();capture(dialog,'operations.png');dialog.destroy()
     app.document.selection=SelectionGroup((app.document.selection,Selection((3,9,-4),(6,12,-1))))
     app.regions_dialog();app.update();dialog=app.region_list.winfo_toplevel();capture(dialog,'regions.png');dialog.destroy()
     app.inspector_tabs.select(2);capture(app,'world-tools.png')
@@ -60,5 +69,8 @@ with tempfile.TemporaryDirectory() as temporary:
     app._attach(Document(open_world(java_world(Path(temporary)/'world'))));app.chunks_dialog();app.update()
     while app.busy:app.update();time.sleep(.005)
     app.document.selection=Selection((0,0,0),(31,0,15));app.refresh();dialog=app.chunk_map.winfo_toplevel();capture(dialog,'chunks.png');dialog.destroy()
+    from facetedit.worldsave import save_original
+    result=save_original(app.document.world,{})
+    app._attach(Document(result.world));app.world_recovery_dialog();app.update();dialog=app.world_save_list.winfo_toplevel();capture(dialog,'world-save.png');dialog.destroy()
     app.destroy()
     (ROOT/'artifacts/renderer-benchmark.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2))

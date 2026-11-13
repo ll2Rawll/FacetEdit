@@ -228,12 +228,12 @@ class WorkflowTests(unittest.TestCase):
         export_structure(doc.clipboard, file)
         self.assertEqual(import_mcstructure(file).blocks[(0,0,0)], block)
 
-    def test_bedrock_direction_transform_refused(self):
+    def test_bedrock_direction_transform_preserves_typed_state(self):
         doc = Document(open_world(bedrock_world(self.path / "bedrock")))
         doc.selection = Selection((0,0,0), (0,0,0))
-        doc.copy()
-        with self.assertRaisesRegex(ValueError, "directional-state"):
-            doc.paste(turns=1)
+        doc.apply('stairs',[((0,0,0),Block('oak_stairs',(('weirdo_direction','0'),),(('weirdo_direction',nbt.INT),)))])
+        doc.copy();doc.paste((1,0,0),turns=1)
+        self.assertEqual(doc.get(1,0,0),Block('oak_stairs',(('weirdo_direction','2'),),(('weirdo_direction',nbt.INT),)))
 
     def test_bedrock_textual_noop_preserves_state_types(self):
         doc = Document(open_world(bedrock_world(self.path / "bedrock")))

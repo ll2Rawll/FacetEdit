@@ -59,6 +59,11 @@ class ExternalRegionTests(unittest.TestCase):
         self.temp=tempfile.TemporaryDirectory();self.path=Path(self.temp.name)/'r.-1.0.mca'
     def tearDown(self):self.temp.cleanup()
 
+    def test_empty_region_inventory_and_partial_header(self):
+        self.path.write_bytes(b'');self.assertEqual(Region.coordinates(self.path),set())
+        self.path.write_bytes(b'\0'*100)
+        with self.assertRaises(nbt.FormatError):Region.coordinates(self.path)
+
     def test_external_read_edit_and_sidecar_cleanup(self):
         region=Region(path=self.path);region.put_payload(-1,0,b'\x82',__import__('zlib').compress(b'abc'))
         region.write();sidecar=self.path.parent/'c.-1.0.mcc'

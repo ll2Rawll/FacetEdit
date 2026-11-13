@@ -82,13 +82,14 @@ class EntityClipboardTests(unittest.TestCase):
         self.assertEqual(len(doc.undo_stack),depth+1)
         doc.undo();self.assertIsNone(doc.get_entity(4,2,3))
 
-    def test_transforms_refuse_block_nbt_before_any_change(self):
+    def test_transforms_relocate_block_nbt_and_keep_inventory(self):
         doc = self.document();doc.copy()
         edits = dict(doc.edits);entities = dict(doc.entity_edits)
         for options in ({'turns':1},{'mirror':True}):
-            with self.assertRaisesRegex(ValueError,'Block-entity rotation'):
-                doc.paste((4,2,3),**options)
-        self.assertEqual(doc.edits,edits);self.assertEqual(doc.entity_edits,entities)
+            doc.paste((4,2,3),**options)
+            self.assertPayload(doc.get_entity(4,2,3),(4,2,3))
+            doc.undo()
+            self.assertEqual(doc.edits,edits);self.assertEqual(doc.entity_edits,entities)
 
     def test_unchanged_payload_with_changed_block_survives_delta_optimization(self):
         doc = Document(open_world(java_world(self.path/'Java')))
@@ -202,10 +203,9 @@ class EntityClipboardTests(unittest.TestCase):
         primary,secondary = [Block('stone')]*4096,[AIR]*4096
         secondary[(1<<8)|(3<<4)|2] = Block('water')
         doc.world.values[b'\x00'*8+b'/\x00'] = encode_bedrock(9,0,[primary,secondary],[])
-        for fn in (doc.copy,lambda:doc.clone((1,0,0))):
-            with self.assertRaisesRegex(ValueError,'secondary Bedrock layers'):
-                fn()
-        self.assertIsNone(doc.clipboard)
+        doc.copy();self.assertEqual(doc.clipboard.extra_blocks[(0,0,0)],(Block('water'),))
+        doc.clone((1,0,0));self.assertEqual(doc.get_extra_blocks(2,2,3),(Block('water'),))
+        doc.undo()
         doc.fill(Block('glass'))  # Replacing the block deliberately clears water.
         doc.copy()
         self.assertEqual(doc.clipboard.blocks[(0,0,0)],Block('glass'))

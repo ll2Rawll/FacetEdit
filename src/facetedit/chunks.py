@@ -63,7 +63,8 @@ def empty_java(world,cx,cz,dimension):
         section = {'Y':nbt.Tag(nbt.BYTE,sy)}
         palette = nbt.Tag(nbt.LIST,nbt.ListValue(nbt.COMPOUND,[{'Name':nbt.Tag(nbt.STRING,'minecraft:air')}]))
         if world.version>=2834:section['block_states'] = nbt.compound(palette=palette)
-        else:section.update(Palette=palette,BlockStates=nbt.Tag(nbt.LONG_ARRAY,[0]*256))
+        elif world.version>=1451:section.update(Palette=palette,BlockStates=nbt.Tag(nbt.LONG_ARRAY,[0]*256))
+        else:section.update(Blocks=nbt.Tag(nbt.BYTE_ARRAY,b'\0'*4096),Data=nbt.Tag(nbt.BYTE_ARRAY,b'\0'*2048))
         if world.version>=2834:
             biome = {'the_nether':'nether_wastes','the_end':'the_end'}.get(dimension,'plains')
             section['biomes'] = nbt.compound(palette=nbt.Tag(nbt.LIST,nbt.ListValue(nbt.STRING,['minecraft:'+biome])))
@@ -83,6 +84,11 @@ def empty_java(world,cx,cz,dimension):
         # Older chunks use 2D biome IDs; plains/Nether/End have stable legacy IDs.
         biome = {'the_nether':8,'the_end':9}.get(dimension,1)
         level.value['Biomes'] = nbt.Tag(nbt.INT_ARRAY,[biome]*1024 if world.version>=2203 else [biome]*256)
+        if world.version>=2203:level.value['Biomes']=nbt.Tag(nbt.INT_ARRAY,[biome]*((maximum-minimum+1)*4))
+        if world.version<1451:
+            level.value['Biomes']=nbt.Tag(nbt.BYTE_ARRAY,bytes([biome])*256)
+            level.value['TerrainPopulated']=nbt.Tag(nbt.BYTE,1)
+            level.value['LightPopulated']=nbt.Tag(nbt.BYTE,0)
         root = nbt.compound(Level=level)
     root.value['DataVersion'] = nbt.Tag(nbt.INT,world.version)
     return ChunkState('replace',((b'region',b'\x02'+zlib.compress(nbt.dumps(root))),))
@@ -105,7 +111,7 @@ def validate_java_state(state,cx,cz):
     if (nbt.get(level,'xPos'),nbt.get(level,'zPos'))!=(cx,cz):
         raise ValueError('Imported chunk coordinates disagree with the destination')
     version = nbt.get(root,'DataVersion',0)
-    if not 1451<=version<=4189:raise ValueError('Imported chunk DataVersion is unsupported')
+    if type(version) is not int or not 0<=version<=4189:raise ValueError('Imported chunk DataVersion is unsupported')
 
 
 def write_java_chunks(world,stage,overrides):

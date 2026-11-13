@@ -1,0 +1,134 @@
+{
+  "fixture_source": "https://github.com/Amulet-Team/Amulet-Core/tree/1.9.41/tests/data/worlds_src",
+  "worlds": [
+    {
+      "world": "bedrock/vanilla/1_16",
+      "edition": "Bedrock \u00b7 experimental export",
+      "stored_chunks": 436,
+      "position": [
+        99,
+        60,
+        -233
+      ],
+      "original_block": "minecraft:stone[stone_type=stone]",
+      "original_biome": "minecraft:plains",
+      "source_files": 5,
+      "source_unchanged": true,
+      "block_biome_layers_roundtrip": "pass",
+      "seconds": 2.156
+    },
+    {
+      "world": "bedrock/vanilla/1_18/updated_superflat",
+      "edition": "Bedrock \u00b7 experimental export",
+      "stored_chunks": 72,
+      "position": [
+        3,
+        60,
+        -41
+      ],
+      "original_block": "minecraft:air",
+      "original_biome": "minecraft:plains",
+      "source_files": 5,
+      "source_unchanged": true,
+      "block_biome_layers_roundtrip": "pass",
+      "seconds": 0.06
+    },
+    {
+      "world": "bedrock/vanilla/1_18/vanilla",
+      "edition": "Bedrock \u00b7 experimental export",
+      "stored_chunks": 2737,
+      "position": [
+        1491,
+        60,
+        7
+      ],
+      "original_block": "minecraft:stone[stone_type=stone]",
+      "original_biome": "minecraft:dark_forest",
+      "source_files": 13,
+      "source_unchanged": true,
+      "block_biome_layers_roundtrip": "pass",
+      "seconds": 20.375
+    },
+    {
+      "world": "java/vanilla/1_12_2",
+      "edition": "Java",
+      "stored_chunks": 169,
+      "position": [
+        99,
+        60,
+        103
+      ],
+      "original_block": "minecraft:barrier",
+      "original_biome": "minecraft:plains",
+      "source_files": 2,
+      "source_unchanged": true,
+      "block_biome_layers_roundtrip": "pass",
+      "seconds": 0.043
+    },
+    {
+      "world": "java/vanilla/1_13",
+      "edition": "Java",
+      "stored_chunks": 289,
+      "position": [
+        131,
+        60,
+        135
+      ],
+      "original_block": "minecraft:barrier",
+      "original_biome": "minecraft:plains",
+      "source_files": 2,
+      "source_unchanged": true,
+      "block_biome_layers_roundtrip": "pass",
+      "seconds": 0.033
+    },
+    {
+      "world": "java/vanilla/1_17_1/custom_height_inline",
+      "edition": "Java",
+      "stored_chunks": 156,
+      "position": [
+        211,
+        60,
+        7
+      ],
+      "original_block": "minecraft:stone",
+      "original_biome": "minecraft:mountains",
+      "source_files": 2,
+      "source_unchanged": true,
+      "block_biome_layers_roundtrip": "pass",
+      "seconds": 0.091
+    },
+    {
+      "world": "java/vanilla/1_17_1/superflat",
+      "edition": "Java",
+      "stored_chunks": 126,
+      "position": [
+        195,
+        60,
+        55
+      ],
+      "original_block": "minecraft:air",
+      "original_biome": "minecraft:plains",
+      "source_files": 2,
+      "source_unchanged": true,
+      "block_biome_layers_roundtrip": "pass",
+      "seconds": 0.018
+    },
+    {
+      "world": "java/vanilla/1_18/superflat",
+      "edition": "Java",
+      "stored_chunks": 324,
+      "position": [
+        147,
+        60,
+        7
+      ],
+      "original_block": "minecraft:air",
+      "original_biome": "minecraft:plains",
+      "source_files": 2,
+      "source_unchanged": true,
+      "block_biome_layers_roundtrip": "pass",
+      "seconds": 0.04
+    }
+  ],
+  "scope": "Published Minecraft world fixtures read, edited, exported and reopened by FacetEdit; no Minecraft game/server execution, no Amulet runtime imports. Fixtures are outside the distribution."
+}

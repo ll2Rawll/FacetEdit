@@ -69,6 +69,9 @@ def java_entry(block):
 
 
 def decode_java_section(section, version):
+    if version<1451:
+        from .legacy import decode_section
+        return decode_section(section)
     modern = version >= 2834
     section = Tag(COMPOUND, section)
     states = section.value.get("block_states") if modern else section
@@ -95,6 +98,9 @@ def decode_java_section(section, version):
 def encode_java_section(section, blocks, version):
     if len(blocks) != 4096:
         raise ValueError("A chunk section has 4096 blocks")
+    if version<1451:
+        from .legacy import encode_section
+        return encode_section(section,blocks)
     palette = list(dict.fromkeys(blocks))
     lookup = {block: i for i, block in enumerate(palette)}
     bits = max(4, (len(palette) - 1).bit_length())

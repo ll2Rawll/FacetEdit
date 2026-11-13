@@ -55,28 +55,11 @@ class Block:
             raise ValueError("Duplicate block property")
         return cls(name, tuple(properties))
 
-    def transform(self, turns=0, mirror=False):
-        props = dict(self.properties)
-        directions = ["north", "east", "south", "west"]
-        def direction(value):
-            if value not in directions:
-                return value
-            index = directions.index(value)
-            if mirror:
-                index = -index % 4
-            return directions[(index + turns) % 4]
-        if "facing" in props:
-            props["facing"] = direction(props["facing"])
-        if turns % 2 and props.get("axis") in ("x", "z"):
-            props["axis"] = "z" if props["axis"] == "x" else "x"
-        if "rotation" in props:
-            try:
-                r = int(props["rotation"])
-                props["rotation"] = str(((-r if mirror else r) + turns * 4) % 16)
-            except ValueError:
-                pass
-        props = {direction(k): v for k, v in props.items()}
-        return Block(self.name, tuple(props.items()), tuple((direction(k), v) for k, v in self.state_types))
+    def transform(self, turns=0, mirror=False,edition='Java'):
+        if not turns%4 and not mirror:return self
+        from .transforms import state_properties
+        props,types=state_properties(self,turns,mirror,edition)
+        return Block(self.name,tuple(props.items()),tuple(types.items()))
 
 
 AIR = Block("air")

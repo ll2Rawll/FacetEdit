@@ -23,10 +23,11 @@ class Transaction:
     biome_changes: list = field(default_factory=list)
     chunk_changes: list = field(default_factory=list)
     cleared_edits: list = field(default_factory=list)
+    layer_changes: list = field(default_factory=list)
 
     @property
     def count(self):
-        return len(self.changes)+len(self.entity_changes)+len(self.biome_changes)+len(self.chunk_changes)+len(self.cleared_edits)
+        return len(self.changes)+len(self.entity_changes)+len(self.biome_changes)+len(self.chunk_changes)+len(self.cleared_edits)+len(self.layer_changes)
 
     @property
     def payload_bytes(self):
@@ -41,23 +42,36 @@ class Clipboard:
     offset: tuple = (0,0,0)
     entities: dict = field(default_factory=dict)
     data_version: int | None = 4189
+    extra_blocks: dict = field(default_factory=dict)
 
     def transformed(self, turns=0, mirror=False):
-        if self.entities and (turns%4 or mirror):
-            raise ValueError("Block-entity rotation is not implemented; paste without rotation or mirroring")
-        if self.offset != (0,0,0) and (turns%4 or mirror):
-            raise ValueError("Rotation of a schematic with a nonzero paste offset is not implemented")
-        result = {}
+        if self.data_version is not None and self.edition=='Java' and self.data_version<1451 and (turns%4 or mirror):
+            from .affine import transform_clipboard
+            return transform_clipboard(self,(0,turns*90,0),(-1 if mirror else 1,1,1))
+        result,extra = {},{}
         width, height, depth = self.size
         for (x, y, z), block in self.blocks.items():
+            source=(x,y,z)
             if mirror:
                 x = width - 1 - x
             w, d = width, depth
             for _ in range(turns % 4):
                 x, z = d - 1 - z, x
                 w, d = d, w
-            result[(x, y, z)] = block.transform(turns, mirror)
-        return Clipboard((depth, height, width) if turns % 2 else self.size, result, self.edition,self.offset,dict(self.entities),self.data_version)
+            result[(x, y, z)] = block.transform(turns, mirror,self.edition)
+            if source in self.extra_blocks:extra[x,y,z]=tuple(b.transform(turns,mirror,self.edition) for b in self.extra_blocks[source])
+        from .entities import transform
+        from .transforms import point
+        entities={point(pos,self.size,turns,mirror):transform(data,self.size,turns,mirror) for pos,data in self.entities.items()}
+        ox,oy,oz=self.offset
+        if mirror:ox=-ox
+        for _ in range(turns%4):ox,oz=-oz,ox
+        offset=(ox,oy,oz)
+        return Clipboard((depth, height, width) if turns % 2 else self.size, result, self.edition,offset,entities,self.data_version,extra)
+
+    def affine(self,rotation=(0,0,0),scale=(1,1,1),rotate_states=True):
+        from .affine import transform_clipboard
+        return transform_clipboard(self,rotation,scale,rotate_states)
 
 
 class Document:
@@ -68,6 +82,7 @@ class Document:
         self.entity_edits = {}
         self.biome_edits = {}
         self.chunk_edits = {}
+        self.layer_edits = {}
         self._view_world = None
         self.undo_stack = []
         self.redo_stack = []
@@ -77,7 +92,7 @@ class Document:
 
     @property
     def pending_count(self):
-        return len(self.edits)+len(self.entity_edits)+len(self.biome_edits)+len(self.chunk_edits)
+        return len(self.edits)+len(self.entity_edits)+len(self.biome_edits)+len(self.chunk_edits)+len(self.layer_edits)
 
     @property
     def view_world(self):
@@ -85,14 +100,37 @@ class Document:
         return self._view_world
 
     def export_metadata(self):
-        return {'entity_edits':dict(self.entity_edits),'biome_edits':dict(self.biome_edits),'chunk_edits':dict(self.chunk_edits)}
+        return {'entity_edits':dict(self.entity_edits),'biome_edits':dict(self.biome_edits),'chunk_edits':dict(self.chunk_edits),'layer_edits':dict(self.layer_edits)}
 
     def snapshot(self):
         result = copy.copy(self)
-        for name in ('edits','entity_edits','biome_edits','chunk_edits'):
+        for name in ('edits','entity_edits','biome_edits','chunk_edits','layer_edits'):
             setattr(result,name,dict(getattr(self,name)))
         result.undo_stack,result.redo_stack = [],[]
         return result
+
+    def history_for_saved_world(self):
+        """Resolve old source-chunk references before replacing the source folder."""
+        resolved={}
+        def history(stack):
+            result=[]
+            for transaction in stack:
+                item=copy.copy(transaction);changes=[]
+                for position,before,after in transaction.chunk_changes:
+                    key=(transaction.dimension,*position)
+                    if SOURCE in (before,after) and key not in resolved:
+                        resolved[key]=self.world.chunk_snapshot(*position,transaction.dimension)
+                    changes.append((position,resolved[key] if before==SOURCE else before,resolved[key] if after==SOURCE else after))
+                item.chunk_changes=changes;result.append(item)
+            while result and (sum(t.count for t in result)>MAX_HISTORY or sum(t.payload_bytes for t in result)>2*MAX_PAYLOAD):result.pop(0)
+            return result
+        return history(self.undo_stack),history(self.redo_stack)
+
+    def rebase_saved_world(self,world,histories):
+        self.world=world;self._view_world=None
+        for name in ('edits','entity_edits','biome_edits','chunk_edits','layer_edits'):getattr(self,name).clear()
+        self.undo_stack,self.redo_stack=histories
+        self.revision+=1
 
     def get_entity(self, x, y, z):
         key = (self.dimension,x,y,z)
@@ -103,7 +141,7 @@ class Document:
         return self.view_world.get_block_entity(x,y,z,self.dimension)
 
     def get_biome(self, x, y, z):
-        x,y,z = (v//4*4 for v in (x,y,z))
+        x,y,z = self.view_world.biome_cell(x,y,z,self.dimension)
         key = (self.dimension,x,y,z)
         return self.biome_edits[key] if key in self.biome_edits else self.view_world.get_biome(x,y,z,self.dimension)
 
@@ -113,7 +151,13 @@ class Document:
             return self.edits[key]
         return self.view_world.get_block(x, y, z, self.dimension)
 
-    def apply(self, label, requested, entity_updates=()):
+    def get_extra_blocks(self,x,y,z):
+        key=(self.dimension,x,y,z)
+        if key in self.layer_edits:return self.layer_edits[key]
+        if key in self.edits:return ()
+        return self.view_world.get_extra_blocks(x,y,z,self.dimension)
+
+    def apply(self, label, requested, entity_updates=(),layer_updates=()):
         changes = []
         seen = set()
         for position, after in requested:
@@ -123,6 +167,9 @@ class Document:
                 raise ValueError("Duplicate coordinate in transaction")
             seen.add(position)
             self.view_world.validate_edit(position, self.dimension)
+            if self.world.edition=='Java' and getattr(self.world,'version',4189)<1451:
+                from .legacy import identifier
+                identifier(after)
             before = self.get(*position)
             if not after.state_types and (after.name, after.properties) == (before.name, before.properties):
                 after = before  # Preserve Bedrock's typed metadata for a textual no-op.
@@ -145,7 +192,18 @@ class Document:
                 entities[position] = (position,before,after)
             else:
                 entities.pop(position,None)
-        transaction = Transaction(label, self.dimension, changes, list(entities.values()))
+        supplied=dict(layer_updates)
+        if supplied.keys()-seen:raise ValueError('Extra layers must accompany requested block positions')
+        layers=[]
+        for position in seen:
+            before=self.get_extra_blocks(*position)
+            after=tuple(supplied.get(position,()))
+            from .blocks import Block
+            if len(after)>7 or any(not isinstance(b,Block) for b in after):raise ValueError('Invalid extra block layers')
+            while after and after[-1].air:after=after[:-1]
+            if after and not self.world.edition.startswith('Bedrock'):raise ValueError('Extra block layers require Bedrock')
+            if before!=after or (after and position in changed_positions):layers.append((position,before,after))
+        transaction = Transaction(label, self.dimension, changes, list(entities.values()),layer_changes=layers)
         return self._commit(transaction)
 
     def _commit(self, transaction):
@@ -158,7 +216,7 @@ class Document:
         self.redo_stack.clear()
         while sum(t.count for t in self.undo_stack)>MAX_HISTORY or sum(t.payload_bytes for t in self.undo_stack)>2*MAX_PAYLOAD:
             self.undo_stack.pop(0)
-        return len(transaction.changes) or len(transaction.entity_changes) or len(transaction.biome_changes) or len(transaction.chunk_changes)
+        return len(transaction.changes) or len(transaction.entity_changes) or len(transaction.biome_changes) or len(transaction.chunk_changes) or len(transaction.layer_changes)
 
     def _apply(self, transaction, forward):
         if transaction.chunk_changes:
@@ -171,7 +229,8 @@ class Document:
         explicit_entity = object()
         for changes,target,getter in ((transaction.changes,self.edits,self.view_world.get_block),
                                       (transaction.entity_changes,self.entity_edits,self.view_world.get_block_entity),
-                                      (transaction.biome_changes,self.biome_edits,self.view_world.get_biome)):
+                                      (transaction.biome_changes,self.biome_edits,self.view_world.get_biome),
+                                      (transaction.layer_changes,self.layer_edits,self.view_world.get_extra_blocks)):
             for pos, before, after in changes:
                 value = after if forward else before
                 baseline = getter(*pos, transaction.dimension)
@@ -182,6 +241,8 @@ class Document:
                     # Replacing a block erases its original NBT. An explicit
                     # replacement is required even when its bytes are unchanged.
                     baseline = explicit_entity
+                elif target is self.layer_edits and value and final_blocks.get(key,key in self.edits):
+                    baseline=explicit_entity
                 updates.append((target,key,value,baseline))
         resulting_size = self.pending_count
         for target,key,value,baseline in updates:
@@ -237,24 +298,26 @@ class Document:
     def copy(self):
         selection = self.require_selection()
         origin = selection.minimum
-        blocks,entities = {},{}
+        blocks,entities,extra = {},{},{}
         for p in selection.positions():
             if (self.dimension,*p) not in self.edits:
                 self.view_world.validate_copy(p,self.dimension)
             local = tuple(p[i]-origin[i] for i in range(3))
             blocks[local] = self.get(*p)
+            layers=self.get_extra_blocks(*p)
+            if layers:extra[local]=layers
             entity = self.get_entity(*p)
             if entity is not None:
                 entities[local] = relocate(entity,local)
         bedrock = self.world.edition.startswith("Bedrock")
-        self.clipboard = Clipboard(selection.size,blocks,"Bedrock" if bedrock else "Java",entities=entities,data_version=None if bedrock else getattr(self.world,"version",4189))
+        self.clipboard = Clipboard(selection.size,blocks,"Bedrock" if bedrock else "Java",entities=entities,data_version=None if bedrock else getattr(self.world,"version",4189),extra_blocks=extra)
         return len(blocks)
 
     def cut(self):
         self.copy()
         return self.apply("Cut selection", ((p, AIR) for p in self.selection.positions()))
 
-    def paste(self, origin=None, turns=0, mirror=False, include_air=False):
+    def paste(self, origin=None, turns=0, mirror=False, include_air=False,include_water=True,include_lava=True,rotation=None,scale=(1,1,1),rotate_states=True):
         if self.clipboard is None:
             raise ValueError("Copy a selection or import a structure first")
         edition = "Bedrock" if self.world.edition.startswith("Bedrock") else "Java"
@@ -262,19 +325,20 @@ class Document:
             raise ValueError("Cross-edition clipboard translation is not implemented")
         if edition=="Java" and self.clipboard.data_version != getattr(self.world,"version",4189):
             raise ValueError("Cross-version block translation is not implemented; the structure and world must have the same Java DataVersion")
-        if edition == "Bedrock" and (turns % 4 or mirror):
-            raise ValueError("Bedrock directional-state transforms are not implemented; paste without rotation or mirroring")
         origin = origin or self.require_selection().minimum
-        clip = self.clipboard.transformed(turns, mirror)
+        clip = self.clipboard.transformed(turns, mirror) if rotation is None else self.clipboard.affine(rotation,scale,rotate_states)
         origin = tuple(origin[i]+clip.offset[i] for i in range(3))
-        blocks,entities = [],[]
+        blocks,entities,layers = [],[],[]
         for pos,block in clip.blocks.items():
+            if not include_water and block.name in ('minecraft:water','minecraft:flowing_water'):continue
+            if not include_lava and block.name in ('minecraft:lava','minecraft:flowing_lava'):continue
             if include_air or not block.air:
                 target = tuple(pos[i]+origin[i] for i in range(3))
                 blocks.append((target,block))
                 data = clip.entities.get(pos)
                 entities.append((target,relocate(data,target) if data is not None else None))
-        return self.apply("Paste structure",blocks,entities)
+                layers.append((target,clip.extra_blocks.get(pos,())))
+        return self.apply("Paste structure",blocks,entities,layers)
 
     def set_entity(self, position, tag):
         self.view_world.validate_edit(position,self.dimension)
@@ -292,29 +356,44 @@ class Document:
         changes = [(position,before,data)] if before != data else []
         return self._commit(Transaction("Edit block NBT",self.dimension,[],changes))
 
-    def set_biome(self, name):
-        from .blocks import Block
-        name = Block(name).name  # Same resource-location syntax as biome names.
+    def set_biome(self, name,mode='box'):
+        if mode not in ('box','column'):raise ValueError('Unknown biome selection mode')
         selection = self.require_selection()
         if selection.volume > MAX_OPERATION:
             raise ValueError(f"Select at most {MAX_OPERATION:,} blocks per operation")
         cells = set()
-        for box in selection.boxes:
-            lo,hi = box.minimum,box.maximum
-            for y in range(lo[1]//4*4,hi[1]//4*4+1,4):
-                for z in range(lo[2]//4*4,hi[2]//4*4+1,4):
-                    for x in range(lo[0]//4*4,hi[0]//4*4+1,4):cells.add((x,y,z))
+        if mode=='column':
+            minimum,maximum=self.world.bounds(self.dimension)
+            columns={(x,z) for x,y,z in selection.positions()}
+            positions=((x,y,z) for x,z in columns for y in range(minimum,maximum+1))
+        else:positions=selection.positions()
+        for x,y,z in positions:
+            cells.add(self.view_world.biome_cell(x,y,z,self.dimension))
+            if len(cells)>MAX_OPERATION:raise ValueError('Biome operation exceeds 65,536 cells')
         changes = []
         for x,y,z in sorted(cells):
             self.view_world.validate_edit((x,y,z),self.dimension)
+            value=self.view_world.biome_value(name,x,y,z,self.dimension)
             before = self.get_biome(x,y,z)
-            if before!=name:changes.append(((x,y,z),before,name))
+            if before!=value:changes.append(((x,y,z),before,value))
         return self._commit(Transaction("Set biome",self.dimension,[],biome_changes=changes))
 
     def waterlog(self, enabled=True):
         from .blocks import Block
         if self.world.edition.startswith("Bedrock"):
-            raise ValueError("Bedrock secondary-layer waterlogging is not implemented")
+            blocks,layers=[],[]
+            water=Block('water',(('liquid_depth','0'),),(('liquid_depth',nbt.INT),))
+            for pos in self.require_selection().positions():
+                block=self.get(*pos);extra=list(self.get_extra_blocks(*pos))
+                if enabled:
+                    if block.air or block.name in ('minecraft:water','minecraft:flowing_water','minecraft:lava','minecraft:flowing_lava'):continue
+                    if extra and not extra[0].air and extra[0].name not in ('minecraft:water','minecraft:flowing_water'):
+                        raise ValueError('Waterlogging would replace an occupied secondary layer')
+                    if extra:extra[0]=water
+                    else:extra=[water]
+                else:extra=[AIR if b.name in ('minecraft:water','minecraft:flowing_water') else b for b in extra]
+                blocks.append((pos,block));layers.append((pos,tuple(extra)))
+            return self.apply('Waterlog blocks' if enabled else 'Remove waterlogging',blocks,layer_updates=layers)
         changes = []
         for pos in self.require_selection().positions():
             block = self.get(*pos)
@@ -323,6 +402,30 @@ class Document:
                 props["waterlogged"] = "true" if enabled else "false"
                 changes.append((pos,Block(block.name,tuple(props.items()),block.state_types)))
         return self.apply("Waterlog blocks" if enabled else "Remove waterlogging",changes)
+
+    def fill_layers(self,block,mode='normal'):
+        if mode not in ('normal','overlay','underlay','game','first','second'):raise ValueError('Unknown layered fill mode')
+        if mode=='normal':return self.fill(block)
+        if not self.world.edition.startswith('Bedrock'):raise ValueError('Layered fill currently requires a Bedrock world')
+        changes,layers=[],[]
+        for position in self.require_selection().positions():
+            old=self.get(*position);extra=list(self.get_extra_blocks(*position));primary=old
+            def second(value):
+                if extra:extra[0]=value
+                else:extra.append(value)
+            if mode=='overlay':
+                if old.air:primary=block
+                else:second(block)
+            elif mode=='underlay':
+                if not old.air:second(old)
+                primary=block
+            elif mode=='game':
+                if old.name in ('minecraft:water','minecraft:flowing_water'):second(old)
+                primary=block
+            elif mode=='first':primary=block
+            else:second(block)
+            changes.append((position,primary));layers.append((position,tuple(extra)))
+        return self.apply('Layered fill: '+mode,changes,layer_updates=layers)
 
     def clone(self, offset, repeats=1, include_air=False):
         if len(offset) != 3 or any(type(v) is not int for v in offset) or not any(offset):
@@ -335,15 +438,16 @@ class Document:
         for pos in selection.positions():
             if (self.dimension,*pos) not in self.edits:
                 self.view_world.validate_copy(pos,self.dimension)
-            source.append((pos,self.get(*pos),self.get_entity(*pos)))
-        changes,entities = {},{}
+            source.append((pos,self.get(*pos),self.get_entity(*pos),self.get_extra_blocks(*pos)))
+        changes,entities,layers = {},{},{}
         for repeat in range(1,repeats+1):
-            for pos,block,entity in source:
+            for pos,block,entity,extra in source:
                 if include_air or not block.air:
                     target = tuple(pos[i]+offset[i]*repeat for i in range(3))
                     changes[target] = block
                     entities[target] = relocate(entity,target) if entity is not None else None
-        return self.apply("Clone selection",changes.items(),entities.items())
+                    layers[target]=extra
+        return self.apply("Clone selection",changes.items(),entities.items(),layers.items())
 
     def nudge_selection(self, offset):
         selection = self.require_selection()
@@ -374,7 +478,7 @@ class Document:
         requested = dict(requested)
         if len(requested)>MAX_CHUNK_COUNT:raise ValueError(f'Operation exceeds {MAX_CHUNK_COUNT:,} chunks')
         changes = []
-        overlaid = {(dim,x//16,z//16) for target in (self.edits,self.entity_edits,self.biome_edits) for dim,x,y,z in target}
+        overlaid = {(dim,x//16,z//16) for target in (self.edits,self.entity_edits,self.biome_edits,self.layer_edits) for dim,x,y,z in target}
         for (cx,cz),after in requested.items():
             if any(type(n) is not int or abs(n)>1_875_000 for n in (cx,cz)):
                 raise ValueError('Chunk coordinates are outside world bounds')
@@ -383,7 +487,7 @@ class Document:
             if before!=after or key in overlaid:changes.append(((cx,cz),before,after))
         targets = {(self.dimension,cx,cz) for (cx,cz),_,_ in changes}
         cleared = []
-        for name in ('edits','entity_edits','biome_edits'):
+        for name in ('edits','entity_edits','biome_edits','layer_edits'):
             for key,value in getattr(self,name).items():
                 dim,x,y,z = key
                 if (dim,x//16,z//16) in targets:cleared.append((name,key,value))

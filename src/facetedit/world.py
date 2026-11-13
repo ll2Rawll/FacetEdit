@@ -18,6 +18,7 @@ from .formats import decode_bedrock, decode_java_section, encode_bedrock, encode
 from .leveldb import load_database, write_database
 from .region import Region,decode_payload
 from . import chunks
+from . import biomes
 
 
 class Cache(OrderedDict):
@@ -57,11 +58,24 @@ class World:
     spawn = (0, 70, 0)
     path = None
 
+    def stored_sections(self,cx,cz,dimension):return None
+
     def get_block_entity(self, x,y,z,dimension="overworld"):
         return None
 
+    def get_extra_blocks(self,x,y,z,dimension='overworld'):
+        return ()
+
     def get_biome(self,x,y,z,dimension="overworld"):
         raise ValueError("Biome editing currently supports modern Java worlds and the sample")
+
+    def biome_grid(self,x,y,z,dimension='overworld'):return 4,4,4
+
+    def biome_cell(self,x,y,z,dimension='overworld'):
+        grid=self.biome_grid(x,y,z,dimension)
+        return tuple(v//step*step if step else self.bounds(dimension)[0] for v,step in zip((x,y,z),grid))
+
+    def biome_value(self,value,x,y,z,dimension='overworld'):return Block(value).name
 
     def validate_copy(self,position,dimension):
         """Refuse payloads the clipboard cannot preserve."""
@@ -146,7 +160,7 @@ class DiskWorld(World):
         self.path = Path(path).expanduser().resolve()
         self.signature = snapshot(self.path)
 
-    def export(self, destination, edits, progress=lambda message: None, entity_edits=None, biome_edits=None,chunk_edits=None):
+    def export(self, destination, edits, progress=lambda message: None, entity_edits=None, biome_edits=None,chunk_edits=None,layer_edits=None):
         destination = Path(destination).expanduser().resolve()
         if destination.exists():
             raise FileExistsError("Choose a new folder; FacetEdit never overwrites an existing world")
@@ -171,7 +185,7 @@ class DiskWorld(World):
             writer = self.with_chunks(chunk_edits or {})
             if chunk_edits and isinstance(self,JavaWorld):
                 chunks.write_java_chunks(self,stage,chunk_edits)
-            writer._write_edits(stage, edits, entity_edits or {}, biome_edits or {})
+            writer._write_edits(stage, edits, entity_edits or {}, biome_edits or {},layer_edits or {})
             if snapshot(self.path) != self.signature:
                 raise ValueError("Source changed during export; close Minecraft before retrying")
             if destination.exists():
@@ -200,19 +214,22 @@ def read_metadata(path):
 class JavaWorld(DiskWorld):
     edition = "Java"
 
+    def stored_sections(self,cx,cz,dimension):
+        chunk=self._chunk(cx,cz,dimension)
+        return tuple(chunk[4]) if chunk else ()
+
     def bounds(self, dimension):
-        # Java permits construction above the Nether roof, up to Y=255.
-        if dimension == "the_nether":
-            return 0, 255
-        return super().bounds(dimension)
+        bounds=self.dimension_bounds.get(dimension)
+        if bounds is None:raise ValueError('Cannot resolve build height for '+dimension+'; its dimension type datapack is required')
+        return bounds
 
     def __init__(self, path):
         super().__init__(path)
         _, root = nbt.loads(read_metadata(self.path / "level.dat"), compressed=True)
         data = root.value.get("Data", root)
         self.version = nbt.get(data, "DataVersion", 0)
-        if not 1451 <= self.version <= 4189:
-            raise nbt.FormatError(f"Java DataVersion {self.version} is outside the implemented range 1451–4189 (1.13–1.21.4)")
+        if type(self.version) is not int or not 0 <= self.version <= 4189:
+            raise nbt.FormatError(f"Java DataVersion {self.version} is outside the implemented Anvil range 0–4189")
         self.minimum_y, self.maximum_y = (-64, 319) if self.version >= 2834 else (0, 255)
         self.name = nbt.get(data, "LevelName", self.path.name)
         self.spawn = tuple(nbt.get(data, "Spawn" + axis, default) for axis, default in zip("XYZ", (0, 70, 0)))
@@ -226,6 +243,12 @@ class JavaWorld(DiskWorld):
                 if region.is_dir():
                     self.dimension_paths[str(region.parent.relative_to(dimensions))] = region.relative_to(self.path)
         self.dimensions = tuple(self.dimension_paths)
+        from .dimensions import java_bounds
+        self.dimension_bounds=java_bounds(self.path,data,self.version,self.dimensions)
+        self.dimension_bounds.setdefault('the_nether',(0,255));self.dimension_bounds.setdefault('the_end',(0,255))
+        self.minimum_y,self.maximum_y=self.bounds('overworld')
+        if any(any((self.path/folder).glob('*.mcr')) and not any((self.path/folder).glob('*.mca')) for folder in self.dimension_paths.values()):
+            raise nbt.FormatError('McRegion .mcr worlds require conversion to Anvil before opening')
         self.cache = Cache(96)
         self.regions = Cache(4)
         self.entity_cache = Cache(96)
@@ -281,10 +304,11 @@ class JavaWorld(DiskWorld):
                 return None
             name, root = nbt.loads(raw)
             version = nbt.get(root, "DataVersion", self.version)
-            if not 1451 <= version <= 4189:
+            if type(version) is not int or not 0 <= version <= 4189:
                 raise nbt.FormatError(f"Chunk DataVersion {version} is unsupported")
             level = root.value.get("Level", root)
             section_list = nbt.get(level, "sections" if version >= 2834 else "Sections", nbt.ListValue(nbt.COMPOUND, []))
+            if any('Blocks' in section for section in section_list.values):version=min(version,1343)
             sections = {}
             raw_sections = {}
             for section in section_list.values:
@@ -295,7 +319,8 @@ class JavaWorld(DiskWorld):
         return self.cache.obtain((dimension, cx, cz), load)
 
     def get_block(self, x, y, z, dimension="overworld"):
-        if not self.minimum_y <= y <= self.maximum_y:
+        minimum,maximum=self.bounds(dimension)
+        if not minimum <= y <= maximum:
             return AIR
         chunk = self._chunk(x // 16, z // 16, dimension)
         if chunk is None:
@@ -325,12 +350,46 @@ class JavaWorld(DiskWorld):
         if chunk is None:
             raise ValueError("Cannot inspect a biome in an ungenerated chunk")
         if chunk[3] < 2834:
-            raise ValueError("Biome editing requires Java 1.18+ paletted biomes")
+            tag=biomes.numeric_java(chunk[2])
+            minimum,three_d=self._numeric_biome_layout(chunk,dimension)
+            return biomes.name(tag.value[biomes.java_index(x,y,z,len(tag.value),minimum,three_d)])
         section = chunk[5].get(y//16,{})
-        biomes = decode_java_biomes(section)
-        return biomes[((x//4)&3) | (((z//4)&3)<<2) | (((y//4)&3)<<4)]
+        cells = decode_java_biomes(section)
+        return cells[((x//4)&3) | (((z//4)&3)<<2) | (((y//4)&3)<<4)]
 
-    def _write_edits(self, stage, edits, entity_edits=None, biome_edits=None):
+    def _numeric_biome_layout(self,chunk,dimension):
+        tag=biomes.numeric_java(chunk[2]);three_d=tag.kind==nbt.INT_ARRAY and chunk[3]>=2203
+        low,high=self.bounds(dimension)
+        # Old chunks left in an upgraded world still index their 256-block
+        # biome columns from Y=0, independent of the new dimension's minimum.
+        minimum=low if chunk[3]>=2709 and len(tag.value)==(high-low+1)*4 else 0
+        return minimum,three_d
+
+    def biome_grid(self,x,y,z,dimension='overworld'):
+        chunk=self._chunk(x//16,z//16,dimension)
+        if chunk is None:raise ValueError('Cannot edit biomes in an ungenerated chunk')
+        if chunk[3]<2834 and not self._numeric_biome_layout(chunk,dimension)[1]:return 1,0,1
+        return 4,4,4
+
+    def biome_cell(self,x,y,z,dimension='overworld'):
+        cell=super().biome_cell(x,y,z,dimension)
+        chunk=self._chunk(x//16,z//16,dimension)
+        if chunk[3]<2834:
+            length=len(biomes.numeric_java(chunk[2]).value);minimum,three_d=self._numeric_biome_layout(chunk,dimension)
+            return cell[0],max(minimum,min(minimum+length//4-4,cell[1])) if three_d else self.bounds(dimension)[0],cell[2]
+        return cell
+
+    def biome_value(self,value,x,y,z,dimension='overworld'):
+        chunk=self._chunk(x//16,z//16,dimension)
+        if chunk is None:raise ValueError('Cannot edit biomes in an ungenerated chunk')
+        if chunk[3]<2834:
+            tag=biomes.numeric_java(chunk[2]);number=biomes.identifier(value)
+            if number>(255 if tag.kind==nbt.BYTE_ARRAY else 0x7fffffff):raise ValueError('Biome ID exceeds this storage format')
+            return biomes.name(number)
+        return Block(value).name
+
+    def _write_edits(self, stage, edits, entity_edits=None, biome_edits=None,layer_edits=None):
+        if layer_edits:raise ValueError('Java does not store extra block layers')
         entity_edits,biome_edits = entity_edits or {},biome_edits or {}
         groups = defaultdict(dict)
         for (dimension, x, y, z), block in edits.items():
@@ -358,7 +417,11 @@ class JavaWorld(DiskWorld):
             biome_sections = {}
             for (x,y,z),biome in biome_groups[(dimension,cx,cz)].items():
                 if version < 2834:
-                    raise ValueError("Biome export requires Java 1.18+")
+                    tag=biomes.numeric_java(level);value=biomes.identifier(biome)
+                    minimum,three_d=self._numeric_biome_layout((name,root,level,version),dimension)
+                    numbers=list(tag.value);numbers[biomes.java_index(x,y,z,len(numbers),minimum,three_d)]=value
+                    level.value['Biomes']=nbt.Tag(tag.kind,bytes(numbers) if tag.kind==nbt.BYTE_ARRAY else numbers)
+                    continue
                 raw = raw_sections.setdefault(y//16,{"Y":nbt.Tag(nbt.BYTE,y//16)})
                 if y//16 not in biome_sections:
                     biome_sections[y//16] = decode_java_biomes(raw)
@@ -384,6 +447,7 @@ class JavaWorld(DiskWorld):
                 level.value[entity_key] = nbt.Tag(nbt.LIST,nbt.ListValue(nbt.COMPOUND,entries))
             if changes:
                 level.value["isLightOn"] = nbt.Tag(nbt.BYTE, 0)
+                if version<1451:level.value['LightPopulated']=nbt.Tag(nbt.BYTE,0)
                 level.value.pop("Heightmaps", None)
                 level.value.pop("HeightMap", None)
             relative = self.dimension_paths[dimension] / f"r.{cx // 32}.{cz // 32}.mca"
@@ -419,6 +483,7 @@ class BedrockWorld(DiskWorld):
         self.dimensions = tuple(self.dimension_ids)
         self.cache = Cache(96)
         self.entity_cache = Cache(96)
+        self.biome_cache=Cache(32)
         self.inventory_cache = None
         self.chunk_record_index = None
 
@@ -445,6 +510,7 @@ class BedrockWorld(DiskWorld):
         if not overrides:return self
         clone = chunks.bedrock_with_chunks(self,overrides)
         clone.cache,clone.entity_cache = Cache(96),Cache(96)
+        clone.biome_cache=Cache(32)
         clone.inventory_cache = None
         clone.chunk_record_index = None
         clone.empty_templates = {}
@@ -474,14 +540,14 @@ class BedrockWorld(DiskWorld):
         index = ((x & 15) << 8) | ((z & 15) << 4) | (y & 15)
         return section[2][0][index]
 
-    def validate_copy(self,position,dimension):
-        x,y,z = position
+    def get_extra_blocks(self,x,y,z,dimension='overworld'):
         if not self.minimum_y <= y <= self.maximum_y:
-            return
+            return ()
         section = self._section(x//16,y//16,z//16,dimension)
         index = ((x&15)<<8)|((z&15)<<4)|(y&15)
-        if section and any(not layer[index].air for layer in section[2][1:]):
-            raise ValueError("This selection contains secondary Bedrock layers; clipboard interchange cannot yet preserve them")
+        extra=tuple(layer[index] for layer in section[2][1:]) if section else ()
+        while extra and extra[-1].air:extra=extra[:-1]
+        return extra
 
     def validate_edit(self, pos, dimension):
         super().validate_edit(pos, dimension)
@@ -503,14 +569,52 @@ class BedrockWorld(DiskWorld):
             return entries
         return self.entity_cache.obtain(prefix,load).get((x,y,z))
 
-    def _write_edits(self, stage, edits, entity_edits=None, biome_edits=None):
-        if biome_edits:
-            raise ValueError("Bedrock biome editing is not implemented")
+    def biome_grid(self,x,y,z,dimension='overworld'):
+        prefix=self.prefix(x//16,z//16,dimension)
+        if prefix+b'+' in self.values:return 1,1,1
+        if prefix+b'-' in self.values:return 1,0,1
+        raise ValueError('This chunk has no stored biome data')
+
+    def _biomes(self,x,z,dimension):
+        prefix=self.prefix(x//16,z//16,dimension)
+        return self.biome_cache.obtain(prefix,lambda:biomes.BedrockBiomes(self.values[prefix+b'+'],self.bounds(dimension)[0]))
+
+    def get_biome(self,x,y,z,dimension='overworld'):
+        grid=self.biome_grid(x,y,z,dimension)
+        if grid[1]:value=self._biomes(x,z,dimension).get(x,y,z)
+        else:
+            raw=self.values[self.prefix(x//16,z//16,dimension)+b'-']
+            if len(raw)!=768:raise nbt.FormatError('Expected 768-byte Bedrock 2D biome record')
+            value=raw[512+(z&15)*16+(x&15)]
+        return biomes.name(value,'Bedrock')
+
+    def biome_value(self,value,x,y,z,dimension='overworld'):
+        number=biomes.identifier(value,'Bedrock')
+        if self.biome_grid(x,y,z,dimension)[1]==0 and number>255:raise ValueError('2D biome IDs must fit one byte')
+        return biomes.name(number,'Bedrock')
+
+    def _write_edits(self, stage, edits, entity_edits=None, biome_edits=None,layer_edits=None):
         entity_edits = entity_edits or {}
         values = dict(self.values)
+        biome_groups=defaultdict(dict)
+        for (dimension,x,y,z),value in (biome_edits or {}).items():
+            biome_groups[dimension,x//16,z//16][x,y,z]=biomes.identifier(value,'Bedrock')
+        for (dimension,cx,cz),changes in biome_groups.items():
+            prefix=self.prefix(cx,cz,dimension)
+            if prefix+b'+' in values:values[prefix+b'+']=self._biomes(cx*16,cz*16,dimension).edited(changes)
+            else:
+                raw=bytearray(values[prefix+b'-'])
+                if len(raw)!=768:raise nbt.FormatError('Invalid Bedrock 2D biome record')
+                for (x,y,z),value in changes.items():raw[512+(z&15)*16+(x&15)]=value
+                values[prefix+b'-']=bytes(raw)
         groups = defaultdict(dict)
         for (dimension, x, y, z), block in edits.items():
             groups[(dimension, x // 16, y // 16, z // 16)][(x, y, z)] = block
+        layer_groups=defaultdict(dict)
+        for (dimension,x,y,z),extra in (layer_edits or {}).items():
+            key=(dimension,x//16,y//16,z//16)
+            groups.setdefault(key,{})
+            layer_groups[key][x,y,z]=extra
         changed_chunks = defaultdict(set)
         for (dimension, cx, sy, cz), changes in groups.items():
             section = copy.deepcopy(self._section(cx, sy, cz, dimension))
@@ -521,6 +625,11 @@ class BedrockWorld(DiskWorld):
                 # Do not leave water/secondary storage inside a replaced block.
                 for layer in layers[1:]:
                     layer[index] = AIR
+            for (x,y,z),extra in layer_groups[dimension,cx,sy,cz].items():
+                if len(extra)>7:raise ValueError('Too many extra block layers')
+                index=((x&15)<<8)|((z&15)<<4)|(y&15)
+                while len(layers)<=len(extra):layers.append([AIR]*4096)
+                for i,layer in enumerate(layers[1:]):layer[index]=extra[i] if i<len(extra) else AIR
             prefix = self.prefix(cx, cz, dimension)
             values[prefix + b"/" + struct.pack("b", sy)] = encode_bedrock(version, sy, layers, palettes)
             changed_chunks[prefix].update(changes)

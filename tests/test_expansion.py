@@ -191,7 +191,8 @@ class ExpansionTests(unittest.TestCase):
         path=self.path/'offset.schem';save_schematic(clip,path)
         doc=Document(SampleWorld());doc.clipboard=load_schematic(path)
         doc.paste((0,30,0));self.assertEqual(doc.get(3,32,-1),Block('glass'))
-        with self.assertRaises(ValueError):doc.paste((0,30,0),turns=1)
+        doc.paste((0,30,0),turns=1);self.assertEqual(doc.get(1,32,3),Block('glass'))
+        doc.undo();self.assertNotEqual(doc.get(1,32,3),Block('glass'))
 
     def test_schematic_unknown_palette_index_and_entity_refused(self):
         clip=Clipboard((1,1,1),{(0,0,0):Block('stone')})

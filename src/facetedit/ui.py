@@ -14,8 +14,11 @@ from .world import SampleWorld,open_world
 from .chrome import BG,SURFACE,INK,MUTED,LINE,BLUE,PALE,FONT,GlassPanel,Pill,label,rounded
 from .studio import StudioLayout
 from .managers import EditorManagers
+from .operation_ui import OperationsUI
+from .save_ui import WorldSaveUI
+from .transform_ui import TransformUI
 
-class FacetEditApp(EditorManagers,StudioLayout,tk.Tk):
+class FacetEditApp(TransformUI,WorldSaveUI,OperationsUI,EditorManagers,StudioLayout,tk.Tk):
     def __init__(self,settings_path=None):
         super().__init__()
         global FONT
@@ -41,6 +44,8 @@ class FacetEditApp(EditorManagers,StudioLayout,tk.Tk):
         self.turns = tk.IntVar(value=0)
         self.mirror = tk.BooleanVar(value=False)
         self.include_air = tk.BooleanVar(value=False)
+        self.include_water=tk.BooleanVar(value=True)
+        self.include_lava=tk.BooleanVar(value=True)
         self._poll_id = None
         self._initialize_managers()
         self.app_logo = chrome.logo(self,64)
@@ -66,13 +71,15 @@ class FacetEditApp(EditorManagers,StudioLayout,tk.Tk):
         self.recent_menu = tk.Menu(file, tearoff=False)
         file.add_cascade(label="Recent worlds", menu=self.recent_menu)
         file.add_separator()
-        file.add_command(label="Save edited copy…", accelerator="Ctrl+S", command=self.save_copy)
+        file.add_command(label='Save original world…',accelerator='Ctrl+S',command=self.save_original)
+        file.add_command(label="Save edited copy…", command=self.save_copy)
         file.add_command(label="Save FacetEdit project…", accelerator="Ctrl+Shift+S", command=self.save_project_dialog)
         file.add_command(label="Import structure…", command=self.import_dialog)
         file.add_command(label="Export selection as structure…", command=self.export_dialog)
         file.add_command(label="Import .mcworld archive…", command=self.import_world_archive)
         file.add_command(label="Export .mcworld archive…", command=self.export_world_archive)
         file.add_command(label="Recovery workspaces…",command=self.recovery_dialog)
+        file.add_command(label='World save checkpoints…',command=self.world_recovery_dialog)
         file.add_separator()
         file.add_command(label="Quit", command=self.close_app)
         menu.add_cascade(label="File", menu=file)
@@ -82,6 +89,9 @@ class FacetEditApp(EditorManagers,StudioLayout,tk.Tk):
         edit.add_separator()
         edit.add_command(label='Manage selection regions…',command=self.regions_dialog)
         edit.add_command(label='Manage chunks…',command=self.chunks_dialog)
+        edit.add_command(label='Layered fill…',command=self.layer_dialog)
+        edit.add_command(label='Custom operations…',command=self.operations_dialog)
+        edit.add_command(label='Transform and preview paste…',command=self.transform_dialog)
         for text,fn in (("Clone / repeat…",self.clone_dialog),("Nudge selection…",self.nudge_dialog),("Set biome…",self.biome_dialog),("Inspect block NBT…",self.nbt_dialog)):
             edit.add_command(label=text,command=fn)
         menu.add_cascade(label="Edit", menu=edit)
@@ -106,7 +116,7 @@ class FacetEditApp(EditorManagers,StudioLayout,tk.Tk):
             self.recent_menu.add_command(label="No recent worlds", state="disabled")
 
     def _bindings(self):
-        commands = {"o": self.open_dialog, "s": self.save_copy, "z": self.undo, "y": self.redo, "c": self.copy, "x": self.cut, "v": self.paste, "k": self.command_palette}
+        commands = {"o": self.open_dialog, "s": self.save_original, "z": self.undo, "y": self.redo, "c": self.copy, "x": self.cut, "v": self.paste, "k": self.command_palette}
         modifier = "Command" if sys.platform == "darwin" else "Control"
         for key, fn in commands.items():
             self.bind(f"<{modifier}-{key}>", lambda event, f=fn, k=key: self._shortcut(event, f, k))
@@ -168,7 +178,7 @@ class FacetEditApp(EditorManagers,StudioLayout,tk.Tk):
     def refresh(self):
         doc = self.document
         self.world_title.configure(text=doc.world.name)
-        self.edition_label.configure(text=doc.world.edition + (" · Source protected" if doc.world.path else " · Editable sample"))
+        self.edition_label.configure(text=doc.world.edition + (" · Staged edits" if doc.world.path else " · Editable sample"))
         self.title(f"{'• ' if doc.revision != self._saved_revision else ''}{doc.world.name} — FacetEdit")
         self.undo_button.state(bool(doc.undo_stack) and not self.busy)
         self.redo_button.state(bool(doc.redo_stack) and not self.busy)
@@ -232,7 +242,7 @@ class FacetEditApp(EditorManagers,StudioLayout,tk.Tk):
         self.run_action(self.document.cut, lambda n: f"Cut {n:,} blocks · Undo is available")
 
     def paste(self):
-        self.run_action(lambda: self.document.paste(turns=self.rotation_box.current(), mirror=self.mirror.get(), include_air=self.include_air.get()), lambda n: f"Pasted {n:,} blocks · Undo is available")
+        self.run_action(lambda: self.document.paste(turns=self.rotation_box.current(), mirror=self.mirror.get(), include_air=self.include_air.get(),include_water=self.include_water.get(),include_lava=self.include_lava.get()), lambda n: f"Pasted {n:,} blocks · Undo is available")
 
     def undo(self):
         self.run_action(self.document.undo, lambda name: "Undid " + name if name else "Nothing to undo")
@@ -279,8 +289,15 @@ class FacetEditApp(EditorManagers,StudioLayout,tk.Tk):
         if self.busy:
             self.dimension_var.set(self.document.dimension)
             return
-        self.document.dimension = self.dimension_var.get()
+        dimension=self.dimension_var.get()
+        try:minimum,maximum=self.document.world.bounds(dimension)
+        except ValueError as exc:self.dimension_var.set(self.document.dimension);self.show_error(exc);return
+        self._close_managers()
+        self.document.dimension = dimension
         self.document.selection = None
+        self.viewport.preview=None
+        self.viewport.ceiling=maximum
+        self.viewport.camera.position[1]=max(minimum,min(maximum,self.viewport.camera.position[1]))
         self.viewport._geometry_key = None
         self.refresh()
 
@@ -318,6 +335,10 @@ class FacetEditApp(EditorManagers,StudioLayout,tk.Tk):
             self.open_path(path)
 
     def open_path(self, path):
+        if not Path(path).exists():
+            from .worldsave import list_saves
+            if list_saves(Path(path).parent,Path(path).name):
+                self.world_recovery_dialog(Path(path).parent);return
         if not self._confirm_discard():
             return
         def finished(world):
@@ -378,11 +399,13 @@ class FacetEditApp(EditorManagers,StudioLayout,tk.Tk):
         if self.busy:
             return
         bedrock = self.document.world.edition.startswith("Bedrock")
-        path = filedialog.askopenfilename(title="Import structure", filetypes=[("Bedrock structure", "*.mcstructure")] if bedrock else [("Java structure", "*.nbt"),("Sponge schematic","*.schem")], parent=self)
+        path = filedialog.askopenfilename(title="Import structure", filetypes=[("Bedrock structure", "*.mcstructure")] if bedrock else [("Java structure", "*.nbt"),("Sponge schematic","*.schem"),("Legacy schematic","*.schematic")], parent=self)
         if path:
             def imported():
                 from .schematic import load_schematic
-                self.document.clipboard = import_mcstructure(path) if bedrock else load_schematic(path) if Path(path).suffix.lower()==".schem" else import_structure(path)
+                from .legacy_schematic import load_legacy_schematic
+                version=getattr(self.document.world,'version',4189)
+                self.document.clipboard = import_mcstructure(path) if bedrock else load_legacy_schematic(path,version if version<1451 else None) if Path(path).suffix.lower()=='.schematic' else load_schematic(path) if Path(path).suffix.lower()==".schem" else import_structure(path)
                 return len(self.document.clipboard.blocks)
             self.run_action(imported, lambda n: f"Imported {n:,} blocks · Select a destination and paste")
 
@@ -395,10 +418,12 @@ class FacetEditApp(EditorManagers,StudioLayout,tk.Tk):
         except Exception as exc:
             self.show_error(exc)
             return
-        path = filedialog.asksaveasfilename(title="Export selection as structure", defaultextension=".mcstructure" if bedrock else ".nbt", filetypes=[("Bedrock structure", "*.mcstructure")] if bedrock else [("Java structure", "*.nbt"),("Sponge schematic","*.schem")], parent=self)
+        legacy=getattr(self.document.world,'version',4189)<1451
+        path = filedialog.asksaveasfilename(title="Export selection as structure", defaultextension=".mcstructure" if bedrock else '.schematic' if legacy else ".nbt", filetypes=[("Bedrock structure", "*.mcstructure")] if bedrock else [("Legacy schematic","*.schematic")] if legacy else [("Java structure", "*.nbt"),("Sponge schematic","*.schem")], parent=self)
         if path:
             from .schematic import save_schematic
-            writer = save_schematic if Path(path).suffix.lower()==".schem" else export_structure
+            from .legacy_schematic import save_legacy_schematic
+            writer = save_legacy_schematic if Path(path).suffix.lower()=='.schematic' else save_schematic if Path(path).suffix.lower()==".schem" else export_structure
             self.run_action(lambda: writer(self.document.clipboard, path), lambda _: "Block structure saved · " + path)
 
     def worker(self, function, completed, message):
@@ -455,7 +480,8 @@ class FacetEditApp(EditorManagers,StudioLayout,tk.Tk):
         def go():
             try:
                 x, y, z = (int(v.get()) for v in values)
-                if max(abs(x), abs(z)) > 30_000_000 or not self.document.world.minimum_y <= y <= self.document.world.maximum_y:
+                minimum,maximum=self.document.world.bounds(self.document.dimension)
+                if max(abs(x), abs(z)) > 30_000_000 or not minimum <= y <= maximum:
                     raise ValueError("Coordinates are outside world bounds")
                 self.viewport.go_to(x,y,z)
                 dialog.destroy()
@@ -502,7 +528,8 @@ class FacetEditApp(EditorManagers,StudioLayout,tk.Tk):
         options.pack(fill="both", expand=True)
         commands = [("Open Minecraft world", self.open_dialog), ("Save edited world copy", self.save_copy), ("Save FacetEdit project", self.save_project_dialog), ("Open FacetEdit project", self.open_project_dialog), ("Fill selection", self.fill), ("Replace blocks", self.replace_dialog), ("Delete selection", self.delete), ("Copy selection", self.copy), ("Paste clipboard", self.paste), ("Undo last change", self.undo), ("Redo change", self.redo), ("Go to coordinates", self.goto_dialog), ("Import structure", self.import_dialog), ("Export structure", self.export_dialog), ("Reset camera", self.viewport.reset), ("Preferences", self.preferences), ("Help and compatibility", self.help_dialog)]
         commands += [("Clone / repeat selection",self.clone_dialog),("Set biome",self.biome_dialog),("Inspect / edit block NBT",self.nbt_dialog),("Import .mcworld",self.import_world_archive),("Export .mcworld",self.export_world_archive),("Nudge selection",self.nudge_dialog),("Waterlog selection",lambda:self.waterlog(True))]
-        commands += [('Manage selection regions',self.regions_dialog),('Manage chunks',self.chunks_dialog),('Restore recovery workspace',self.recovery_dialog),('Switch orbit / flight camera',self.toggle_camera)]
+        commands += [('Manage selection regions',self.regions_dialog),('Manage chunks',self.chunks_dialog),('Restore recovery workspace',self.recovery_dialog),('Switch orbit / flight camera',self.toggle_camera),('Layered fill',self.layer_dialog),('Custom operations',self.operations_dialog),('Save original world',self.save_original),('Recover world save',self.world_recovery_dialog)]
+        commands.append(('Transform and preview paste',self.transform_dialog))
         matches = []
         def search(*_):
             matches[:] = [(name, fn) for name, fn in commands if query.get().lower() in name.lower()]
@@ -592,7 +619,21 @@ class FacetEditApp(EditorManagers,StudioLayout,tk.Tk):
         Pill(content,"Move bounds" if nudge else "Create copies",apply,True,155).pack(anchor="e",pady=10)
 
     def waterlog(self,enabled):
-        self.run_action(lambda:self.document.waterlog(enabled),lambda n:f"Updated {n:,} blocks with a waterlogged state")
+        self.run_action(lambda:self.document.waterlog(enabled),lambda n:f"Updated waterlogging at {n:,} blocks")
+
+    def layer_dialog(self):
+        dialog,content=self._dialog('Build with layers',520,400)
+        label(content,'Bedrock stores extra blocks, including water, in separate layers.',10,color=MUTED,wraplength=460,justify='left').pack(anchor='w')
+        block=tk.StringVar(value=self.block_var.get());mode=tk.StringVar(value='overlay')
+        label(content,'MATERIAL',8,True,MUTED).pack(anchor='w',pady=(16,6))
+        ttk.Entry(content,textvariable=block).pack(fill='x')
+        label(content,'LAYER ACTION',8,True,MUTED).pack(anchor='w',pady=(16,6))
+        ttk.Combobox(content,textvariable=mode,values=('normal','overlay','underlay','game','first','second'),state='readonly').pack(fill='x')
+        label(content,'Overlay adds a second block when the first is occupied.\nUnderlay moves the first block into the second layer.\nGame fill keeps water when placing a new first block.\nFirst / second replaces only that layer. Normal clears extras.',9,color=MUTED,justify='left').pack(anchor='w',pady=14)
+        def apply():
+            result=self.run_action(lambda:self.document.fill_layers(Block.parse(block.get()),mode.get()),lambda n:f'Layered fill · {n:,} blocks')
+            if result is not None:dialog.destroy()
+        Pill(content,'Apply layered fill',apply,True,180).pack(anchor='e')
 
     def biome_dialog(self):
         try:
@@ -601,12 +642,14 @@ class FacetEditApp(EditorManagers,StudioLayout,tk.Tk):
         except Exception as exc:
             self.show_error(exc)
             return
-        dialog,content = self._dialog("A different atmosphere",460,300)
-        label(content,"Set the biome of every 4×4×4 cell touching\nyour selection. Modern Java worlds and sample.",10,color=MUTED,justify="left").pack(anchor="w",pady=(0,12))
+        dialog,content = self._dialog("A different atmosphere",490,360)
+        label(content,'Change the selected box or its full-height columns.\nCell size follows the world format. Unknown numeric IDs\ncan be entered as numeric:<ID>.',10,color=MUTED,justify='left').pack(anchor='w',pady=(0,12))
         value = tk.StringVar(value=current)
+        mode=tk.StringVar(value='box')
         ttk.Combobox(content,textvariable=value,values=tuple("minecraft:"+name for name in ("plains","forest","desert","cherry_grove","lush_caves","snowy_plains","badlands","swamp","ocean"))).pack(fill="x",pady=8)
+        ttk.Combobox(content,textvariable=mode,values=('box','column'),state='readonly').pack(fill='x',pady=8)
         def apply():
-            result = self.run_action(lambda:self.document.set_biome(value.get()),lambda n:f"Updated {n:,} biome cells · Undo is available")
+            result = self.run_action(lambda:self.document.set_biome(value.get(),mode.get()),lambda n:f"Updated {n:,} biome cells · Undo is available")
             if result is not None:
                 dialog.destroy()
         Pill(content,"Apply biome",apply,True,150).pack(anchor="e",pady=15)
@@ -705,10 +748,10 @@ class FacetEditApp(EditorManagers,StudioLayout,tk.Tk):
         dialog, content = self._dialog("A little guidance",590,600)
         text = (
             "LOOK AROUND\nOrbit: drag to orbit, scroll to zoom, right-drag to pan.\nF5 switches to flight: WASD moves, Q/E goes down/up, Shift moves faster.\nDrag to look; scroll changes speed. Click a block to select it.\nFlight stops when another control receives focus. Go to coordinates\nmoves the camera; in orbit, Y clips the terrain.\n\n"
-            "SELECT & EDIT\nClick a block, then Shift-click a second corner. Or enter both corners.\nChoose a material; fill, replace, delete, copy or paste. Undo with Ctrl/Cmd+Z.\nPaste rotation supports common Java facing/axis/rotation states.\n\n"
-            "SAVE YOUR WORK\nCtrl/Cmd+S exports a separate world copy, or a project for the sample.\nProjects reference the original world; keep that folder unchanged.\nClose Minecraft before exporting a copy. Source worlds are never edited.\nUnsaved edits get recovery copies every 30 seconds by default.\nFile → Recovery workspaces restores or discards checkpoints.\n\n"
-            "DEEPER EDITING\nThe World tab includes modern Java biomes, block-entity NBT editing,\nwaterlogging, and Bedrock archives. Paste includes clone/repeat.\nStructures: Java .nbt, Bedrock .mcstructure, Sponge .schem v2/v3.\nManage selection regions adds boxes or subtracts holes. The chunk map\ncreates empty chunks, deletes, prunes and imports matching versions.\nChunk actions are staged and undoable, including associated metadata.\n\n"
-            "CURRENT COMPATIBILITY\nJava DataVersion 1451–4189 (1.13–1.21.4). Bedrock subchunks v8/v9.\nBedrock export remains experimental; database budget is 256 MiB.\nCross-edition conversion, moving entities, automatic lighting, full\nversion coverage and Amulet plugins remain unfinished. No in-game\nvalidation is claimed. Structures retain block NBT; moving entities are unsupported.\n\n"
+            "SELECT & EDIT\nClick a block, then Shift-click a second corner. Or enter both corners.\nChoose a material; fill, replace, delete, copy or paste. Undo with Ctrl/Cmd+Z.\nPaste → Free transform previews X/Y/Z rotations, scaling and reflections.\nSome states cannot represent tilted orientations; state rotation is optional.\n\n"
+            "SAVE YOUR WORK\nCtrl/Cmd+S saves the original world with a retained backup. Close Minecraft\nbefore saving. Save copy exports a separate folder. Projects reference their\nsource world; keep that folder unchanged while using the project.\nUnsaved edits get recovery copies every 30 seconds by default. File includes\nworkspace recovery and world-save checkpoints for interrupted saves.\n\n"
+            "DEEPER EDITING\nThe World tab includes Java/Bedrock biomes, typed block NBT, waterlogging,\nlayered fill, trusted Python operations and Bedrock archives. Paste includes\nclone/repeat. Structures: .nbt, .mcstructure, .schem v2/v3, legacy .schematic.\nManage selection regions adds boxes or subtracts holes. The chunk map\ncreates empty chunks, deletes, prunes and imports matching versions.\nChunk actions are staged and undoable, including associated metadata.\n\n"
+            "CURRENT COMPATIBILITY\nJava numeric/paletted Anvil through DataVersion 4189; Bedrock subchunks\nv8/v9. Legacy Java retains numeric metadata, not modern translated states.\nBedrock export is experimental; database budget is 256 MiB. Full Amulet\nparity, version/edition translation, moving entities, resource-pack rendering\nand game lighting remain unfinished. Published world fixtures are tested;\nexports have not been reopened in Minecraft.\n\n"
             "INDEPENDENT BY DESIGN\nOriginal code and art. Python + Tk only. No Amulet code or runtime.\nNo accounts, network requests, analytics or third-party Python packages."
         )
         Pill(content, "Got it", dialog.destroy, True, 100).pack(side="bottom",anchor="e",pady=12)

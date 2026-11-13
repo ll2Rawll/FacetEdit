@@ -37,6 +37,8 @@ def export_structure(clipboard, path):
         raise ValueError('Structure bounding volume exceeds 65,536 blocks; export closer regions separately')
     if clipboard.edition == "Bedrock":
         return export_mcstructure(clipboard, path)
+    if clipboard.data_version is None or clipboard.data_version<1451:raise ValueError('Export numeric Java blocks as .schematic')
+    if clipboard.extra_blocks:raise ValueError('Java structures cannot store Bedrock extra layers')
     palette = list(dict.fromkeys(clipboard.blocks.values()))
     indexes = {block: i for i, block in enumerate(palette)}
     blocks = [{"pos": nbt.Tag(nbt.LIST, nbt.ListValue(nbt.INT, list(pos))),
@@ -99,17 +101,23 @@ def export_mcstructure(clipboard, path):
     volume = width * height * depth
     if volume > MAX_OPERATION:
         raise ValueError("Structure exceeds the block limit")
-    palette = list(dict.fromkeys(clipboard.blocks.values()))
+    if any(len(layers)>1 for layers in clipboard.extra_blocks.values()):
+        raise ValueError('mcstructure supports two layers; this selection has more')
+    palette = list(dict.fromkeys((*clipboard.blocks.values(),*(b for layers in clipboard.extra_blocks.values() for b in layers))))
     lookup = {block: i for i, block in enumerate(palette)}
     indices = [-1] * volume
+    secondary=[-1]*volume
     for (x, y, z), block in clipboard.blocks.items():
         indices[x * height * depth + y * depth + z] = lookup[block]
+    for (x,y,z),layers in clipboard.extra_blocks.items():
+        if (x,y,z) not in clipboard.blocks:raise ValueError('Extra layer lies outside the selected block mask')
+        if layers:secondary[x*height*depth+y*depth+z]=lookup[layers[0]]
     root = nbt.compound(
         format_version=nbt.Tag(nbt.INT, 1),
         size=nbt.Tag(nbt.LIST, nbt.ListValue(nbt.INT, list(clipboard.size))),
         structure_world_origin=nbt.Tag(nbt.LIST, nbt.ListValue(nbt.INT, [0, 0, 0])),
         structure=nbt.compound(
-            block_indices=nbt.Tag(nbt.LIST, nbt.ListValue(nbt.LIST, [nbt.ListValue(nbt.INT, indices), nbt.ListValue(nbt.INT, [-1] * volume)])),
+            block_indices=nbt.Tag(nbt.LIST, nbt.ListValue(nbt.LIST, [nbt.ListValue(nbt.INT, indices), nbt.ListValue(nbt.INT,secondary)])),
             entities=nbt.Tag(nbt.LIST, nbt.ListValue(nbt.COMPOUND, [])),
             palette=nbt.compound(default=nbt.compound(
                 block_palette=nbt.Tag(nbt.LIST, nbt.ListValue(nbt.COMPOUND, [bedrock_entry(b).value for b in palette])),
@@ -146,10 +154,9 @@ def import_mcstructure(path):
     layers = nbt.get(structure, "block_indices").values
     if len(layers) != 2 or any(len(layer.values) != volume for layer in layers):
         raise ValueError("Invalid mcstructure block index array")
-    if any(i != -1 for i in layers[1].values):
-        raise ValueError("Secondary-layer mcstructures are not supported yet")
     palette = [bedrock_block(nbt.Tag(nbt.COMPOUND, e)) for e in nbt.get(palette_root, "block_palette").values]
     blocks = {}
+    extra={}
     for index, state in enumerate(layers[0].values):
         if state == -1:
             continue
@@ -158,6 +165,12 @@ def import_mcstructure(path):
         x, rem = divmod(index, height * depth)
         y, z = divmod(rem, depth)
         blocks[(x, y, z)] = palette[state]
+    for index,state in enumerate(layers[1].values):
+        if state==-1:continue
+        if type(state) is not int or not 0<=state<len(palette):raise ValueError('Invalid secondary palette index')
+        x,rem=divmod(index,height*depth);y,z=divmod(rem,depth)
+        if (x,y,z) not in blocks:raise ValueError('Secondary layer has no selected primary block')
+        if not palette[state].air:extra[x,y,z]=(palette[state],)
     entities = {}
     for index,entry in nbt.get(palette_root,"block_position_data",{}).items():
         if not index.isdecimal() or not 0 <= int(index) < volume:
@@ -169,7 +182,7 @@ def import_mcstructure(path):
         pos = (x,y,z)
         validate_local(pos,dims,blocks,entities)
         entities[pos] = relocate(nbt.dumps(entry.value["block_entity_data"]),pos)
-    return Clipboard(dims, blocks, "Bedrock",entities=entities,data_version=None)
+    return Clipboard(dims, blocks, "Bedrock",entities=entities,data_version=None,extra_blocks=extra)
 
 
 MAX_PROJECT_BYTES = 64*1024*1024
@@ -178,7 +191,7 @@ MAX_PROJECT_BYTES = 64*1024*1024
 def project_data(document):
     world = document.world
     data = {
-        "format": "facetedit-project", "version": 3,
+        "format": "facetedit-project", "version": 4,
         "source": str(world.path) if world.path else None,
         "source_signature": getattr(world, "signature", None),
         "sample_generator": world.generator if world.path is None else None,
@@ -186,6 +199,7 @@ def project_data(document):
         "edits": [[dimension, x, y, z, {"name": block.name, "properties": list(block.properties), "state_types": list(block.state_types)}] for (dimension, x, y, z), block in sorted(document.edits.items())],
         "block_entities": [[*key,base64.b64encode(value).decode("ascii") if value is not None else None] for key,value in sorted(document.entity_edits.items())],
         "biomes": [[*key,value] for key,value in sorted(document.biome_edits.items())],
+        "layers": [[*key,[{"name":b.name,"properties":b.properties,"state_types":b.state_types} for b in value]] for key,value in sorted(document.layer_edits.items())],
         "chunks": [[*key,state.kind,[[base64.b64encode(k).decode('ascii'),base64.b64encode(v).decode('ascii')] for k,v in state.records]] for key,state in sorted(document.chunk_edits.items())],
         "selection": [[list(box.a),list(box.b)] for box in document.selection.boxes] if document.selection else [],
     }
@@ -206,7 +220,7 @@ def load_project(path):
     if path.stat().st_size > MAX_PROJECT_BYTES:
         raise ValueError("Project file exceeds 64 MiB")
     data = json.loads(path.read_text("utf-8"))
-    if data.get("format") not in ("facetedit-project","luma-project") or data.get("version") not in (1,2,3):
+    if data.get("format") not in ("facetedit-project","luma-project") or data.get("version") not in (1,2,3,4):
         raise ValueError("Unsupported FacetEdit project format")
     if data.get("source") is not None:
         world = open_world(data["source"])
@@ -257,7 +271,7 @@ def load_project(path):
             document.edits[key] = block
     if data.get("dimension") not in world.dimensions:
         raise ValueError("Invalid project dimension")
-    for field,target in (("block_entities",document.entity_edits),("biomes",document.biome_edits)):
+    for field,target in (("block_entities",document.entity_edits),("biomes",document.biome_edits),("layers",document.layer_edits)):
         rows = data.get(field,[])
         if not isinstance(rows,list) or len(rows)+document.pending_count > 262144:
             raise ValueError("Project exceeds the pending edit limit")
@@ -277,12 +291,16 @@ def load_project(path):
                     value = base64.b64decode(value,validate=True)
                     validate_entity(value,(x,y,z))
                 baseline = view.get_block_entity(x,y,z,dim)
-            else:
-                if any(v%4 for v in (x,y,z)):
-                    raise ValueError("Biome coordinates must be aligned to 4-block cells")
-                value = Block(value).name
+            elif field=='biomes':
+                if view.biome_cell(x,y,z,dim)!=(x,y,z):raise ValueError('Biome coordinates must align with their stored cells')
+                value = view.biome_value(value,x,y,z,dim)
                 baseline = view.get_biome(x,y,z,dim)
-            if value != baseline or (field == "block_entities" and value is not None and key in document.edits):
+            else:
+                if not world.edition.startswith('Bedrock') or not isinstance(value,list) or len(value)>7:raise ValueError('Invalid project block layers')
+                value=tuple(Block(b['name'],tuple(tuple(p) for p in b.get('properties',[])),tuple(tuple(p) for p in b.get('state_types',[]))) for b in value)
+                while value and value[-1].air:value=value[:-1]
+                baseline=view.get_extra_blocks(x,y,z,dim)
+            if value != baseline or (field == "block_entities" and value is not None and key in document.edits) or (field=='layers' and value and key in document.edits):
                 target[key] = value
     document.dimension = data["dimension"]
     boxes = data.get('selection',[])

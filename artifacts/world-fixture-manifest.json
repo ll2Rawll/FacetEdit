@@ -1,0 +1,171 @@
+{
+  "source": "https://github.com/Amulet-Team/Amulet-Core/tree/1.9.41/tests/data/worlds_src",
+  "scope": "Public reference test fixtures, downloaded for validation only; no fixtures or reference implementation are bundled. Java worlds contain selected regions, not all source-world files.",
+  "files": [
+    {
+      "path": "bedrock/vanilla/1_16/db/000004.log",
+      "bytes": 2912549,
+      "sha256": "7b7f776bfb549a56b7267b7ceaff08cb5037873117c0fd4f177b072b35a7f7cb"
+    },
+    {
+      "path": "bedrock/vanilla/1_16/db/000005.ldb",
+      "bytes": 1078686,
+      "sha256": "0433c572c5e09603875ce7ad0092bdee811ea48ebbae080ac629465cdee85b99"
+    },
+    {
+      "path": "bedrock/vanilla/1_16/db/CURRENT",
+      "bytes": 16,
+      "sha256": "1005a525006f148c86efcbfb36c6eac091b311532448010f70f7de9a68007167"
+    },
+    {
+      "path": "bedrock/vanilla/1_16/db/MANIFEST-000002",
+      "bytes": 108,
+      "sha256": "4e5f9366fed90d995a2710ee4e26b4e226fa91acc860dd261094f1395f404fb9"
+    },
+    {
+      "path": "bedrock/vanilla/1_16/level.dat",
+      "bytes": 2215,
+      "sha256": "e9f64b05fe2575ce43ff669c0750d4babe1bcdab2028738307c8d80af3cf15d9"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/updated_superflat/db/000009.ldb",
+      "bytes": 7641,
+      "sha256": "a319ec39243f8149eab6cf7b868bc7d1afd128afe3058304a59cf3efab458a4b"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/updated_superflat/db/000011.log",
+      "bytes": 67818,
+      "sha256": "3b5eda9cbff85e0987043d90dcf6f734703f431ede2fd5b5b52a8a61d02fd8d6"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/updated_superflat/db/CURRENT",
+      "bytes": 16,
+      "sha256": "e91d13722e31f9b06c5df3582cad1ea5b73547ce3dc08b12ed461f095aad48ee"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/updated_superflat/db/MANIFEST-000010",
+      "bytes": 112,
+      "sha256": "fb044a2259348dad1201d64e328e3919546eea399c61c9d565802ef285db22ae"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/updated_superflat/level.dat",
+      "bytes": 2606,
+      "sha256": "ac0251b6ac1bb03c30e4244d3a55ad3ae847dfbf00bb3140e319a84cbabd6b4b"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/vanilla/db/000285.ldb",
+      "bytes": 2115269,
+      "sha256": "9ce5a6aa25f4156eaf3ae103f083d76b69ed964120aaaea59f0bf9d42ba41357"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/vanilla/db/000286.ldb",
+      "bytes": 2139359,
+      "sha256": "1580b8b1ec1fbaeeb3a01914033d4cf7fbb7701f7d950ceeb5ba78388fb85c85"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/vanilla/db/000287.ldb",
+      "bytes": 2140669,
+      "sha256": "a7fc474109c15089776d5ab0c83add7cc94984dc1524300f6fb5874f77d6701d"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/vanilla/db/000288.ldb",
+      "bytes": 2119022,
+      "sha256": "e5530ed4f23a83bbb9ec00d358a39b93f3b163ba24d6fec311cab5d1674e59d1"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/vanilla/db/000289.ldb",
+      "bytes": 2109949,
+      "sha256": "011ace043d770eae1ad55c9af6e789013a8c0b0321003780892e80447a104cb9"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/vanilla/db/000290.ldb",
+      "bytes": 2135706,
+      "sha256": "77ea1b116ec6439897433a144804328e108f1b4fa8608461b2c993b7a61016ac"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/vanilla/db/000291.ldb",
+      "bytes": 2113847,
+      "sha256": "1da4edecf6a945156cb63d79c57e2c616b633755beee84cc20d1e5671965606b"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/vanilla/db/000292.ldb",
+      "bytes": 861720,
+      "sha256": "7952d95969dcfb0098842f9f0c674bf5626d76af48d606f998238872ee056412"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/vanilla/db/000307.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/vanilla/db/CURRENT",
+      "bytes": 16,
+      "sha256": "e5d5b52da6b4b7734b973101396157753cb46451c86ab4f0e06f87cf077d30c6"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/vanilla/db/LOCK",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/vanilla/db/MANIFEST-000305",
+      "bytes": 488,
+      "sha256": "148715f8b3c7e781e8e788bdb52133e3a54fdb5a2d398ccf8dfcbc5e5dcbff6a"
+    },
+    {
+      "path": "bedrock/vanilla/1_18/vanilla/level.dat",
+      "bytes": 2556,
+      "sha256": "d40c47d7568651c92dc61151f91500dd57919f7fdeaf9e586d159a70534eea1b"
+    },
+    {
+      "path": "java/vanilla/1_12_2/level.dat",
+      "bytes": 1520,
+      "sha256": "c1c25862717ced2dcf83608b54c5f633d2273415194695c42b3cfe84c0aa96b6"
+    },
+    {
+      "path": "java/vanilla/1_12_2/region/r.0.0.mca",
+      "bytes": 700416,
+      "sha256": "676f11c0cd15be716d03f9127c75d0ed071fd5e8f47eec0a533891d075ddbd2c"
+    },
+    {
+      "path": "java/vanilla/1_13/level.dat",
+      "bytes": 1552,
+      "sha256": "f4b352f07df23002946643f40097c83be6a1beb64d04a9a18e4378f9d6ba9a8a"
+    },
+    {
+      "path": "java/vanilla/1_13/region/r.0.0.mca",
+      "bytes": 1191936,
+      "sha256": "edc157758a3d9c5b24947f25a197f5601e96ea14b4baf6cd6d1652bfd2288179"
+    },
+    {
+      "path": "java/vanilla/1_17_1/custom_height_inline/level.dat",
+      "bytes": 1874,
+      "sha256": "e622ee46ff047ff855c44596e8ca3bffa25400fe6be95dcca274a78522bbf559"
+    },
+    {
+      "path": "java/vanilla/1_17_1/custom_height_inline/region/r.0.0.mca",
+      "bytes": 1286144,
+      "sha256": "45a548b818644324d1f811bd1917ef4bcb2f8da417c3b1b8a8eb6053020a2895"
+    },
+    {
+      "path": "java/vanilla/1_17_1/superflat/level.dat",
+      "bytes": 2023,
+      "sha256": "394f106df25e030fecf8333b50108c473afb6659bda053e14db2a1a657f0c60e"
+    },
+    {
+      "path": "java/vanilla/1_17_1/superflat/region/r.0.0.mca",
+      "bytes": 528384,
+      "sha256": "f93df800f80eb7f64886cc9811e520810837b45ac66facbb73cb55f9a4e22f06"
+    },
+    {
+      "path": "java/vanilla/1_18/superflat/level.dat",
+      "bytes": 2008,
+      "sha256": "5db0a130e166e34cdc7c72a561d226e8b051f7b4e1bfd706f2a448ba08099d79"
+    },
+    {
+      "path": "java/vanilla/1_18/superflat/region/r.0.0.mca",
+      "bytes": 1335296,
+      "sha256": "cbcc31c820cfe9d9ff3eb4d064740a836fb13727fcbf2faa881ab03fcb01777b"
+    }
+  ]
+}

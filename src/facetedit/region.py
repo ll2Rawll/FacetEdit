@@ -130,6 +130,7 @@ class Region:
         match = re.fullmatch(r'r\.(-?\d+)\.(-?\d+)\.mca',path.name)
         if not match:return set()
         size = path.stat().st_size
+        if size==0:return set()  # Minecraft may leave an allocated but empty region file.
         if size<8192 or size%SECTOR or size>256*1024*1024:raise FormatError('Invalid region file length')
         with path.open('rb') as file:header = file.read(4096)
         rx,rz = map(int,match.groups());result = set();occupied = {0,1}

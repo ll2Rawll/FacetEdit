@@ -6,7 +6,7 @@ Written from scratch in Python's standard library and Tk. No Amulet code,
 translation tables, plugins, third-party Python packages, webview, account,
 telemetry, or network service is used by the application.
 
-**Version 0.3.0 is experimental. Full Amulet feature parity is unfinished.**
+**Version 0.4.0 is experimental. Full Amulet feature parity is unfinished.**
 The editor performs real Java and Bedrock edits; the exact boundaries are in
 [Compatibility](docs/COMPATIBILITY.md). Synthetic tests and independent database
 validation do not establish that exported worlds have been validated in Minecraft.
@@ -29,7 +29,7 @@ Windows:
 py -3 launch.py
 ```
 
-Or extract `FacetEdit-0.3.0-portable.zip` and open the matching platform launcher.
+Or extract `FacetEdit-0.4.0-portable.zip` and open the matching platform launcher.
 The portable app is a Python zipapp, not a self-contained `.exe` or signed `.app`:
 
 ```sh
@@ -76,9 +76,10 @@ Tk does not provide Apple's native backdrop-refraction material.
 3. Copy, cut, paste or repeat a selection with Clone. Block entities such as
    container inventories retain their typed NBT and relocated coordinates.
    Biome and NBT edits participate in undo, redo, projects and edited-world export.
-4. **Save copy** exports to a new folder. The source world is never edited.
-   Close Minecraft before exporting a consistent snapshot. Bedrock can also
-   export an edited `.mcworld` archive.
+4. **Save original world** (Ctrl/Cmd+S) installs a prepared copy and retains the
+   original in a backup folder beside the world. Close Minecraft first. File →
+   **World save checkpoints** restores a backup or finishes an interrupted save.
+   **Save copy** exports to a new folder; Bedrock also exports `.mcworld` archives.
 5. **Save FacetEdit project** stores pending changes and a reference to the
    original source folder. Keep that source at its recorded path and unchanged.
    Sample projects preserve the sample generator and changes without an external
@@ -94,17 +95,36 @@ Tk does not provide Apple's native backdrop-refraction material.
    preferences control autosave and its interval. Saving or closing cleanly
    clears the current checkpoint; interrupted sessions remain discoverable.
 
-Java `.nbt`, Bedrock `.mcstructure` and Sponge `.schem` v2/v3 interchange blocks
-and block NBT. Moving entities, scheduled-tick structure metadata, schematic
-biomes and secondary Bedrock layers are unsupported and refused when detected.
-Java structure DataVersion must match the target world; there is no version or
-edition translator. Common Java block-state rotations are supported; rotation
-of block NBT and Bedrock directional states is refused.
+Java `.nbt`, Bedrock `.mcstructure`, Sponge `.schem` v2/v3, and legacy Java
+`.schematic` interchange blocks and block NBT. Bedrock structures preserve both
+storage layers; the editor and projects retain up to eight world storage layers.
+Moving entities, scheduled-tick structure metadata and schematic biomes are
+refused when detected. Java DataVersion and edition must match the destination;
+universal version/edition translation is unfinished.
 
-Modern Java biome edits affect every 4×4×4 cell intersecting the selection.
-Waterlog updates existing Java `waterlogged` properties. The block NBT editor
-uses lossless typed JSON; it preserves numeric widths, lists and arrays and
-validates syntax/ranges before applying a change.
+**Free transform & preview** in Paste provides arbitrary X/Y/Z angles, per-axis
+scaling/reflection, numeric destinations and nudge controls. A placement outline
+and representative blocks appear without editing the world. Arbitrary angles
+resample voxels; cardinal transforms retain exact coordinates. Common Java and
+Bedrock directional states, rails, stairs, hinges and container links rotate.
+Some tilted/legacy states cannot be represented; disable state rotation to
+transform geometry alone. Opaque nested NBT coordinates are not universally moved.
+
+**Set biome** supports box or full-column selection, Java numeric/paletted layouts
+and Bedrock 2D/3D biome storage. Unknown numeric IDs can be entered as `numeric:ID`.
+Custom Java dimension heights resolve from metadata and enabled datapacks.
+**Waterlog** updates Java properties or Bedrock secondary water layers; **Layered
+fill** offers overlay, underlay, game-like placement and explicit first/second
+layer modes. Typed block NBT retains numeric widths, lists and arrays through undo.
+
+**Custom operations** runs bundled checkerboard/shell operations or trusted
+Python scripts with typed options, progress, cooperative cancellation and a
+single undoable commit. See the [operation API](docs/OPERATIONS.md). Amulet plugins
+that import its libraries are not compatible with this independent API.
+
+Pre-1.13 Anvil worlds retain numeric IDs/metadata, including modded 12-bit IDs.
+Use historical names such as `wool[legacy_data=14]` or `legacy:300[legacy_data=12]`.
+This is lossless numeric editing, not automatic conversion to modern block states.
 
 ## Shortcuts
 
@@ -113,7 +133,7 @@ Use Ctrl on Windows/Linux and Command on macOS.
 | Shortcut | Action |
 | --- | --- |
 | O | Open world |
-| S | Save edited world copy; sample: save project |
+| S | Save original world with retained backup; sample: save project |
 | Shift+S | Save project |
 | Z / Y or Shift+Z | Undo / redo |
 | C / X / V | Copy / cut / paste |
@@ -147,7 +167,7 @@ native platform release signing remain unverified.
 
 Read the [implementation plan](docs/IMPLEMENTATION_PLAN.md),
 [redesign plan](docs/REDESIGN_PLAN.md), [compatibility ledger](docs/COMPATIBILITY.md),
-[0.3 expansion plan](docs/PARITY_0_3_PLAN.md) and [test report](docs/TEST_REPORT.md).
+[full parity worklist](docs/FULL_PARITY_WORKLIST.md) and [test report](docs/TEST_REPORT.md).
 The application source is MIT-licensed.
 FacetEdit is independent of Amulet, Mojang and Microsoft; their names identify
 reference software and file formats, not ownership or endorsement.

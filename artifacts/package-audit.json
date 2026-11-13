@@ -1,13 +1,13 @@
 {
-  "version": "0.3.0",
+  "version": "0.4.0",
   "module_origin": "/workspace/facetedit/dist/FacetEdit.pyz/facetedit/__init__.py",
-  "python_modules": 26,
+  "python_modules": 41,
   "third_party_imports": [],
   "logo_assets": [
     "facetedit/assets/logo-128.png",
     "facetedit/assets/logo-256.png",
     "facetedit/assets/logo-64.png"
   ],
-  "bytes": 202288,
-  "sha256": "2a8558111bd4035903d07c55aad2f7a534154afd6d5f57feefcfbbddae261c80"
+  "bytes": 236198,
+  "sha256": "c94cd49400f7e9e6caf9c6ae54197fc75bf63029dcb66f92c2be66de4dbde94b"
 }

@@ -23,9 +23,12 @@ def java_world(path, version=4189):
         if version >= 2834:
             section["block_states"] = nbt.compound(palette=palette)
             section["biomes"] = nbt.compound(palette=nbt.Tag(nbt.LIST, nbt.ListValue(nbt.STRING, ["minecraft:plains"])))
-        else:
+        elif version>=1451:
             section["Palette"] = palette
             section["BlockStates"] = nbt.Tag(nbt.LONG_ARRAY, [0] * 256)
+        else:
+            section['Blocks']=nbt.Tag(nbt.BYTE_ARRAY,b'\x01'*4096)
+            section['Data']=nbt.Tag(nbt.BYTE_ARRAY,b'\0'*2048)
         data = nbt.compound(
             xPos=nbt.Tag(nbt.INT, cx), zPos=nbt.Tag(nbt.INT, cz),
             Status=nbt.Tag(nbt.STRING, "minecraft:full" if version >= 2834 else "full"),
@@ -34,6 +37,7 @@ def java_world(path, version=4189):
             isLightOn=nbt.Tag(nbt.BYTE, 1),
         )
         data.value["sections" if version >= 2834 else "Sections"] = nbt.Tag(nbt.LIST, nbt.ListValue(nbt.COMPOUND, [section]))
+        if version<1451:data.value['Biomes']=nbt.Tag(nbt.BYTE_ARRAY,b'\x01'*256)
         data.value["block_entities" if version >= 2834 else "TileEntities"] = nbt.Tag(nbt.LIST, nbt.ListValue(nbt.COMPOUND, [
             {"id": nbt.Tag(nbt.STRING, "minecraft:chest"), "x": nbt.Tag(nbt.INT, cx*16+1), "y": nbt.Tag(nbt.INT, 2), "z": nbt.Tag(nbt.INT, cz*16+3)},
             {"id": nbt.Tag(nbt.STRING, "minecraft:chest"), "x": nbt.Tag(nbt.INT, cx*16+2), "y": nbt.Tag(nbt.INT, 2), "z": nbt.Tag(nbt.INT, cz*16+3)},

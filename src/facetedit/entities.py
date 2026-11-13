@@ -28,3 +28,23 @@ def validate_local(position, size, blocks, entities):
         raise ValueError("Block entity lies outside the structure bounds")
     if position not in blocks or blocks[position].air or position in entities:
         raise ValueError("Block entity is duplicated or has no non-air block")
+
+
+def transform(data,size,turns=0,mirror=False):
+    if not turns%4 and not mirror:return data
+    from .transforms import point
+    name,tag=nbt.loads(data)
+    position=tuple(nbt.get(tag,axis) for axis in 'xyz')
+    if any(type(v) is not int for v in position):raise ValueError('Invalid block entity coordinates')
+    if 'pairx' in tag.value or 'pairz' in tag.value:
+        pair=(nbt.get(tag,'pairx',position[0]),position[1],nbt.get(tag,'pairz',position[2]))
+        if any(type(v) is not int for v in pair):raise ValueError('Invalid paired-container coordinates')
+        target=point(pair,size,turns,mirror)
+        tag.value['pairx']=nbt.Tag(nbt.INT,target[0]);tag.value['pairz']=nbt.Tag(nbt.INT,target[2])
+    for key in ('Rot',):
+        if key in tag.value:
+            old=tag.value[key]
+            if old.kind in (nbt.BYTE,nbt.SHORT,nbt.INT):
+                tag.value[key]=nbt.Tag(old.kind,((-old.value if mirror else old.value)+4*turns)%16)
+    for axis,value in zip('xyz',point(position,size,turns,mirror)):tag.value[axis]=nbt.Tag(nbt.INT,value)
+    return nbt.dumps(tag,name)

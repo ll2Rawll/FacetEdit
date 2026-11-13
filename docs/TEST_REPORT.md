@@ -1,158 +1,142 @@
-# FacetEdit 0.3.0 — verification report
+# FacetEdit 0.4.0 — verification report
 
 Verified locally on 2026-11-13, Linux x86_64, Python 3.13.5, Tk 8.6.16 and an
-Xvfb desktop. A second core run used Python 3.12.14. Native Windows/macOS and
-Minecraft-game reopening were not available. Full Amulet parity is unfinished.
+Xvfb desktop. Python 3.12.14 was also used for the core suite. This is an
+experimental release; full Amulet parity and native Windows/macOS verification
+remain unfinished. No export has been reopened in Minecraft.
 
-## Final automated results
+## Automated results
 
-**240 tests passed: 192 core/workflow tests and 48 live desktop tests**, without
-skips, in both the source and packaged application:
+**344 tests pass: 284 core/workflow tests and 60 live desktop tests.**
 
 | Run | Result |
 | --- | --- |
-| Python 3.13 source, all GUI flags enabled | 240 passed, 9.630 seconds |
-| Python 3.13 packaged zipapp, all GUI flags enabled | 240 passed, 9.512 seconds |
-| Python 3.12 core | 192 passed; 48 desktop tests explicitly skipped |
-| Compilation | Application, tests and scripts compiled |
-| Native LZ4 / xxHash oracle | 142 independent checks passed |
-| Native LevelDB / Snappy oracle | All snapshot, SST/tombstone and compression checks passed |
+| Python 3.13 source with GUI tests | 344 passed, no skips, 11.831 seconds |
+| Python 3.13 packaged application with GUI tests | 344 passed, no skips, 11.619 seconds |
+| Python 3.12 core | 284 passed; 60 desktop tests explicitly skipped, 3.661 seconds |
+| Compilation and whitespace validation | Passed |
+| Runtime package import audit | 41 Python modules; no third-party imports; three logo assets |
+| Published world fixture corpus | Eight worlds read, edited, exported and reopened in FacetEdit; all source file hashes unchanged |
 
-```sh
-DISPLAY=:100 FACETEDIT_GUI_TESTS=1 PYTHONPATH=src /usr/bin/python3 -m unittest discover -v
-DISPLAY=:100 FACETEDIT_GUI_TESTS=1 PYTHONPATH=dist/FacetEdit.pyz /usr/bin/python3 -m unittest discover -v
-```
-
-Raw evidence: [source](../artifacts/test-results.txt),
-[packaged](../artifacts/package-tests.txt),
-[Python 3.12](../artifacts/python312-tests.txt),
+[Source log](../artifacts/test-results.txt),
+[package log](../artifacts/package-tests.txt),
+[Python 3.12 log](../artifacts/python312-tests.txt),
 [package audit](../artifacts/package-audit.json).
 
-The package audit parses all **26 Python modules**, checks absolute imports
-against the standard library, verifies the three logo resources, excludes Amulet
-and site-packages, and confirms imports resolve from the zipapp. The tested
-executable is 202,288 bytes. The final documentation rebuild is checked against
-its SHA-256 so the delivered executable is the one that passed the tests.
+The tested zipapp is 236,198 bytes, SHA-256
+`c94cd49400f7e9e6caf9c6ae54197fc75bf63029dcb66f92c2be66de4dbde94b`.
+The final documentation rebuild must retain this executable hash. Distribution
+ZIP hashes are in `dist/checksums.json`. The audit checks all imports against the
+standard library, confirms imports resolve from the zipapp and excludes Amulet,
+site-packages and bytecode caches.
 
-## Added coverage in 0.3
+## Additional coverage in 0.4
 
-The previous 151 tests remain. This expansion adds 89 tests:
+The 240 earlier tests remain, with obsolete refusal assertions replaced by
+positive behavior/preservation checks. This release adds 104 tests:
 
-- **Selection algebra (11):** union, subtraction, overlaps and no duplicate
-  edits; 70 randomized comparisons against brute-force coordinate sets;
-  negative chunk rounding, bounds and box budgets; atomic shrinking, nudge,
-  sparse paste, biome gaps, both sparse structure formats and export limits.
-- **Region extensions (11):** XXH32 known vectors, Java's 28-bit checksum adapter,
-  raw/compressed LZ4 blocks, overlapping matches, framing/truncation/limits,
-  external sidecars, oversized spill, copied sidecars, deletion and neighbors.
-- **Chunk workflows (26):** Java terrain/entities/POI and LZ4 external sidecars;
-  empty chunks across old/modern layouts; deletion, pruning, import, dimensions,
-  project/export/reopen, source hashes, failure cleanup and budgets; undo restores
-  cleared block/NBT/biome edits. Bedrock tests retain opaque records, legacy
-  entities and actor indexes, protect shared actors, reject collisions and
-  unknown/mismatched game versions, and reopen projects/.mcworld exports.
-- **Recovery (8):** atomic checkpoints, restoration, source changes, session
-  isolation, stale-writer generation guards and explicit discard restrictions.
-- **New manager UI (13):** actual selection-region actions and chunk-map pointer
-  events; create/fill/save/reopen, undo/redo, pruning confirmation, imports,
-  checkpoint restoration, saving newer edits before restoring an older copy,
-  preferences, dialog bounds and closing stale managers when switching worlds.
-- **Camera math (10):** orthonormal bases, movement directions, constant diagonal
-  speed, boost/time/world clamps, projection, culling, segment/near-plane clipping
-  and 400 randomized camera/face cases.
-- **Camera UI (10):** actual mode/pointer/key actions, picking/fill/undo,
-  focus-loss stopping, text-field isolation, drag look, scroll speed, underground
-  faces, cached geometry, coordinate navigation and new-world reset.
-
-These supplement the original binary NBT/palettes/LevelDB tests, metadata and
-structure preservation, archives, transactional history, world-copy failures,
-legacy project migration and full desktop editing workflows.
-
-## Revisions and defects found
-
-1. Added chunk transactions, disjoint selections, external chunks and LZ4.
-   Verified retained Java metadata, Bedrock shared actor references and unchanged
-   source hashes. Reimporting identical chunk bytes now still clears pending edits.
-2. Added background recovery and the actual manager controls. Fixed same-session
-   restoration after saving newer edits, and closed old manager windows when
-   changing documents so controls cannot act on a stale document.
-3. Visual inspection found the chunk-map centering button clipped. Reduced
-   spacing and added a minimum visible button-height assertion; captured and
-   reviewed the corrected screen.
-4. Fixed oversized transactions being applied and immediately evicted from undo.
-   They now fail before mutation. Added world-level external-chunk tests, sidecar
-   copying, dimension isolation and sparse-format preservation checks.
-5. Added perspective flight and 20 math/desktop tests. Cached transformed vertices
-   and skipped unnecessary clipping work, then measured the same camera path
-   before and after. Raised the initial camera to give a clearer entry view.
-6. Indexed Bedrock chunk records once and reused Java region caches during chunk
-   import. Added known-version checks before creating empty Bedrock chunks.
-7. The first broad pass caught two new test-harness mistakes: Document.copy()
-   returns a count, while the clipboard lives on the document. Corrected the
-   tests; all 239 then passed. A later 240-test run exposed a timing-sensitive
-   camera release: one movement timer could remain pending after the last key
-   was released. Cancelled that timer immediately, then reran the targeted,
-   full-source and full-package suites successfully.
-8. Reviewed workspace, flight, compact flight, regions, chunks and recovery
-   screenshots. Built the standard-library zipapp and audited its contents.
-
-Screenshots are captures of the running application:
-[workspace](../artifacts/workspace.png), [flight](../artifacts/flight.png),
-[compact flight](../artifacts/flight-compact.png), [chunks](../artifacts/chunks.png),
-[regions](../artifacts/regions.png), [recovery](../artifacts/recovery.png).
-Earlier visual passes remain in the source archive.
-
-## Independent binary checks
-
-The optional scripts use separately installed native libraries as test oracles.
-None are imported or bundled by the application.
-
-- Native LevelDB reads 1,001 FacetEdit-written key/value pairs, including a
-  fragmented large value. FacetEdit reads 901 survivors after native tombstones
-  and SST compaction. Native Snappy supplies five compression corpora.
-- Native liblz4 compresses random/repetitive inputs from zero to 100,000 bytes;
-  FacetEdit decodes them. Native libxxhash verifies four seeds per input. Java
-  LZ4Block framing uses the independently computed checksum masked to 28 bits.
-
-See [database results](../artifacts/independent-validation.json) and
-[LZ4/xxHash results](../artifacts/independent-lz4.txt).
-The checksum adapter is specified by lz4-java's public
-[StreamingXXHash32.asChecksum](https://github.com/lz4/lz4-java/blob/master/src/java/net/jpountz/xxhash/StreamingXXHash32.java).
-No lz4-java implementation is bundled. These checks establish binary agreement,
-not Minecraft gameplay correctness.
-
-## Measurements
-
-[Core benchmarks](../artifacts/benchmarks.json),
-[viewport benchmarks](../artifacts/renderer-benchmark.json),
-[chunk benchmarks](../artifacts/chunk-benchmark.json).
-
-| Synthetic workload | Median on this host |
+| Area | New tests and examples |
 | --- | --- |
-| Decode 65,536 NBT longs | 1.455 ms |
-| Decode / encode 4,096-block, 37-state palette | 0.636 / 2.583 ms |
-| CRC32C of 1 MiB | 104.730 ms |
-| Fill + undo + redo, 32,768 blocks | 198.872 ms |
-| Warm orbit redraw, 1,365 visible faces | 15.518 ms |
-| Warm perspective redraw, 533 faces in last frame | 22.084 ms |
-| Java import + undo + redo, 64 empty chunks | 76.469 ms |
-| Bedrock import + undo + redo, 64 chunks / 20,000 unrelated source records | 0.887 ms |
+| Bedrock layers | 12: layer-only changes, fill modes, NBT retention, copy/paste/clone, undo, project and structure persistence, typed states and export |
+| Cardinal transforms | 4: rails/stairs/hinges, Bedrock state types, paired-container coordinates and inverse/composition checks |
+| Numeric/Bedrock biomes | 13: 2D/3D layouts, golden byte positions, height preservation, inherited successor isolation, projects, undo and column behavior |
+| Trusted operations | 12: option validation, atomic proposals, cancellation, failures, stale workspace rejection, budget, read-own-writes and script exit handling |
+| Original save/recovery | 15: both editions, exact backups, rebase/undo, failures at every swap boundary, changed-file protection, subprocess locks and abrupt process exits |
+| New desktop workflows | 10: bundled/custom/cancelled scripts, layered fill, biome columns, save/restore/cancel, transform preview/movement/paste/undo and visible buttons |
+| Legacy Java | 10: all 65,536 ID/metadata combinations, independent nibble/index fixtures, numeric Anvil edits/biomes/projects, empty chunks, Alpha schematic/NBT/offsets, malformed input and McRegion guards |
+| Affine transforms | 11: XYZ expected coordinates, inverse/composition properties, analytic arbitrary-angle sampling, integer/fractional scaling, sparse masks, type/state policies, NBT/layers and atomic failures |
+| Dimension heights | 9: inline and folder/ZIP datapacks, priority/disabled packs, unresolved/invalid definitions, negative Y, short 3D biome arrays and older chunks in upgraded worlds |
+| Geometry loading | 7: latest-request cancellation/coalescing, bounded cache, error delivery, shutdown, sparse height hints and actual Tk responsiveness/stale-view rejection |
+| Empty region inventory | 1: Minecraft-created zero-byte regions versus truncated headers |
 
-A perspective redraw that loads a new volume took 51.784 ms in the sample.
-A separate fixed camera path improved from a 32.117 ms median to 20.945 ms after
-projection/clipping optimization; raw [before](../artifacts/0.3-flight-before-optimization.json)
-and [after](../artifacts/0.3-flight-after-optimization.json) results retain its scope.
+All previous NBT, compression, database, chunk, selection, recovery, archives,
+source-preservation, camera and desktop workflows also run in both complete suites.
 
-No idle rendering animation runs. Geometry loads are synchronous and bounded;
-these small cached-scene measurements do not establish large-world throughput,
-constant frame rates, memory-pressure behavior or superiority to Amulet.
+## Published world corpus
 
-## Remaining validation
+The independent validation script uses public Amulet-Core **1.9.41 test fixtures**
+as input data, with no Amulet runtime imports or copied implementation. Fixtures
+stay outside the distribution. Java fixtures contain metadata and selected
+regions; Bedrock fixtures contain the database files. This is not a complete
+world/version corpus or a game compatibility certification.
 
-No export was reopened in Minecraft. Worlds are synthetic; the Bedrock empty-
-chunk fixture deliberately carries opaque biome bytes and does not validate
-real biome semantics. Not every Java release or Bedrock encoding is covered.
-Windows/macOS execution, HiDPI hardware, screen readers, process-kill/power-loss
-recovery, filesystem diversity, large-world soak tests, signing and installers
-remain unverified. CI definitions cover the three OS families but no remote run
-is claimed. See [Compatibility](COMPATIBILITY.md) for outstanding feature parity.
+- Java: 1.12.2 numeric Anvil; 1.13; 1.17.1 superflat and custom-height worlds;
+  1.18 superflat.
+- Bedrock: 1.16; 1.18 updated superflat and vanilla, the latter with 2,737 stored
+  chunks and modern 3D biome palettes.
+
+Each case reads a stored block and biome, stages a block/biome change (plus a
+Bedrock secondary water layer), exports a separate folder, reopens it and verifies
+its edited values. SHA-256 checks confirm every downloaded source file is
+unchanged. [Results](../artifacts/world-corpus-results.json) and
+[33-file provenance/hash manifest](../artifacts/world-fixture-manifest.json).
+
+```sh
+PYTHONPATH=src python3 scripts/validate_world_corpus.py --fixtures /path/to/world-fixtures
+DISPLAY=:100 FACETEDIT_GUI_TESTS=1 PYTHONPATH=src python3 -m unittest discover -v
+DISPLAY=:100 FACETEDIT_GUI_TESTS=1 PYTHONPATH=dist/FacetEdit.pyz python3 -m unittest discover -v
+```
+
+## Revisions from tests and review
+
+1. Fixed explicit unchanged secondary layers being lost when a primary block
+   changed. Added a regression for the baseline/delta interaction.
+2. Operations now clear stale NBT when staging a replacement primary block and
+   report SystemExit/KeyboardInterrupt through the worker error path.
+3. Legacy and custom-height fixture reads led to zero-byte region handling,
+   dimension-type resolution, variable-height numeric biome arrays and careful
+   separation of old biome origins in upgraded worlds.
+4. Original saves retain backups and durable journals. Fault-injection tests
+   cover preparation, backup and installation. Three subprocesses terminate via
+   `os._exit` at publication boundaries; recovery restores original hashes.
+   These abrupt-exit checks are not a power-loss/filesystem durability simulation.
+5. A lock review found POSIX process locks can disappear when another descriptor
+   for the same file closes. Linux now uses open-file-description locks; saves
+   also reacquire game locks after copying/hashing and before publication.
+   A separate process using a classic POSIX record lock verifies the game lock
+   is still held after preparation. The Windows implementation remains untested.
+6. Screenshot review found clipped transform-panel buttons. Increased the panel
+   height, added actual bounds/height assertions and reviewed the corrected image.
+7. Background geometry cancels obsolete requests, bounds cache/queue growth and
+   rejects stale results after switching worlds. CPU-heavy meshing now yields
+   briefly so Tk can regain the interpreter during redraws.
+8. Full source and zipapp suites pass after these revisions. The package also
+   passes the standard-library import/resource audit and `--diagnose`.
+
+Captures from the running application:
+[workspace](../artifacts/workspace.png), [compact](../artifacts/compact.png),
+[transform](../artifacts/transform.png), [placement preview](../artifacts/transform-preview.png),
+[operations](../artifacts/operations.png), [save checkpoints](../artifacts/world-save.png),
+[flight](../artifacts/flight.png), [chunks](../artifacts/chunks.png).
+
+## Performance evidence and limits
+
+The cached sample's latest visual-review run measured a 14.960 ms median orbit
+redraw (1,365 visible faces) and 24.528 ms median perspective redraw (533 faces in
+the final frame). A sample draw entering a new volume took 51.447 ms. These are
+small CPU-rendered scenes on this Linux host, not a comparison with Amulet.
+[Viewport measurements](../artifacts/renderer-benchmark.json).
+
+A separate six-position disk-world path uses the published 1.17.1 custom-height
+fixture. Both runs build three meshes and reuse three cached meshes. Adding
+cooperative worker yields reduced the slowest UI draw/enqueue from **127.139 ms
+to 52.231 ms**. The tradeoff is longer background completion: the slowest measured
+complete view increased from 133.626 ms to 198.925 ms. Cached requests completed
+in roughly 28 ms. There are two cached meshes; polling stops when work completes.
+[Before](../artifacts/streaming-before-optimization.json) and
+[after](../artifacts/streaming-benchmark.json) retain all individual measurements.
+
+Earlier core/chunk benchmarks and optional native LevelDB/Snappy/LZ4/xxHash
+oracle results are retained as historical codec evidence. Those oracle libraries
+are test tools only and are not runtime dependencies or bundled code. Their
+checks do not validate Minecraft gameplay, lighting, ticks or all format versions.
+
+## Remaining acceptance work
+
+Full state/biome/block-NBT translation, remaining formats/versions, moving-entity
+interchange, resource-pack/model/transparency rendering and full-world display
+are still missing. Native Windows/macOS execution, actual game reopening,
+large-world soak/memory tests, power-loss/filesystem diversity, signing/installers,
+HiDPI hardware and accessibility auditing are unverified. The complete target
+and current boundaries are in [Full parity worklist](FULL_PARITY_WORKLIST.md)
+and [Compatibility](COMPATIBILITY.md).

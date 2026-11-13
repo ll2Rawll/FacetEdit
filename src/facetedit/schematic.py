@@ -82,6 +82,8 @@ def load_schematic(path):
 
 
 def save_schematic(clipboard, path, version=3):
+    if clipboard.data_version is None or clipboard.data_version<1451:raise ValueError('Use .schematic for legacy numeric Java blocks')
+    if clipboard.extra_blocks:raise ValueError('Sponge schematics do not store Bedrock extra layers')
     if clipboard.edition != "Java" or version not in (2,3):
         raise ValueError("Sponge schematic export requires a Java clipboard and version 2 or 3")
     width, height, depth = clipboard.size

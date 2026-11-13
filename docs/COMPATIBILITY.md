@@ -1,4 +1,4 @@
-# FacetEdit 0.3.0 — compatibility and parity ledger
+# FacetEdit 0.4.0 — compatibility and parity ledger
 
 Implemented means code and the stated tests exist, within the listed limits.
 It does not mean every Minecraft version or in-game behavior has been verified.
@@ -9,19 +9,20 @@ Full Amulet parity remains an unfinished project goal.
 | Capability | Status and boundary |
 | --- | --- |
 | NBT | Both byte orders, every tag type, modified UTF-8, compression and size/depth guards |
-| Java level.dat / Anvil | Read and separate-copy export; gzip/zlib/raw/LZ4; negative coordinates, cross-region edits and unchanged neighboring payloads |
-| Java block sections | Paletted legacy Level/Sections and modern sections/block_states; continuous/padded longs |
-| Java versions | DataVersion 1451–4189 accepted (1.13–1.21.4); synthetic layouts 1451, 2230, 2586 and 4189 tested; not every release |
+| Java level.dat / Anvil | Read, copy export and journaled original save; gzip/zlib/raw/LZ4; negative coordinates, cross-region edits and unchanged neighboring payloads |
+| Java block sections | Numeric Blocks/Data/Add; paletted Level/Sections and modern sections/block_states; continuous/padded longs |
+| Java versions | DataVersion 0–4189 Anvil accepted; synthetic and published fixtures cover selected numeric/paletted layouts through 1.21.4, not every release or snapshot; missing DataVersion is allowed for old numeric Anvil |
 | Java external .mcc / LZ4 | Read external gzip/zlib/raw/LZ4Block streams; validate xxHash checksum, copy/delete sidecars, spill oversized writes to zlib .mcc; no LZ4 encoder |
-| Java numeric/pre-1.13, newer versions | Not implemented; explicit format/version guards |
+| Java numeric/pre-1.13 | All 12-bit IDs and 4-bit metadata retained; historical named convenience vocabulary plus legacy:ID[legacy_data=N]; no modern state translation; McRegion and newer versions remain unsupported |
 | Bedrock database | Experimental independent LevelDB manifest/SST/WAL reader, tombstones, sequence numbers, CRC32C, Snappy/zlib/raw-deflate; fresh snapshot export |
-| Bedrock blocks | Persistent subchunks v8/v9; primary palette editing; untouched additional layers preserved |
+| Bedrock blocks | Persistent subchunks v8/v9; primary and up to seven extra storage layers; typed palettes retained through editing, clipboard, undo, projects and world export |
 | Other Bedrock encodings | Older/runtime/inherited/network storage unsupported; no every-version claim |
 | Java .nbt structure | Blocks and block NBT, typed inventory data, declared DataVersion retained |
-| Bedrock .mcstructure | Primary blocks and block_position_data/block_entity_data; typed states retained |
+| Bedrock .mcstructure | Two storage layers and block_position_data/block_entity_data; typed states retained; more than two layers refused |
 | Sponge .schem v2/v3 | Blocks, block entities, varint palettes, unsigned-short dimensions, offsets and DataVersion retained |
-| Structure restrictions | Moving entities, biome data, scheduled-tick payloads and Bedrock secondary layers refused; no silent dropping of these detected payloads |
-| Legacy .schematic / .construction | Not implemented |
+| Structure restrictions | Moving entities, biome data and scheduled-tick payloads refused when detected; Java/Sponge reject extra layers; no silent dropping of these detected payloads |
+| Legacy .schematic | Alpha numeric Blocks/Data/AddBlocks, block NBT, offsets, rectangular selections and declared/default legacy DataVersion; alternate mod mappings and moving entities refused |
+| .construction | Not implemented; its universal block/entity representation requires the missing translation registry |
 | Bedrock .mcworld | Bounded ZIP import to a new folder; edited archive export; unsafe paths, symlinks, duplicate-case names and oversized extraction refused |
 | Archive publishing | Atomic no-clobber hard-link publication on the destination filesystem; filesystems without hard-link support fail cleanly |
 | Cross-edition/version conversion | Not implemented; clipboard edition and Java DataVersion must match target |
@@ -30,33 +31,34 @@ Full Amulet parity remains an unfinished project goal.
 
 | Capability | Status and boundary |
 | --- | --- |
-| Dimensions | Java overworld/Nether/End/custom region folders; standard Bedrock dimension keys |
+| Dimensions | Java overworld/Nether/End/custom region folders; inline or enabled folder/ZIP datapack dimension heights; missing custom height definitions refused; standard Bedrock dimension keys |
 | Selection | Inclusive boxes; pointer/numeric bounds; clear, nudge, expand, shrink |
 | Multiple disjoint selections | Union/subtraction with up to 256 normalized boxes, unique-block edits, region manager and per-box outlines; sparse clipboards preserve gaps |
 | Fill / replace / erase | Atomic edit transactions, up to 65,536 blocks per operation |
-| Copy / cut / paste / clone | Same-edition blocks and block entities; include-air; overlapping clone captures the source before applying writes |
-| Java rotations / mirror | Coordinates and common facing, axis, rotation and cardinal connections; complex stairs/rails/hinges/multiblocks are incomplete |
-| NBT/directional transforms | Block-NBT rotations and Bedrock directional transforms explicitly refused; ordinary translation updates xyz and Bedrock pairx/pairz |
+| Copy / cut / paste / clone | Same-edition blocks, block entities and extra layers; separate air/water/lava primary-block masks; overlapping clone captures source before writes |
+| Cardinal rotations / mirror | Coordinates, offsets, common Java/Bedrock facing/axis/sign states, cardinal connections, rails, stairs, hinge/chest sides, vines and selected mushroom states; not a full versioned state registry |
+| Arbitrary transforms | XYZ angles, positive/negative per-axis scales, nearest-cell inverse sampling, sparse holes and bounded destination volume; movable outline/block-sample preview, one undoable paste; some tilted and legacy orientations are refused unless state rotation is disabled |
+| NBT transforms | Root xyz, paired-container x/z links and Rot states; typed inventories preserved; paired chests cannot be tilted into vertical links |
 | Embedded world references | Arbitrary nested coordinates in opaque NBT are preserved verbatim, not universally translated |
-| Bedrock secondary-layer clipboard | Refused if selected unchanged blocks contain non-air secondary layers |
+| Bedrock secondary-layer clipboard | Copy/cut/paste/clone and transforms preserve layers; ordinary fill clears extras; explicit layered fill selects overlay/underlay/game/first/second behavior |
 | Block states | Java strings; Bedrock byte/int/string metadata retained; no complete versioned registry/default-state validator |
 | Block-entity NBT | Typed JSON inspection/editing, type/range checks, immutable selected xyz, undo/redo, project/export persistence in both editions |
 | Moving entities / players | Existing opaque storage retained during copy export; dedicated inspection/editing/rendering not implemented |
 | Modern Java biomes | Java 1.18+ paletted 4×4×4 cells; selection edits, undo/redo, project persistence and export |
-| Older Java / Bedrock biomes | Not implemented |
-| Waterlog | Existing Java waterlogged properties; Bedrock secondary-layer waterlogging not implemented |
+| Older Java / Bedrock biomes | Java 2D/3D numeric arrays, including custom heights and old chunks in upgraded worlds; Bedrock 2D columns and full-resolution 3D palettes; preserve heights, neighboring cells and inherited sections; box/column modes and numeric:ID fallback |
+| Waterlog | Existing Java waterlogged properties; Bedrock secondary water insertion/removal preserving base NBT and other layers; occupied non-water layer replacement refused |
 | Undo / redo / timeline | Blocks, block NBT, biomes and chunk transactions; replaced/deleted chunks clear staged edits and undo restores them; 262,144 changed items and 64 MiB chunk-payload history; a new edit clears redo |
-| Pending edits | 262,144 block/entity/biome/chunk entries combined; at most 65,536 chunk overrides and 32 MiB compressed chunk snapshots; export and reopen to continue |
+| Pending edits | 262,144 block/entity/biome/chunk/layer entries combined; at most 65,536 chunk overrides and 32 MiB compressed chunk snapshots; save/export and rebase/reopen to continue |
 | Lighting / heightmaps | Stale Java light flags/data and heightmaps invalidated after block edits; no relight engine or in-game confirmation; Bedrock lighting/height data not recalculated |
 | Chunk map / delete / prune | Header/index inventory, chunk selection, undoable deletion and pruning, project/export persistence; Java terrain/entities/POI/sidecars, Bedrock per-chunk records and actor-index cleanup |
 | Empty chunks | Java supported layouts; Bedrock requires known game metadata, reuses opaque biome data from a same-dimension source template and resets heights; no terrain generator and no in-game generation claim |
 | Chunk import | Same edition, matching Java world DataVersion or known Bedrock lastOpenedWithVersion; same dimension and existing coordinates only; opaque metadata retained; retained actor-ID conflicts refused |
 | World/terrain generation | Not implemented; block edits require stored chunks, including staged empty/imported chunks |
-| Custom operations / plugins | No plugin loader or Amulet plugin compatibility layer |
-| Projects | Version 3 .facet JSON stores chunks and multiple boxes; versions 1/2 and legacy .luma/.facetedit remain supported; source fingerprints checked; sample generator v1/v2 preserved |
-| Saving | Staged separate-folder export; source-change checks, copied-content verification, failure cleanup and destination-collision refusal |
+| Custom operations / plugins | Original trusted-Python API with discovery, typed options, bundled examples, progress, cooperative cancellation, staged edits and atomic undoable commits; no Amulet/NumPy/wx plugin compatibility shim or sandbox |
+| Projects | Version 4 .facet stores layers, chunks and multiple boxes; versions 1/2/3 and legacy .luma/.facetedit remain supported; source fingerprints checked; sample generators v1/v2 preserved |
+| Saving | Staged separate-folder export plus explicit original-world save; source checks, copied-content verification, failure cleanup and destination-collision refusal |
 | Autosave / recovery | Atomic per-session project checkpoints, background serialization, configurable interval (30 seconds by default), source checks, restore/discard, clean-save cleanup and stale-writer generation guards |
-| In-place save | Not implemented; all world writes go to a new copy |
+| Original-world save | Prepare/validate/fsync a same-filesystem copy, acquire OS locks, journal, retain original backup and install prepared world; undo history rebased, including old source-chunk snapshots; restore/finish recovery and altered-file protection; two renames are not a single atomic operation |
 
 ## Display and packaging
 
@@ -70,7 +72,11 @@ The CPU renderer offers an orthographic cutaway and perspective flight. Orbit
 supports pan/zoom/picking/Y clipping. Flight supports WASD, vertical movement,
 speed/boost, drag look, picking, underground views, near/frustum clipping and
 clipped selection outlines. It caches a bounded voxel volume on a four-block
-grid; newly visited volumes load synchronously. This is not full-world streaming.
+grid. Disk worlds load through a cancellable background worker, one replaceable
+pending request and two cached meshes; sparse Java section hints skip missing
+height ranges. Completed/stale results are handled on the Tk thread and idle
+polling stops. The in-memory sample loads synchronously. This is bounded local
+terrain loading, not full-world streaming.
 Solid original block colors are illustrative. Textures, resource-pack block
 models, real transparency, moving-entity rendering, animated textures and
 ambient/game lighting are not implemented.
@@ -91,8 +97,10 @@ and entity lookups use bounded LRU caches. Projects are capped at 64 MiB.
 
 1. Complete versioned block/state/biome translation, including paired blocks,
    water layers, block entities and every supported directional transform.
-2. Complete legacy/new formats, chunk transforms, moving-entity workflows,
-   plugins, in-place saves, all biome/layer formats and the missing renderer work.
+2. Complete remaining legacy/new formats, chunk transforms, moving-entity
+   workflows, versioned plugin/data semantics, all biome/layer encodings and
+   resource-pack/model/transparency rendering. Existing original-save and operation
+   implementations still need native-platform and game verification.
 3. Assemble a game-generated fixture corpus covering every target release,
    mixed-version upgrades, custom dimensions and malformed/interrupted storage.
 4. Load exports in both Minecraft editions and check inventories, lighting,
