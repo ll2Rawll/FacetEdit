@@ -79,3 +79,22 @@ world saves, operations plugins and resource-pack rendering remain open.
 The release remains experimental. Completing all rows of the compatibility
 ledger, the game/version matrix, and platform verification is still necessary
 before calling the project an exact feature replica.
+
+## 0.5 progress — 2026-11-13
+
+- Item 7 now has original PNG decoding, local Java resource stacks, blockstate/
+  model baking, textured/cutout/translucent rendering, optional animation, model
+  picking, stored-level fluids and client-provided biome colors. The material
+  studio exposes reload/priority/backend/animation/diagnostics. System OpenGL and
+  independent software rendering share the editing workflows. Workers coalesce
+  requests, bound caches, cancel obsolete geometry and crop empty frame borders.
+- An external Java 1.21.4 client audit parsed 1,097 blockstate files and baked
+  7,018 model references without parse failures. It identified 145 blocks with
+  empty JSON models, including fluids and procedural/invisible blocks; this is
+  not proof of full game geometry. Raw client assets are outside the project.
+- Source and packaged regression suites, real pointer actions, independent native/
+  software pixel comparisons, malformed packs, context ownership/reload, actual
+  screenshots and measured cold/warm/fallback performance provide new evidence.
+- Items 6 and 8 remain open: universal translation, remaining encodings/formats,
+  moving entities, all-version game fixtures and native Windows/macOS/game checks.
+  Item 7 still needs specialized models, exact game effects and full-world display.

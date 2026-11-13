@@ -6,7 +6,7 @@ Written from scratch in Python's standard library and Tk. No Amulet code,
 translation tables, plugins, third-party Python packages, webview, account,
 telemetry, or network service is used by the application.
 
-**Version 0.4.0 is experimental. Full Amulet feature parity is unfinished.**
+**Version 0.5.0 is experimental. Full Amulet feature parity is unfinished.**
 The editor performs real Java and Bedrock edits; the exact boundaries are in
 [Compatibility](docs/COMPATIBILITY.md). Synthetic tests and independent database
 validation do not establish that exported worlds have been validated in Minecraft.
@@ -29,7 +29,7 @@ Windows:
 py -3 launch.py
 ```
 
-Or extract `FacetEdit-0.4.0-portable.zip` and open the matching platform launcher.
+Or extract `FacetEdit-0.5.0-portable.zip` and open the matching platform launcher.
 The portable app is a Python zipapp, not a self-contained `.exe` or signed `.app`:
 
 ```sh
@@ -62,6 +62,16 @@ Native Windows/macOS execution has not been verified in this environment.
 Midnight Glass is the default. The layered colors, curved controls, gradients
 and edge highlights are drawn locally. They are an iOS 26-inspired appearance;
 Tk does not provide Apple's native backdrop-refraction material.
+
+**View → Resource packs and graphics** opens the material studio. Add local Java
+resource-pack folders/ZIPs or a Minecraft client JAR, order the stack and apply.
+Textures, JSON block models, cutouts, translucent surfaces, level-based fluids,
+biome colormaps and optional texture animation appear in orbit and flight.
+System OpenGL runs on a worker thread; a portable Python renderer is available
+when native graphics cannot be used. No game assets are bundled or downloaded
+by the app. See [Resource rendering](docs/RESOURCES.md) for setup and boundaries.
+
+![Actual resource-model viewport](artifacts/model-gallery.png)
 
 ## Edit and save
 

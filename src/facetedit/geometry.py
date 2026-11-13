@@ -46,11 +46,14 @@ def mesh(voxels,cancel=None):
 class Geometry:
     faces:list
     height_origin:int
+    scene:object=None
 
 
-def build(document,mode,center,radius,ceiling,cancel):
+def build(document,mode,center,radius,ceiling,cancel,resources=None):
     minimum,maximum=document.world.bounds(document.dimension);voxels={};height=0
     check=checkpoint(cancel)
+    def occupied(block,position):
+        return not block.air or (resources is not None and any(not b.air for b in document.get_extra_blocks(*position)))
     if mode=='fly':
         x,y,z=center;r=radius+3
         for bx in range(x-r,x+r+1):
@@ -59,12 +62,13 @@ def build(document,mode,center,radius,ceiling,cancel):
                 check()
                 for by in range(max(minimum,y-r),min(maximum,y+r)+1):
                     block=document.get(bx,by,bz)
-                    if not block.air:voxels[bx,by,bz]=block
+                    if occupied(block,(bx,by,bz)):voxels[bx,by,bz]=block
     else:
         cx,cz=center;heights={};world=document.view_world
         edited={}
-        for dim,x,y,z in document.edits:
-            if dim==document.dimension:edited.setdefault((x//16,z//16),set()).add(y//16)
+        for changes in (document.edits,document.layer_edits):
+            for dim,x,y,z in changes:
+                if dim==document.dimension:edited.setdefault((x//16,z//16),set()).add(y//16)
         for x in range(cx-radius,cx+radius):
             check()
             for z in range(cz-radius,cz+radius):
@@ -75,7 +79,7 @@ def build(document,mode,center,radius,ceiling,cancel):
                 found=False
                 for high,low in ranges:
                     for y in range(high,low-1,-1):
-                        if not document.get(x,y,z).air:heights[x,z]=y;found=True;break
+                        if occupied(document.get(x,y,z),(x,y,z)):heights[x,z]=y;found=True;break
                     if found:break
         if heights:
             floor=max(minimum,min(heights.values())-3)
@@ -83,9 +87,13 @@ def build(document,mode,center,radius,ceiling,cancel):
                 if index%32==0:check()
                 for y in range(max(floor,top-24),top+1):
                     block=document.get(x,y,z)
-                    if not block.air:voxels[x,y,z]=block
+                    if occupied(block,(x,y,z)):voxels[x,y,z]=block
             height=sorted(heights.values())[len(heights)//2]-2
-    check();return Geometry(mesh(voxels,cancel),height)
+    check()
+    if resources is not None:
+        from .scene import build_scene
+        return Geometry([],height,build_scene(voxels,resources,document,cancel))
+    return Geometry(mesh(voxels,cancel),height)
 
 
 class GeometryStream:

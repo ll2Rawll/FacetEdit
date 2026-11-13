@@ -1,4 +1,4 @@
-# FacetEdit 0.4.0 — verification report
+# FacetEdit 0.5.0 — verification report
 
 Verified locally on 2026-11-13, Linux x86_64, Python 3.13.5, Tk 8.6.16 and an
 Xvfb desktop. Python 3.12.14 was also used for the core suite. This is an
@@ -7,33 +7,59 @@ remain unfinished. No export has been reopened in Minecraft.
 
 ## Automated results
 
-**344 tests pass: 284 core/workflow tests and 60 live desktop tests.**
+**402 tests: 333 core/workflow/graphics tests and 69 live desktop tests.**
 
 | Run | Result |
 | --- | --- |
-| Python 3.13 source with GUI tests | 344 passed, no skips, 11.831 seconds |
-| Python 3.13 packaged application with GUI tests | 344 passed, no skips, 11.619 seconds |
-| Python 3.12 core | 284 passed; 60 desktop tests explicitly skipped, 3.661 seconds |
+| Python 3.13 source with GUI tests | 402 passed, no skips, 18.744 seconds |
+| Python 3.13 packaged application with GUI tests | 402 passed, no skips, 17.055 seconds |
+| Python 3.12 core | 333 passed; 69 desktop tests explicitly skipped, 5.680 seconds |
 | Compilation and whitespace validation | Passed |
-| Runtime package import audit | 41 Python modules; no third-party imports; three logo assets |
-| Published world fixture corpus | Eight worlds read, edited, exported and reopened in FacetEdit; all source file hashes unchanged |
+| Runtime package import audit | 51 Python modules; no third-party imports; three logo assets |
+| Published world fixture corpus (retained 0.4 evidence) | Eight worlds read, edited, exported and reopened in FacetEdit; all source file hashes unchanged |
+| External Java resource corpus | 1,097 blockstate files, 6,107 variant conditions, 7,018 model references; zero model parsing failures |
 
 [Source log](../artifacts/test-results.txt),
 [package log](../artifacts/package-tests.txt),
 [Python 3.12 log](../artifacts/python312-tests.txt),
 [package audit](../artifacts/package-audit.json).
 
-The tested zipapp is 236,198 bytes, SHA-256
-`c94cd49400f7e9e6caf9c6ae54197fc75bf63029dcb66f92c2be66de4dbde94b`.
-The final documentation rebuild must retain this executable hash. Distribution
+The tested executable is 269,077 bytes, SHA-256
+`afe4b8122aaa8b50c86656a7e1e67fd5b312842708093aede14a5baa0d6644c0`.
+The final documentation rebuild must retain that executable hash. Distribution
 ZIP hashes are in `dist/checksums.json`. The audit checks all imports against the
 standard library, confirms imports resolve from the zipapp and excludes Amulet,
 site-packages and bytecode caches.
 
-## Additional coverage in 0.4
+## Additional coverage in 0.5
+
+58 new tests cover PNG filters/types/depths/Adam7/transparency/corruption,
+resource priority and safe paths, inheritance/cycles, weighted and multipart
+variants, inverted/custom elements, animation, biome colormaps/overrides, fluid
+levels and secondary layers, alpha-aware model picking, perspective/clipping,
+frame cropping and native/software pixel agreement. Native graphics checks run
+on Mesa llvmpipe, including far-world coordinates, resized framebuffers, context
+thread ownership and closing one context while another remains active.
+
+Worker tests exercise cancellation, pending-request coalescing, graphics failure
+fallback, portable resolution bounds and camera updates without frame starvation.
+Nine new live desktop tests exercise pack ordering/reload/persistence, real
+pointer picking with fill/undo, flight/resize/preview, software rendering, idle
+shutdown, failed-pack retention, diagnostics, world-switch invalidation, optional animation and synchronized image/picking handoff.
+
+The external corpus is Mojang's public **Java 1.21.4 client JAR**, downloaded only
+for development validation. SHA-1 matched the published version metadata
+`a7e5a6024bfd3cd614625aa05629adf760020304`; SHA-256 and results are in
+[resource-corpus.json](../artifacts/resource-corpus.json). Raw assets remain outside
+the repository and distribution. 145 block types use empty JSON models; fluids
+are handled separately, while other procedural/invisible types produce markers.
+Additional procedural details attached to non-empty models remain unimplemented.
+Parsing every model reference does not establish Minecraft-equivalent pixels.
+
+## Retained coverage from 0.4
 
 The 240 earlier tests remain, with obsolete refusal assertions replaced by
-positive behavior/preservation checks. This release adds 104 tests:
+positive behavior/preservation checks. The 0.4 release added 104 tests:
 
 | Area | New tests and examples |
 | --- | --- |
@@ -79,6 +105,36 @@ DISPLAY=:100 FACETEDIT_GUI_TESTS=1 PYTHONPATH=dist/FacetEdit.pyz python3 -m unit
 
 ## Revisions from tests and review
 
+The 0.5 revisions include:
+
+- External client assets exposed inverted spawner elements and bare texture-map
+  references. Both are now handled, with independent regression fixtures.
+- Empty procedural models previously vanished; they now produce a diagnostic
+  marker. Water/lava have separate level-based geometry and secondary-layer support.
+- Animated cutout interpolation now uses blending when intermediate alpha is
+  possible. Picking uses the same alpha cutoff as the renderers.
+- Graphics contexts share EGL display lifetime safely across concurrent workers;
+  offscreen framebuffers avoid hidden-window pixel ownership. Windows/macOS paths
+  remain unexecuted and cannot be certified by Linux checks.
+- Camera changes no longer continuously cancel an unfinished frame. Replacing
+  scenes still cancels stale work. Cropping empty borders reduces PNG/readback/Tk
+  transfer work without moving projected positions; tests check the projection.
+- Resource/scene budgets now bound unique texture memory and multipart complexity.
+  Diagnostics distinguish unsupported content from working model parsing.
+
+A parallel GUI test run shared one X display and produced a keyboard-focus
+failure when another test window took focus. Final GUI suites run sequentially;
+no application timing assertions were loosened. The [failed harness run](../artifacts/shared-display-test-conflict.txt) is retained.
+
+Final screenshot review exposed a PhotoImage lifetime bug: a completed worker
+frame could release the visible image before its redraw, briefly blanking terrain.
+The visible image and its picking snapshot now swap together during the canvas
+redraw. A live regression holds redraws pending and checks the old frame remains
+visible and pickable. Screenshots and both performance runs were repeated after
+this correction. Display timings now include the actual canvas commit.
+
+Earlier 0.4 revisions retained in the implementation:
+
 1. Fixed explicit unchanged secondary layers being lost when a primary block
    changed. Added a regression for the baseline/delta interaction.
 2. Operations now clear stale NBT when staging a replacement primary block and
@@ -111,6 +167,25 @@ Captures from the running application:
 
 ## Performance evidence and limits
 
+With a 1,321-surface gallery, 1440×900 window and Mesa software OpenGL, cropping
+empty framebuffer borders reduced median worker orbit rendering from **35.615 ms
+to 9.837 ms**, and measured input-to-display latency from **95.546 ms to 55.965 ms**.
+The 659-surface flight view measured **17.634 ms** worker / **65.372 ms** display.
+The portable Python renderer used 4× enlarged pixels for the same 1,321-surface
+orbit gallery: **78.023 ms** worker / **122.907 ms** display. These measure this host
+and scene, not hardware GPU throughput, all worlds, or an Amulet comparison.
+
+Cold pack load/sample-to-first-frame was **1,050.041 ms**. The slowest measured
+Tk update during cold loading, switching and review was **131.202 ms**; this
+remains a responsiveness limitation. [Before cropping](../artifacts/textured-before-cropping.json)
+and [current measurements](../artifacts/textured-benchmark.json) retain the details.
+Actual captures: [textured world](../artifacts/textured-workspace.png),
+[model gallery](../artifacts/model-gallery.png), [flight](../artifacts/textured-flight.png),
+[resource studio](../artifacts/resource-studio.png), [selection/preview](../artifacts/textured-selection.png),
+[compact](../artifacts/textured-compact.png), [portable fallback](../artifacts/textured-software.png).
+
+Earlier 0.4 performance measurements:
+
 The cached sample's latest visual-review run measured a 14.960 ms median orbit
 redraw (1,365 visible faces) and 24.528 ms median perspective redraw (533 faces in
 the final frame). A sample draw entering a new volume took 51.447 ms. These are
@@ -134,8 +209,8 @@ checks do not validate Minecraft gameplay, lighting, ticks or all format version
 ## Remaining acceptance work
 
 Full state/biome/block-NBT translation, remaining formats/versions, moving-entity
-interchange, resource-pack/model/transparency rendering and full-world display
-are still missing. Native Windows/macOS execution, actual game reopening,
+interchange, specialized procedural/Bedrock resource models, exact game rendering
+and full-world display are still missing. Native Windows/macOS execution, actual game reopening,
 large-world soak/memory tests, power-loss/filesystem diversity, signing/installers,
 HiDPI hardware and accessibility auditing are unverified. The complete target
 and current boundaries are in [Full parity worklist](FULL_PARITY_WORKLIST.md)

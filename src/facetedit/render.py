@@ -7,11 +7,12 @@ import tkinter as tk
 from .blocks import color, shade
 from .chrome import rounded
 from .camera import Camera
+from .textured_view import TexturedView
 
 SKY = "#080f1d"
 
 
-class VoxelView(tk.Canvas):
+class VoxelView(TexturedView,tk.Canvas):
     def __init__(self, parent, document, on_pick, on_error, **kwargs):
         super().__init__(parent, background=SKY, highlightthickness=0, **kwargs)
         self.document = document
@@ -50,6 +51,20 @@ class VoxelView(tk.Canvas):
         self.last_ms = 0
         self.face_count = 0
         self.height_origin = 0
+        self.resources=None
+        self.scene=None
+        self.renderer_backend='auto'
+        self.animate_textures=False
+        self._frames=None
+        self._frame_poll=None
+        self._animation_id=None
+        self._requested_frame=None
+        self._frame_key=None
+        self._display_frame=None
+        self._ready_frame=None
+        self._terrain_image=None
+        self.render_status='Solid colors'
+        self._frame_error=None
         self.bind("<Configure>", lambda _: self.schedule())
         self.bind("<ButtonPress-1>", self._press)
         self.bind("<B1-Motion>", self._motion)
@@ -68,6 +83,8 @@ class VoxelView(tk.Canvas):
     def attach(self, document):
         self.stop_flight()
         self._stop_geometry()
+        self._stop_frames()
+        self.scene=None
         self.faces=[];self.picks.clear()
         self.preview=None
         self.document = document
@@ -207,6 +224,12 @@ class VoxelView(tk.Canvas):
 
     def _release(self, event):
         if self._drag and not self._moved:
+            if self.resources is not None and self._display_frame is not None:
+                frame=self._display_frame
+                position=frame.scene.pick(*frame.view.ray(event.x,event.y),ticks=frame.ticks)
+                if position is not None:self.on_pick(position,bool(event.state&1))
+                self._drag=None
+                return
             items = self.find_overlapping(event.x - 1, event.y - 1, event.x + 1, event.y + 1)
             for item in reversed(items):
                 if item in self.picks:
@@ -235,22 +258,23 @@ class VoxelView(tk.Canvas):
         import threading
         doc=self.document
         center=tuple(math.floor(v/4)*4 for v in self.camera.position) if self.mode=='fly' else (self.center_x,self.center_z)
-        key=(self.mode,id(doc),doc.revision,doc.dimension,center,self.radius,self.ceiling)
+        key=(self.mode,id(doc),doc.revision,doc.dimension,center,self.radius,self.ceiling,id(self.resources))
         if key==self._geometry_key:
             if self._geometry_error:raise ValueError(self._geometry_error)
             return
-        if doc.world.path is None:
+        if doc.world.path is None and self.resources is None:
             value=build(doc,self.mode,center,self.radius,self.ceiling,threading.Event())
             self.faces,self.height_origin=value.faces,value.height_origin
             self._geometry_key=key;self._geometry_error=None
             return
         if key!=self._requested_geometry:
-            if self._display_scope!=(id(doc),doc.dimension):self.faces=[];self.picks.clear()
+            if self._display_scope!=(id(doc),doc.dimension):
+                self.faces=[];self.picks.clear();self.scene=None;self._stop_frames()
             self._display_scope=(id(doc),doc.dimension)
             if self._geometry_stream is None:self._geometry_stream=GeometryStream()
-            snapshot=doc.snapshot();mode,radius,ceiling=self.mode,self.radius,self.ceiling
+            snapshot=doc.snapshot();mode,radius,ceiling,resources=self.mode,self.radius,self.ceiling,self.resources
             self._requested_geometry=key;self._geometry_error=None
-            self._geometry_stream.request(key,lambda cancel:build(snapshot,mode,center,radius,ceiling,cancel))
+            self._geometry_stream.request(key,lambda cancel:build(snapshot,mode,center,radius,ceiling,cancel,resources))
         if self._geometry_poll is None:self._geometry_poll=self.after(25,self._poll_geometry)
 
     def _poll_geometry(self):
@@ -261,8 +285,8 @@ class VoxelView(tk.Canvas):
             key,value,error=result
             if key==self._requested_geometry:
                 self._geometry_key=key
-                if error is None:self.faces,self.height_origin=value.faces,value.height_origin
-                else:self.faces=[];self._geometry_error=str(error)
+                if error is None:self.faces,self.height_origin,self.scene=value.faces,value.height_origin,value.scene
+                else:self.faces=[];self.scene=None;self._stop_frames();self._geometry_error=str(error)
                 self.schedule()
         if self._geometry_key!=self._requested_geometry:self._geometry_poll=self.after(25,self._poll_geometry)
 
@@ -297,6 +321,10 @@ class VoxelView(tk.Canvas):
         self._draw_background(width,height)
         if self._requested_geometry is not None and self._requested_geometry!=self._geometry_key:
             self.create_text(28,100,text='Loading terrain…',anchor='nw',fill='#9cafcb',font=('Helvetica',10))
+        if self.resources is not None:
+            self._draw_resources(width,height)
+            self.last_ms=(time.perf_counter()-start)*1000
+            return
         if self.mode=='fly':
             self._draw_flight(width,height)
             self.last_ms=(time.perf_counter()-start)*1000
@@ -421,6 +449,7 @@ class VoxelView(tk.Canvas):
     def destroy(self):
         self.stop_flight()
         self._stop_geometry()
+        self._stop_frames()
         if self._pending is not None:
             self.after_cancel(self._pending)
         super().destroy()

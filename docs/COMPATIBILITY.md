@@ -1,4 +1,4 @@
-# FacetEdit 0.4.0 — compatibility and parity ledger
+# FacetEdit 0.5.0 — compatibility and parity ledger
 
 Implemented means code and the stated tests exist, within the listed limits.
 It does not mean every Minecraft version or in-game behavior has been verified.
@@ -64,7 +64,8 @@ Full Amulet parity remains an unfinished project goal.
 
 The native Tk interface defaults to Midnight Glass. It uses an original logo,
 floating tool rail, segmented inspector, compact material tray, action dock and
-cached atmospheric background. It has no idle animation/render loop or network
+cached atmospheric background. Idle animation is disabled by default; optional
+texture animation renders while an animated scene is visible. There is no network
 activity. The appearance is glass-inspired; it does not implement native iOS
 backdrop blur/refraction.
 
@@ -75,11 +76,24 @@ clipped selection outlines. It caches a bounded voxel volume on a four-block
 grid. Disk worlds load through a cancellable background worker, one replaceable
 pending request and two cached meshes; sparse Java section hints skip missing
 height ranges. Completed/stale results are handled on the Tk thread and idle
-polling stops. The in-memory sample loads synchronously. This is bounded local
+polling stops. Solid-color samples load synchronously; model scenes use the worker.
+This is bounded local
 terrain loading, not full-world streaming.
-Solid original block colors are illustrative. Textures, resource-pack block
-models, real transparency, moving-entity rendering, animated textures and
-ambient/game lighting are not implemented.
+
+Java folder/ZIP/client-JAR resource stacks now provide PNG textures, inherited
+JSON elements, variants/multipart, rotations/UVs/UV lock, custom shapes, cutouts,
+translucent face sorting and optional animation. System OpenGL renders in a
+dedicated worker; a bounded Python rasterizer is the portable fallback. Model
+surface picking respects texture holes and the displayed camera. Water/lava use
+stored levels and neighboring surfaces; Bedrock secondary fluids are displayed.
+Biome colormaps/overrides read selected client biome definitions. Parsing/baking
+was audited against all 7,018 references in the Java 1.21.4 client, not every game
+release or a Minecraft pixel oracle. See [Resource rendering](RESOURCES.md).
+
+Dedicated procedural/entity models, Bedrock-native resource geometry, complete
+state translation, exact game lighting/noise/biome blending and order-independent
+transparency remain unfinished. Empty procedural JSON models produce diagnostic
+markers. Some JSON-plus-procedural models show only their JSON component.
 
 The app needs Python 3.11+ and Tk, with no third-party Python packages. Zipapp and
 source distributions include Windows/macOS/Linux launchers. Linux interaction
@@ -99,7 +113,7 @@ and entity lookups use bounded LRU caches. Projects are capped at 64 MiB.
    water layers, block entities and every supported directional transform.
 2. Complete remaining legacy/new formats, chunk transforms, moving-entity
    workflows, versioned plugin/data semantics, all biome/layer encodings and
-   resource-pack/model/transparency rendering. Existing original-save and operation
+   remaining specialized resource models and exact rendering behavior. Existing original-save and operation
    implementations still need native-platform and game verification.
 3. Assemble a game-generated fixture corpus covering every target release,
    mixed-version upgrades, custom dimensions and malformed/interrupted storage.

@@ -1,0 +1,12 @@
+{
+  "scope": "Read-only external asset parsing/model baking. No game execution, pixel comparison with Minecraft, universal state translation or native Windows/macOS validation.",
+  "source_file": "minecraft-1.21.4-client.jar",
+  "sha256": "c17c450c6e72cc51297daa57ce38f800aa01cf022b743daa21a0512d326d894e",
+  "blockstate_files": 1097,
+  "variant_conditions": 6107,
+  "model_references": 7018,
+  "baked_faces": 69800,
+  "fluid_scene_faces": 12,
+  "seconds": 7.931
+}
+Empty JSON models: 145 Parsing failures: 0

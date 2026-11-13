@@ -1,0 +1,40 @@
+{
+  "scope": "Linux/Xvfb, actual Tk viewport, local Java 1.21.4 assets. System Mesa software OpenGL on this host; no game/native Windows/macOS comparison. Screenshots depict the original editable gallery.",
+  "python": "3.13.5",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "backend": "OpenGL \u00b7 llvmpipe (LLVM 19.1.7, 256 bits)",
+  "window": "1440x900",
+  "radius": 12,
+  "cold_sample_to_first_frame_ms": 1473.234,
+  "gallery_surfaces": 1321,
+  "orbit": {
+    "iterations": 12,
+    "scene_surfaces": 1321,
+    "display_zoom": 1,
+    "worker_frame_ms_median": 35.615,
+    "worker_frame_ms_max": 48.649,
+    "input_to_display_ms_median": 95.546,
+    "tk_draw_ms_median": 4.658
+  },
+  "flight": {
+    "iterations": 12,
+    "scene_surfaces": 659,
+    "display_zoom": 1,
+    "worker_frame_ms_median": 24.469,
+    "worker_frame_ms_max": 27.813,
+    "input_to_display_ms_median": 100.912,
+    "tk_draw_ms_median": 4.746
+  },
+  "tk_update_ms_max": 173.786,
+  "portable_software": {
+    "iterations": 3,
+    "scene_surfaces": 1321,
+    "display_zoom": 4,
+    "worker_frame_ms_median": 79.584,
+    "worker_frame_ms_max": 86.491,
+    "input_to_display_ms_median": 132.706,
+    "tk_draw_ms_median": 6.271
+  },
+  "resource_diagnostics": {},
+  "empty_border_cropping": false
+}

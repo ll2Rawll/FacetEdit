@@ -17,8 +17,9 @@ from .managers import EditorManagers
 from .operation_ui import OperationsUI
 from .save_ui import WorldSaveUI
 from .transform_ui import TransformUI
+from .resource_ui import ResourceUI
 
-class FacetEditApp(TransformUI,WorldSaveUI,OperationsUI,EditorManagers,StudioLayout,tk.Tk):
+class FacetEditApp(ResourceUI,TransformUI,WorldSaveUI,OperationsUI,EditorManagers,StudioLayout,tk.Tk):
     def __init__(self,settings_path=None):
         super().__init__()
         global FONT
@@ -61,6 +62,7 @@ class FacetEditApp(TransformUI,WorldSaveUI,OperationsUI,EditorManagers,StudioLay
         self.refresh()
         recovered = len(self.recovery.entries())
         if recovered:self.status_var.set(f'{recovered} recovery copies available · File → Recovery workspaces')
+        self.after_idle(self._restore_resources)
 
     def _build_menus(self):
         menu = tk.Menu(self)
@@ -99,6 +101,7 @@ class FacetEditApp(TransformUI,WorldSaveUI,OperationsUI,EditorManagers,StudioLay
         view.add_command(label='Switch orbit / flight',accelerator='F5',command=self.toggle_camera)
         view.add_command(label="Reset camera", command=lambda: self.viewport.reset())
         view.add_command(label="Go to coordinates…", command=self.goto_dialog)
+        view.add_command(label='Resource packs and graphics…',command=self.resources_dialog)
         view.add_command(label="Preferences…", command=self.preferences)
         menu.add_cascade(label="View", menu=view)
         help_menu = tk.Menu(menu, tearoff=False)
@@ -490,7 +493,7 @@ class FacetEditApp(TransformUI,WorldSaveUI,OperationsUI,EditorManagers,StudioLay
         Pill(content, "Go to location", go, True, 150).pack(anchor="e")
 
     def preferences(self):
-        dialog, content = self._dialog("Make yourself at home",450,460)
+        dialog, content = self._dialog("Make yourself at home",450,505)
         label(content,"MIDNIGHT GLASS  ·  DEFAULT DARK",9,True,BLUE).pack(anchor="w",pady=(0,10))
         label(content, "Display radius · smaller uses less CPU", 10, color=MUTED).pack(anchor="w")
         radius = tk.IntVar(value=self.viewport.radius)
@@ -518,6 +521,7 @@ class FacetEditApp(TransformUI,WorldSaveUI,OperationsUI,EditorManagers,StudioLay
             except OSError as exc:
                 self.show_error(exc)
         Pill(content, "Save preferences", apply, True, 170).pack(anchor="e", pady=14)
+        Pill(content,'Resource packs and graphics',lambda:(dialog.destroy(),self.resources_dialog()),width=290,height=32).pack(anchor='w')
 
     def command_palette(self):
         dialog, content = self._dialog("What would you like to do?",520,445)
@@ -530,6 +534,7 @@ class FacetEditApp(TransformUI,WorldSaveUI,OperationsUI,EditorManagers,StudioLay
         commands += [("Clone / repeat selection",self.clone_dialog),("Set biome",self.biome_dialog),("Inspect / edit block NBT",self.nbt_dialog),("Import .mcworld",self.import_world_archive),("Export .mcworld",self.export_world_archive),("Nudge selection",self.nudge_dialog),("Waterlog selection",lambda:self.waterlog(True))]
         commands += [('Manage selection regions',self.regions_dialog),('Manage chunks',self.chunks_dialog),('Restore recovery workspace',self.recovery_dialog),('Switch orbit / flight camera',self.toggle_camera),('Layered fill',self.layer_dialog),('Custom operations',self.operations_dialog),('Save original world',self.save_original),('Recover world save',self.world_recovery_dialog)]
         commands.append(('Transform and preview paste',self.transform_dialog))
+        commands.append(('Resource packs and graphics',self.resources_dialog))
         matches = []
         def search(*_):
             matches[:] = [(name, fn) for name, fn in commands if query.get().lower() in name.lower()]
@@ -751,7 +756,8 @@ class FacetEditApp(TransformUI,WorldSaveUI,OperationsUI,EditorManagers,StudioLay
             "SELECT & EDIT\nClick a block, then Shift-click a second corner. Or enter both corners.\nChoose a material; fill, replace, delete, copy or paste. Undo with Ctrl/Cmd+Z.\nPaste → Free transform previews X/Y/Z rotations, scaling and reflections.\nSome states cannot represent tilted orientations; state rotation is optional.\n\n"
             "SAVE YOUR WORK\nCtrl/Cmd+S saves the original world with a retained backup. Close Minecraft\nbefore saving. Save copy exports a separate folder. Projects reference their\nsource world; keep that folder unchanged while using the project.\nUnsaved edits get recovery copies every 30 seconds by default. File includes\nworkspace recovery and world-save checkpoints for interrupted saves.\n\n"
             "DEEPER EDITING\nThe World tab includes Java/Bedrock biomes, typed block NBT, waterlogging,\nlayered fill, trusted Python operations and Bedrock archives. Paste includes\nclone/repeat. Structures: .nbt, .mcstructure, .schem v2/v3, legacy .schematic.\nManage selection regions adds boxes or subtracts holes. The chunk map\ncreates empty chunks, deletes, prunes and imports matching versions.\nChunk actions are staged and undoable, including associated metadata.\n\n"
-            "CURRENT COMPATIBILITY\nJava numeric/paletted Anvil through DataVersion 4189; Bedrock subchunks\nv8/v9. Legacy Java retains numeric metadata, not modern translated states.\nBedrock export is experimental; database budget is 256 MiB. Full Amulet\nparity, version/edition translation, moving entities, resource-pack rendering\nand game lighting remain unfinished. Published world fixtures are tested;\nexports have not been reopened in Minecraft.\n\n"
+            "MODELS & TEXTURES\nView → Resource packs and graphics loads local Java resource folders,\nZIPs or client JARs. Order packs, apply/reload and inspect diagnostics.\nAuto graphics uses system OpenGL with a portable software fallback.\nTextures, models, cutouts, fluids and biome colors appear in both cameras.\nOptional animation is off by default. Game assets are not downloaded.\n\n"
+            "CURRENT COMPATIBILITY\nJava numeric/paletted Anvil through DataVersion 4189; Bedrock subchunks\nv8/v9. Legacy Java retains numeric metadata, not modern translated states.\nBedrock export is experimental; database budget is 256 MiB. Full Amulet\nparity, version/edition translation, moving entities, specialized models\nand game lighting remain unfinished. Published world fixtures are tested;\nexports have not been reopened in Minecraft.\n\n"
             "INDEPENDENT BY DESIGN\nOriginal code and art. Python + Tk only. No Amulet code or runtime.\nNo accounts, network requests, analytics or third-party Python packages."
         )
         Pill(content, "Got it", dialog.destroy, True, 100).pack(side="bottom",anchor="e",pady=12)

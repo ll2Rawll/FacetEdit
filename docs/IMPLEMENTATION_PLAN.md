@@ -269,3 +269,17 @@ The [full parity worklist](FULL_PARITY_WORKLIST.md) and
 [current compatibility ledger](COMPATIBILITY.md) supersede older status tables.
 Universal translation, all remaining formats/versions, entity interchange,
 resource-pack rendering and complete acceptance evidence remain open.
+
+## 11. Implemented in 0.5; remaining endpoint
+
+Version 0.5 adds the independent PNG codec, local Java resource stacks, JSON
+block models, native/software textured rendering, alpha-aware picking, optional
+animation, level-based fluids and resource-provided biome colors. The material
+studio controls pack priority, reload, diagnostics and graphics preferences.
+Frame transfer crops empty borders and commits its visible image/picking snapshot
+together. The resource plan, compatibility ledger and current test report describe
+the implemented boundaries and native-platform limits.
+
+The target remains full independent parity. Universal translation, remaining
+world/structure encodings, moving entities, specialized game models/effects,
+full-world display and native-platform/in-game certification are still open.

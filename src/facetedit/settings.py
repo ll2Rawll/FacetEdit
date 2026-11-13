@@ -22,6 +22,7 @@ class Settings:
     def __init__(self, path=None):
         self.path = Path(path) if path else config_path()
         self.data = {"version": 1, "recent": [], "radius": 12, "grid": True, "theme": "midnight", "glass": True,"autosave":True,"autosave_seconds":30}
+        self.data.update(resource_packs=[],resources_enabled=True,renderer='auto',animate_textures=False)
         self.warning = None
         try:
             source = self.path
@@ -40,6 +41,11 @@ class Settings:
                 if type(raw.get("glass")) is bool:
                     self.data["glass"] = raw["glass"]
                 if type(raw.get('autosave')) is bool:self.data['autosave'] = raw['autosave']
+                packs=raw.get('resource_packs',[])
+                if isinstance(packs,list):self.data['resource_packs']=list(dict.fromkeys(p for p in packs if isinstance(p,str) and len(p)<4096))[:16]
+                for key in ('resources_enabled','animate_textures'):
+                    if type(raw.get(key)) is bool:self.data[key]=raw[key]
+                if raw.get('renderer') in ('auto','software'):self.data['renderer']=raw['renderer']
                 if type(raw.get('autosave_seconds')) is int and 15<=raw['autosave_seconds']<=600:
                     self.data['autosave_seconds'] = raw['autosave_seconds']
         except FileNotFoundError:
