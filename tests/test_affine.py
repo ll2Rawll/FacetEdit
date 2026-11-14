@@ -60,7 +60,8 @@ class AffineTests(unittest.TestCase):
         clip.blocks[0,0,0]=Block.parse('oak_log[axis=y]')
         self.assertEqual(dict(clip.affine((90,0,0)).blocks[0,0,0].properties)['axis'],'z')
         clip.edition='Bedrock';clip.data_version=None;clip.blocks[0,0,0]=Block('piston',(('facing_direction','1'),),(('facing_direction',nbt.INT),))
-        result=clip.affine((0,0,90)).blocks[0,0,0];self.assertEqual(dict(result.properties)['facing_direction'],'4');self.assertEqual(result.state_types,clip.blocks[0,0,0].state_types)
+        # Native pistons use west=5; their numeric order differs from chests.
+        result=clip.affine((0,0,90)).blocks[0,0,0];self.assertEqual(dict(result.properties)['facing_direction'],'5');self.assertEqual(result.state_types,clip.blocks[0,0,0].state_types)
 
     def test_sign_rotation_uses_sixteen_steps_and_state_toggle(self):
         clip=Clipboard((1,1,1),{(0,0,0):Block.parse('oak_sign[rotation=0]')})

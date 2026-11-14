@@ -7,7 +7,7 @@ import gzip
 from importlib.resources import files
 import json
 
-from . import nbt, text_components
+from . import nbt, text_components,book_items,armor_items,potion_items
 from .blocks import Block
 from .formats import bedrock_block,bedrock_entry
 from .native_rules import ALIASES as BLOCK_ALIASES
@@ -15,7 +15,10 @@ from .payload_fields import Fields,compound_list,string_list
 from .payload_formats import COLORS,patterns_to_bedrock,patterns_to_java
 
 DATA=json.loads(gzip.decompress(files('facetedit').joinpath('data','registries','items-1.21.json.gz').read_bytes()))
-JAVA_ITEMS=DATA['java'];BEDROCK_ITEMS=frozenset(DATA['bedrock'])
+JAVA_ITEMS=DATA['java']
+# Signed books are a native inventory item omitted by the public item report.
+BEDROCK_INTERNAL_ITEMS=frozenset(('minecraft:written_book',))
+BEDROCK_ITEMS=frozenset(DATA['bedrock'])|BEDROCK_INTERNAL_ITEMS
 ALIASES={**BLOCK_ALIASES,'dirt_path':'grass_path','magma_block':'magma','cobweb':'web','snow_block':'snow','snow':'snow_layer',
          'cobblestone_stairs':'stone_stairs','stone_stairs':'normal_stone_stairs','end_stone_brick_stairs':'end_brick_stairs',
          'prismarine_brick_stairs':'prismarine_bricks_stairs','stone_slab':'normal_stone_slab','oak_button':'wooden_button',
@@ -24,7 +27,7 @@ ALIASES={**BLOCK_ALIASES,'dirt_path':'grass_path','magma_block':'magma','cobweb'
          'small_dripleaf':'small_dripleaf_block','item_frame':'frame','glow_item_frame':'glow_frame','map':'empty_map',
          'light_gray_glazed_terracotta':'silver_glazed_terracotta','zombified_piglin_spawn_egg':'zombie_pigman_spawn_egg'}
 REVERSE={v:k for k,v in ALIASES.items()}
-UNMAPPED_VARIANTS={'filled_map','potion','splash_potion','lingering_potion','tipped_arrow'}
+UNMAPPED_VARIANTS={'filled_map'}
 # Native Bedrock enchantment identifiers. Names are checked against the pinned
 # primary metadata; these explicit numeric format identifiers are not code/data
 # imported from Amulet. Java-only sweeping_edge has no native mapping.
@@ -62,7 +65,8 @@ class ItemTranslator:
         components=Fields(f.pop('components',nbt.COMPOUND,{}),path+'.components');f.finish()
         base=name.removeprefix('minecraft:');aux=0
         if base in UNMAPPED_VARIANTS:raise ValueError(path+': item variant/world-reference translation is not implemented for '+name)
-        if base.endswith('_bed') and base[:-4] in COLORS:target='bed';aux=COLORS.index(base[:-4])
+        if base in potion_items.KINDS:target,aux=potion_items.to_bedrock(base,components)
+        elif base.endswith('_bed') and base[:-4] in COLORS:target='bed';aux=COLORS.index(base[:-4])
         elif base.endswith('_banner') and base[:-7] in COLORS:target='banner';aux=15-COLORS.index(base[:-7])
         else:target=ALIASES.get(base,base)
         target='minecraft:'+target
@@ -118,6 +122,8 @@ class ItemTranslator:
                 seen.add(slot);item=self.to_bedrock(child.pop('item',nbt.COMPOUND),child.path+'.item',depth+1);child.finish()
                 item['Slot']=nbt.Tag(nbt.BYTE,slot);items.append(item)
             tag['Items']=nbt.Tag(nbt.LIST,nbt.ListValue(nbt.COMPOUND,items))
+        book_items.to_bedrock(components,tag,base)
+        armor_items.to_bedrock(components,tag,base)
         components.finish()
         if tag:result['tag']=nbt.Tag(nbt.COMPOUND,tag)
         return result
@@ -130,7 +136,10 @@ class ItemTranslator:
         if not 1<=count<=99:raise ValueError(path+'.Count: the Java 1.21.4 item codec requires a count from 1 to 99')
         aux=f.pop('Damage',nbt.SHORT,0);base=name.removeprefix('minecraft:')
         if base in UNMAPPED_VARIANTS:raise ValueError(path+': item variant/world-reference translation is not implemented for '+name)
-        if base=='bed':
+        potion=None
+        if base in potion_items.KINDS or base=='arrow' and aux:
+            target,potion=potion_items.to_java(base,aux,path);aux=0
+        elif base=='bed':
             if not 0<=aux<16:raise ValueError(path+': invalid bed item color')
             target=COLORS[aux]+'_bed';aux=0
         elif base=='banner':
@@ -142,6 +151,9 @@ class ItemTranslator:
         if aux:raise ValueError(path+'.Damage: legacy item variant has no explicit conversion rule')
         f.default_only('WasPickedUp',nbt.BYTE,0)
         tag=Fields(f.pop('tag',nbt.COMPOUND,{}),path+'.tag');components={}
+        if potion is not None:
+            components['minecraft:potion_contents']=potion
+            tag.default_only('Potion',nbt.STRING,potion.value['potion'].value)
         for source,destination in (('Damage','minecraft:damage'),('RepairCost','minecraft:repair_cost')):
             if source in tag.data:
                 value=tag.pop(source,nbt.INT)
@@ -188,6 +200,8 @@ class ItemTranslator:
                 slot=item.pop('Slot').value
                 entries.append({'slot':nbt.Tag(nbt.INT,slot),'item':nbt.Tag(nbt.COMPOUND,item)})
             components['minecraft:container']=nbt.Tag(nbt.LIST,nbt.ListValue(nbt.COMPOUND,entries))
+        book_items.to_java(tag,components,target.removeprefix('minecraft:'))
+        armor_items.to_java(tag,components,target.removeprefix('minecraft:'))
         tag.finish();f.finish()
         result={'id':nbt.Tag(nbt.STRING,target),'count':nbt.Tag(nbt.INT,count)}
         if components:result['components']=nbt.Tag(nbt.COMPOUND,components)

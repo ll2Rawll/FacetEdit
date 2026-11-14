@@ -24,7 +24,7 @@ from facetedit.registry import profile
 from facetedit.translation import LOGS, LEAVES, STATELESS
 profiles={name:profile(name) for name in ('Java 1.21.4','Bedrock 1.21.50')}
 assert len(profiles['Java 1.21.4'].blocks)==1095
-assert len(profiles['Bedrock 1.21.50'].blocks)==1239
+assert len(profiles['Bedrock 1.21.50'].blocks)==1241
 assert profiles['Bedrock 1.21.50'].palette_version==18163713
 assert len(STATELESS)==307 and 'minecraft:mushroom_stem' not in LOGS
 assert 'minecraft:oak_log' in LOGS and 'minecraft:oak_leaves' in LEAVES
@@ -33,7 +33,7 @@ from facetedit.item_translation import JAVA_ITEMS,BEDROCK_ITEMS
 from facetedit.payload_formats import COLORS,TEXT_RGB
 facts=catalog();assert sum(len(block['states']) for block in facts['blocks'].values())==27866
 assert tuple(facts['text_colors'][name] for name in COLORS)==TEXT_RGB
-assert len(JAVA_ITEMS)==1385 and len(BEDROCK_ITEMS)==1369
+assert len(JAVA_ITEMS)==1385 and len(BEDROCK_ITEMS)==1370
 report={'version':facetedit.__version__,'module_origin':facetedit.__file__,'python_modules':len(modules),
         'third_party_imports':sorted(unsupported),'logo_assets':assets,
         'bundled_block_definitions':{name:len(value.blocks) for name,value in profiles.items()},

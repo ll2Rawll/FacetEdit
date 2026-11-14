@@ -149,6 +149,31 @@ before calling the project an exact feature replica.
   display and native platform/game verification. This release does not complete
   the full parity worklist.
 
+## 0.8 progress — 2026-11-13
+
+- Current-profile palette translation expands to 976 initial identities and
+  22,907 accepted state vectors checked against the isolated reference oracle.
+  With the existing 118 payload identities, isolated initial cells now accept
+  1,094/1,095 types. Moving pistons and numerous non-default/active payloads
+  remain open; this count is not a percentage of overall Amulet parity.
+- Typed payloads now cover populated books/lecterns/bookshelves, campfire and
+  brewing timers, pottery, records, crafters, beacon effects, stationary pistons,
+  gateways, eight natural-spawner types, passive sculk and restricted technical
+  settings. Books, potions/tipped arrows, armor trims and leather dyes expand
+  item conversion. Custom components, active/linked entities, complex spawn/
+  loot/configuration data and general command rewriting remain incomplete.
+- Primary Java predicates and actual context-method calls verify redstone
+  geometry; official item/block-entity codecs verify emitted Java fields.
+  Independent native database/NBT readers check exported bytes in both
+  directions. Comprehensive cardinal transform checks found additional fixes
+  in existing door, hanging-sign and portal code alongside new family handling.
+- Source/packaged desktop tests, real inspector/preflight screenshots and a
+  repeated baseline/current benchmark are recorded in TEST_REPORT.md. Context
+  processing now avoids irrelevant container cells. Runtime remains stdlib/Tk.
+- All-version migration, moving assemblies, remaining specialized display and
+  native OS/game verification still prevent a full-parity claim. The completion
+  sequence in PARITY_COMPLETION_PLAN.md remains active.
+
 ## Reference scope and remaining acceptance matrix
 
 The interface target is the stable **0.10.67** tag. The available checkout is

@@ -1,0 +1,682 @@
+{
+  "accepted_states": 22907,
+  "transform_cases": 183256,
+  "failures_first_100": [
+    {
+      "input": "minecraft:acacia_button[face=floor,facing=north,powered=true]",
+      "turns": 1,
+      "mirror": false,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=floor,facing=north,powered=true]",
+      "turns": 1,
+      "mirror": true,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=floor,facing=north,powered=true]",
+      "turns": 2,
+      "mirror": false,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=floor,facing=north,powered=true]",
+      "turns": 2,
+      "mirror": true,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=floor,facing=north,powered=true]",
+      "turns": 3,
+      "mirror": false,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=floor,facing=north,powered=true]",
+      "turns": 3,
+      "mirror": true,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=floor,facing=north,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=floor,facing=north,powered=false]",
+      "turns": 1,
+      "mirror": true,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=floor,facing=north,powered=false]",
+      "turns": 2,
+      "mirror": false,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=floor,facing=north,powered=false]",
+      "turns": 2,
+      "mirror": true,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=floor,facing=north,powered=false]",
+      "turns": 3,
+      "mirror": false,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=floor,facing=north,powered=false]",
+      "turns": 3,
+      "mirror": true,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=ceiling,facing=north,powered=true]",
+      "turns": 1,
+      "mirror": false,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=ceiling,facing=north,powered=true]",
+      "turns": 1,
+      "mirror": true,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=ceiling,facing=north,powered=true]",
+      "turns": 2,
+      "mirror": false,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=ceiling,facing=north,powered=true]",
+      "turns": 2,
+      "mirror": true,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=ceiling,facing=north,powered=true]",
+      "turns": 3,
+      "mirror": false,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=ceiling,facing=north,powered=true]",
+      "turns": 3,
+      "mirror": true,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=ceiling,facing=north,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=ceiling,facing=north,powered=false]",
+      "turns": 1,
+      "mirror": true,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=ceiling,facing=north,powered=false]",
+      "turns": 2,
+      "mirror": false,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=ceiling,facing=north,powered=false]",
+      "turns": 2,
+      "mirror": true,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=ceiling,facing=north,powered=false]",
+      "turns": 3,
+      "mirror": false,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_button[face=ceiling,facing=north,powered=false]",
+      "turns": 3,
+      "mirror": true,
+      "error": "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 2,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 3,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 3,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=left,open=false,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=left,open=false,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=left,open=false,powered=false]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=left,open=false,powered=false]",
+      "turns": 2,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=left,open=false,powered=false]",
+      "turns": 3,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=left,open=false,powered=false]",
+      "turns": 3,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=right,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=right,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=right,open=true,powered=false]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=right,open=true,powered=false]",
+      "turns": 2,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=right,open=true,powered=false]",
+      "turns": 3,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=right,open=true,powered=false]",
+      "turns": 3,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=right,open=false,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=right,open=false,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=right,open=false,powered=false]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=right,open=false,powered=false]",
+      "turns": 2,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=right,open=false,powered=false]",
+      "turns": 3,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=right,open=false,powered=false]",
+      "turns": 3,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=lower,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=true,open_bit=true,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=3,door_hinge_bit=false,open_bit=true,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=lower,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=true,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=true,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=lower,hinge=left,open=true,powered=false]",
+      "turns": 2,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=true,open_bit=true,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=1,door_hinge_bit=false,open_bit=true,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=lower,hinge=left,open=true,powered=false]",
+      "turns": 3,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=true,open_bit=true,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=2,door_hinge_bit=false,open_bit=true,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=lower,hinge=left,open=false,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=true,open_bit=false,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=3,door_hinge_bit=false,open_bit=false,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=lower,hinge=left,open=false,powered=false]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=lower,hinge=left,open=false,powered=false]",
+      "turns": 2,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=true,open_bit=false,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=lower,hinge=left,open=false,powered=false]",
+      "turns": 3,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=2,door_hinge_bit=false,open_bit=false,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=lower,hinge=right,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=true,open_bit=true,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=3,door_hinge_bit=false,open_bit=true,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=lower,hinge=right,open=true,powered=false]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=true,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=true,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=lower,hinge=right,open=true,powered=false]",
+      "turns": 2,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=true,open_bit=true,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=1,door_hinge_bit=false,open_bit=true,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=lower,hinge=right,open=true,powered=false]",
+      "turns": 3,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=true,open_bit=true,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=2,door_hinge_bit=false,open_bit=true,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=lower,hinge=right,open=false,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=true,open_bit=false,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=3,door_hinge_bit=false,open_bit=false,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=lower,hinge=right,open=false,powered=false]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=lower,hinge=right,open=false,powered=false]",
+      "turns": 2,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=true,open_bit=false,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=lower,hinge=right,open=false,powered=false]",
+      "turns": 3,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=2,door_hinge_bit=false,open_bit=false,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 2,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 3,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 3,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=left,open=false,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=left,open=false,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=left,open=false,powered=false]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=left,open=false,powered=false]",
+      "turns": 2,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=left,open=false,powered=false]",
+      "turns": 3,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=left,open=false,powered=false]",
+      "turns": 3,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=right,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=right,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=right,open=true,powered=false]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=right,open=true,powered=false]",
+      "turns": 2,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=right,open=true,powered=false]",
+      "turns": 3,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=right,open=true,powered=false]",
+      "turns": 3,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=right,open=false,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=right,open=false,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=right,open=false,powered=false]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=right,open=false,powered=false]",
+      "turns": 2,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=right,open=false,powered=false]",
+      "turns": 3,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=upper,hinge=right,open=false,powered=false]",
+      "turns": 3,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=lower,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=true,open_bit=true,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=1,door_hinge_bit=false,open_bit=true,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=lower,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=true,open_bit=true,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=2,door_hinge_bit=false,open_bit=true,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=lower,hinge=left,open=true,powered=false]",
+      "turns": 2,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=true,open_bit=true,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=3,door_hinge_bit=false,open_bit=true,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=lower,hinge=left,open=true,powered=false]",
+      "turns": 3,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=true,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=true,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=lower,hinge=left,open=false,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=true,open_bit=false,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=lower,hinge=left,open=false,powered=false]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=2,door_hinge_bit=false,open_bit=false,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=lower,hinge=left,open=false,powered=false]",
+      "turns": 2,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=true,open_bit=false,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=3,door_hinge_bit=false,open_bit=false,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=lower,hinge=left,open=false,powered=false]",
+      "turns": 3,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=lower,hinge=right,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=true,open_bit=true,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=1,door_hinge_bit=false,open_bit=true,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=lower,hinge=right,open=true,powered=false]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=true,open_bit=true,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=2,door_hinge_bit=false,open_bit=true,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=lower,hinge=right,open=true,powered=false]",
+      "turns": 2,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=3,door_hinge_bit=true,open_bit=true,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=3,door_hinge_bit=false,open_bit=true,upper_block_bit=false]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=south,half=lower,hinge=right,open=true,powered=false]",
+      "turns": 3,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=true,upper_block_bit=false]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=true,upper_block_bit=false]"
+    }
+  ]
+}

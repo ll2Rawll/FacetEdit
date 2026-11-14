@@ -9,6 +9,7 @@ from .item_translation import ItemTranslator
 from .native_rules import SIX,HORIZONTAL
 from .payload_fields import Fields,compound_list,string_list
 from .payload_formats import COLORS,TEXT_RGB,patterns_to_bedrock,patterns_to_java
+from .advanced_payloads import handles as advanced_handles,translate as advanced_translate
 
 CONTAINERS={'chest':('Chest',27),'trapped_chest':('Chest',27),'barrel':('Barrel',27),
             'dispenser':('Dispenser',9),'dropper':('Dropper',9),'hopper':('Hopper',5),
@@ -26,7 +27,7 @@ def identity_block(name,edition):
     return base in ('bed','standing_banner','wall_banner','flower_pot','noteblock','undyed_shulker_box') or base.endswith('_shulker_box')
 
 
-def fields(data,edition,expected,position):
+def fields(data,edition,expected,position,*,movable=1):
     if data is None:result=Fields({},'Block NBT')
     else:
         try:tag=nbt.loads(data)[1]
@@ -39,13 +40,13 @@ def fields(data,edition,expected,position):
     if edition=='Java':
         result.default_only('keepPacked',nbt.BYTE,0)
         result.default_only('components',nbt.COMPOUND,{})
-    else:result.default_only('isMovable',nbt.BYTE,1)
+    elif movable is not None:result.default_only('isMovable',nbt.BYTE,movable)
     return result
 
 
 def root(identifier,position,edition,values):
     values={'id':nbt.Tag(nbt.STRING,identifier),**{axis:nbt.Tag(nbt.INT,v) for axis,v in zip('xyz',position)},**values}
-    if edition=='Bedrock':values['isMovable']=nbt.Tag(nbt.BYTE,1)
+    if edition=='Bedrock':values.setdefault('isMovable',nbt.Tag(nbt.BYTE,1))
     return nbt.dumps(nbt.Tag(nbt.COMPOUND,values))
 
 
@@ -102,6 +103,7 @@ def translate_cell(translator,block,layers,data,position,neighbour=None,neighbou
         if data is not None:raise ValueError('Block NBT: cross-version payload migration is not implemented')
         base,extra=translator.block(block,layers);return base,extra,None
     name=block.name.removeprefix('minecraft:');edition=source.edition
+    if advanced_handles(name):return advanced_translate(translator,block,layers,data,position,neighbour,neighbour_entity)
     identity=identity_block(block.name,edition)
     container=name.removeprefix('lit_')
     is_sign=name.endswith('_sign') or name in ('standing_sign','wall_sign')
@@ -143,7 +145,7 @@ def translate_cell(translator,block,layers,data,position,neighbour=None,neighbou
                 f.default_only('RecipesUsed',nbt.COMPOUND,{})
                 out.update(BurnDuration=nbt.Tag(nbt.SHORT,0),StoredXP=nbt.Tag(nbt.FLOAT,0.0))
             else:
-                f.default_only('BurnDuration',nbt.SHORT,0);f.default_only('StoredXP',nbt.FLOAT,0.0)
+                f.default_only('BurnDuration',nbt.SHORT,0);f.default_only('StoredXP',nbt.FLOAT,0.0);f.default_only('StoredXPInt',nbt.INT,0)
                 out.update(CookTimeTotal=nbt.Tag(nbt.SHORT,200),RecipesUsed=nbt.compound())
     elif is_sign:
         hanging='hanging_sign' in name;java_id='hanging_sign' if hanging else 'sign';native_id='HangingSign' if hanging else 'Sign'

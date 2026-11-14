@@ -1,6 +1,6 @@
 # Conversion and native interchange
 
-FacetEdit 0.7 extends original translation and interchange code. Its runtime uses
+FacetEdit 0.8 extends original translation and interchange code. Its runtime uses
 Python's standard library and Tk only. No Amulet implementation, plugin or
 translation table is distributed with the application.
 
@@ -8,7 +8,8 @@ translation table is distributed with the application.
 
 Open Material studio from the material tray or command palette. Search identifiers
 or words, choose a block and edit its state controls. The bundled profiles contain
-1,095 Java 1.21.4 block definitions and 1,239 Bedrock 1.21.50 definitions. Java
+1,095 Java 1.21.4 block definitions and 1,239 public Bedrock 1.21.50 definitions,
+supplemented by the native internal `end_gateway` and `moving_block` identities. Java
 defaults come from the official server's data report. Bedrock's pinned Mojang
 metadata supplies typed global state domains; these are not a complete list of
 per-block restrictions or verified default permutations. The browser labels that
@@ -37,10 +38,11 @@ comparators and additional decorative/mechanical families. This does **not**
 cover every state of every block. Powered door/gate/trapdoor/head states,
 locked repeaters, dry sea pickles and some orientations remain restricted.
 
-Palette-only rules cover 922 initial block types; an independent exhaustive
-combination audit matches Amulet on 19,853 accepted state vectors. The cell API
+Palette-only rules cover 976 initial block types; an independent exhaustive
+combination audit matches Amulet on 22,907 accepted state vectors. The cell API
 adds 118 block types whose identity/orientation needs NBT. Together these accept
-1,040 of 1,095 isolated Java initial block cells; 55 remain blocked. These counts
+1,094 of 1,095 isolated Java initial block cells; `moving_piston` remains blocked.
+These counts
 do not imply every state, arbitrary existing payload or neighbour context works.
 
 Door and double-chest translation need both matching halves. Chest links are
@@ -54,6 +56,14 @@ supplies only its selected mask. Include both container halves and supporting
 blocks when copying structures with contextual states. Java cave/void air normalize to Bedrock air. Flowing fluid
 identifiers normalize with their depth retained. Reports disclose normalization.
 
+Redstone connections use primary support/conductor/signal predicates and a
+complete context rule independently checked against 28,566 official Java method
+calls. Fire, chorus, tripwire, campfire smoke and scaffolding bottom states use
+neighbours too. Kelp/vine terminal and body encodings can coincide in Bedrock;
+the structure pass resolves those with available neighbours and reports the
+normalization. An inconsistent Java context blocks conversion. An isolated
+palette conversion does not provide those structure-level guarantees.
+
 ## Block NBT and inventories
 
 Supported cell payloads include single/double/trapped chests, barrels, dispensers,
@@ -63,11 +73,36 @@ and basic mob/player heads without custom profiles. Payload identity, coordinate
 types and every handled field are validated. New native NBT is generated when
 the target stores a block's colour, note or orientation there.
 
+Additional handlers include four-slot campfire cooking with pinned vanilla
+600-tick recipes; bookshelf inventory/last slot; written/writable lectern books
+and selected page; jukebox records; pottery sherds and contents; brewing bottle/
+ingredient/fuel slots and timers; crafter inventories and disabled-slot masks;
+beacon effects; gateway age and destination; retracted/extended stationary
+pistons; and pig/zombie/skeleton/spider/cave-spider/silverfish/blaze/magma-cube
+single-type spawners. Empty hive contents, passive sculk and unlinked creaking
+hearts have typed handlers. Nonempty hives, active vibration/cursor state, linked
+actors and customized spawn entity/pool data remain unsupported.
+
+Technical settings include ordinary structure modes, bounds, integrity, seed,
+rotation and mirror, and restricted jigsaw identifiers. Command blocks support
+empty commands or literal `say` text and represented control flags. General
+cross-edition command rewriting, differing structure features/author data,
+jigsaw final-state properties and priorities, nonempty trial/vault runtime data,
+exact-teleport gateways and moving piston assemblies remain explicit blockers.
+Java 1.21.4 gateways use `exit_portal` as an integer array: the official loader
+silently ignores the older `ExitPortal` compound spelling. This pinned handler
+validates the current representation rather than retaining an ignored field.
+
 Items retain explicit native identities, slots, counts from 1–99, supported
 damage/repair data, enchantments at levels 1–255, unbreakable flags, formatted names/lore,
 banner patterns, supported block-state components and nested Shulker contents.
-Unknown components are blockers with field paths; maps/potions and their world/
-variant data are not guessed. The Java codec can normalize invalid counts to one;
+Books preserve static text, title, author and common generations/pages; filtered
+text differences and photographs are rejected. Java's resolved marker is
+canonicalized after static-text conversion. Forty-five vanilla potion variants
+and tipped arrows use explicit native metadata IDs. Custom potion effects,
+colors, luck and the Bedrock-only decay/extended-mundane variants are rejected.
+Vanilla armor trims and opaque RGB leather dye are represented. Maps and unknown
+components remain blockers with field paths. The Java codec can normalize invalid counts to one;
 FacetEdit refuses those counts instead. Nested inventories are bounded by depth
 8 and 4,096 items. Individual containers also validate their actual slot capacity.
 
@@ -82,6 +117,11 @@ still block conversion. Same-version interchange retains opaque NBT unchanged.
 Bedrock Shulker facing bytes and floor-head rotation floats follow clipboard
 transforms. Head transforms use the block's mount state so wall heads do not
 receive a spurious floor rotation; tilted head mounts remain restricted.
+Bookshelf reflection changes occupancy bits, inventory slots and last-interacted
+slots together. Portal planes and jigsaw front/top orientations reject tilted
+forms that their native states cannot represent. The exhaustive transform corpus
+has 182,914 comparable cases with no mismatch, 336 floor/ceiling-button transforms
+without a target orientation, and six native-only pumpkin orientation differences.
 
 ## Convert a saved world
 

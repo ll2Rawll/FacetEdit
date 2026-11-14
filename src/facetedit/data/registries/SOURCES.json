@@ -14,7 +14,15 @@
     "palette_version_verification": "PyMCTranslate 1.2.53 get_version('bedrock', (1,21,50)).data_version, observed in isolated reference validation. This is a storage identifier, not copied translation code; native Bedrock game validation remains open.",
     "source": "https://raw.githubusercontent.com/Mojang/bedrock-samples/v1.21.50.7/metadata/vanilladata_modules/mojang-blocks.json",
     "input_sha256": "377abca7e6a85a7abafb98de342ad9cf6eea581bcd69bca1caf397d3f3171bc5",
-    "notes": "Global state domains only. Mojang's metadata does not specify default permutations or every per-block constraint; initial UI values are not claimed to be game defaults."
+    "notes": "Global state domains only. Mojang's metadata does not specify default permutations or every per-block constraint; initial UI values are not claimed to be game defaults.",
+    "internal_storage_supplement": {
+      "blocks": [
+        "minecraft:end_gateway",
+        "minecraft:moving_block"
+      ],
+      "states": {},
+      "evidence": "Observed native block identities and empty states from the isolated reference translation API. Public metadata omits these internal blocks; no unknown-name fallback is permitted."
+    }
   },
   "Java 1.21.4 state facts": {
     "blocks_input_sha256": "381aaf2729f48928011683b4364e6a3053c0dd986f00126d77822a68b252d1a5",
@@ -36,10 +44,15 @@
       "instrument",
       "wooden_fence_faces",
       "nether_fence_faces",
-      "pane_faces"
+      "pane_faces",
+      "redstone_conductor",
+      "signal_source",
+      "flammable",
+      "wire_connection_faces",
+      "wire_vertical_connection"
     ],
     "format": 1,
-    "reporter_sha256": "a158094298905955ab643f1dd79a35851d95dba4433ba6c14950eecf20643487",
+    "reporter_sha256": "8049b36cbac16df4d46598254000c20c9501dd8ab9601297208f735aabd547b6",
     "server_sha256": "de9538d2497c8f4174805f3fcedb8ade3060446aa203f351b820ea5bd04adbf4",
     "version": [
       1,
@@ -50,7 +63,7 @@
     "mappings": "https://piston-data.mojang.com/v1/objects/0b1e60cc509cfb0172573ae56b436c29febbc187/server.txt",
     "mappings_sha1": "0b1e60cc509cfb0172573ae56b436c29febbc187",
     "client_source": "https://piston-data.mojang.com/v1/objects/a7e5a6024bfd3cd614625aa05629adf760020304/client.jar",
-    "notes": "Original reflection reporter reads face support, connection predicates, note instruments and dye text colors from the pinned official server with official client tags bound. No game/server is started; no executable game code or assets are bundled."
+    "notes": "Original reflection reporter reads face support, connection predicates, note instruments, dye colors, conductors, signal sources, flammability and directional/vertical wire predicates from the pinned official server. Only metadata is bundled. scripts/PrimaryContextReport.java separately checks 28,566 complete redstone contexts and item/block-entity codecs without starting a game/server."
   },
   "Item identity profiles": {
     "generator": "scripts/generate_items.py",
@@ -61,7 +74,13 @@
       "bedrock": "43bd9cee1cae30f0a0f0c63f2cd589354b23504600d1742d5364fc555a8b88fa",
       "java": "a2c232e6d125d78bb3a31f6c4eb66e794a9317e8b6ab485b968ee047d84666e0"
     },
-    "notes": "Only native item identifiers, Java maximum stack size and durability metadata. Matching names do not migrate unknown components. Count handling checked with scripts/PrimaryItemReport.java against the official ItemStack codec."
+    "notes": "Only native item identifiers, Java maximum stack size and durability metadata. Matching names do not migrate unknown components. Count handling checked with scripts/PrimaryItemReport.java against the official ItemStack codec.",
+    "internal_inventory_supplement": {
+      "items": [
+        "minecraft:written_book"
+      ],
+      "evidence": "Native Bedrock written-book item identity documented in the Bedrock item format; omitted by Mojang public item enumeration."
+    }
   },
   "Bedrock enchantment field identifiers": {
     "primary_names_source": "https://raw.githubusercontent.com/Mojang/bedrock-samples/v1.21.50.7/metadata/vanilladata_modules/mojang-enchantments.json",
@@ -71,5 +90,36 @@
     "scope": "Explicit native format IDs 0\u201337 match the independent minecraft-data metadata; 0\u201340 also match the Geyser BedrockEnchantment ordinal definitions. Later Lunge is outside the pinned 1.21.50 profile. No third-party implementation or reference table is bundled.",
     "current_enum_crosscheck": "https://raw.githubusercontent.com/GeyserMC/Geyser/master/core/src/main/java/org/geysermc/geyser/inventory/item/BedrockEnchantment.java",
     "current_enum_crosscheck_sha256": "4df1616c4ef77f7ae0ad7c0904ab64dc0bada0b69a9df9f70173ae8355792869"
+  },
+  "Additional native format fields": {
+    "references": {
+      "Block entity format": {
+        "url": "https://minecraft.wiki/w/Bedrock_Edition_level_format/Block_entity_format",
+        "retrieved": "2026-11-13",
+        "raw_sha256": "f54d720b67d8be56fcf1478bec154a5d66f61a5dc8fdc5816a5c1e8f93df0ca4"
+      },
+      "Item format": {
+        "url": "https://minecraft.wiki/w/Bedrock_Edition_level_format/Item_format",
+        "retrieved": "2026-11-13",
+        "raw_sha256": "466a9493ffcbd091ef061450e3a203b95381c90a8a4da01d3d4e0c6884b8a9bf"
+      },
+      "Bell event flag": {
+        "url": "https://minecraft.wiki/w/Bell",
+        "retrieved": "2026-11-13",
+        "raw_sha256": "29bebfb25aeae97a9681ad7dd350962f7f287810dd3c3d6e9d69e0bbb9c9e1ca"
+      }
+    },
+    "notes": "Only native field names, numeric format identifiers and independent conversion code are bundled. Community field documentation is cross-checked with primary Java serializers and binary native-reader tests; this is not native Bedrock game execution. Bell integer widths also appear in the published Bedrock 1.18 fixture."
+  },
+  "Potion and armor identities": {
+    "java_registries_sha256": "bc4fc2dd0868dfc9e7960c8f94037088113803f0052de1b677aab3962ea58ae2",
+    "java_trim_identities": "data/minecraft/trim_material and trim_pattern in the pinned official 1.21.4 client",
+    "potion_numeric_crosscheck": "https://github.com/GeyserMC/Geyser/blob/master/core/src/main/java/org/geysermc/geyser/inventory/item/Potion.java",
+    "notes": "45 potion identities and native numeric format values; Java luck is rejected, not mapped to Bedrock extended-mundane ID 2. IDs 43/46 use pinned Java registry names wind_charged/infested. No third-party implementation is copied or run by the editor. Primary ItemStack codec accepted all 180 potion/tipped-arrow vectors plus two book records."
+  },
+  "Natural spawner identities": {
+    "source": "https://raw.githubusercontent.com/Mojang/bedrock-samples/v1.21.50.7/metadata/vanilladata_modules/mojang-entities.json",
+    "local_metadata_snapshot_sha256": "30430156079262ff6b25adf5cf44b2d44bdbd24e7f5394d042be6bc5c6aa12d4",
+    "scope": "Eight native identities: pig, zombie, skeleton, spider, cave_spider, silverfish, blaze and magma_cube; no arbitrary entity-NBT or moving-actor translation."
   }
 }

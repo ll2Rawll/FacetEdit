@@ -1,0 +1,16 @@
+{
+  "primary": {
+    "official_java_block_entity_records_checked": 18,
+    "gateway_shape_cases": 6,
+    "wire_context_vectors": 28566,
+    "item_codec_vectors": 182,
+    "lost_checked_fields": 0
+  },
+  "native_worlds": {
+    "bedrock_block_entities": 20,
+    "java_block_entities": 18,
+    "independent_typed_field_checks": "pass",
+    "readers": "native amulet-leveldb 1.0.7 and amulet-nbt 2.1.8; independent Anvil-sector traversal"
+  },
+  "minecraft_game_execution": false
+}

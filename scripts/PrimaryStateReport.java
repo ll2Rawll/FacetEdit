@@ -31,10 +31,14 @@ public class PrimaryStateReport {
         Method fence=Class.forName("dmm").getMethod("a",state,boolean.class,direction);
         Method pane=Class.forName("dnq").getMethod("a",state,boolean.class);
         Method exception=block.getMethod("k",state), instrument=state.getMethod("E");
+        Method conductor=state.getMethod("d",getter,pos),signal=state.getMethod("p");
+        Object fire=Class.forName("djp").getField("cy").get(null);
+        Method burns=Class.forName("dmo").getDeclaredMethod("g",state);burns.setAccessible(true);
+        Method wire=Class.forName("dpu").getDeclaredMethod("a",state,direction);wire.setAccessible(true);
         Method directionName=direction.getMethod("n"), instrumentName=Class.forName("dxy").getMethod("c");
         String[] faces={"down","up","north","south","west","east"};
         for(int id=0;id<=Integer.parseInt(args[0]);id++) {
-            Object value=byId.invoke(null,id);int mask=0,woodMask=0,netherMask=0,paneMask=0;
+            Object value=byId.invoke(null,id);int mask=0,woodMask=0,netherMask=0,paneMask=0,wireMask=0;
             for(Object face:direction.getEnumConstants()) {
                 String name=(String)directionName.invoke(face);
                 for(int bit=0;bit<faces.length;bit++)
@@ -45,10 +49,11 @@ public class PrimaryStateReport {
                             if((boolean)fence.invoke(wooden,value,solid,face))woodMask|=1<<bit;
                             if((boolean)fence.invoke(nether,value,solid,face))netherMask|=1<<bit;
                             if((boolean)pane.invoke(bars,value,solid))paneMask|=1<<bit;
+                            if((boolean)wire.invoke(null,value,face))wireMask|=1<<bit;
                         }
                     }
             }
-            output.println("STATE "+id+" "+mask+" "+exception.invoke(null,value)+" "+instrumentName.invoke(instrument.invoke(value))+" "+woodMask+" "+netherMask+" "+paneMask);
+            output.println("STATE "+id+" "+mask+" "+exception.invoke(null,value)+" "+instrumentName.invoke(instrument.invoke(value))+" "+woodMask+" "+netherMask+" "+paneMask+" "+conductor.invoke(value,empty,zero)+" "+signal.invoke(value)+" "+burns.invoke(fire,value)+" "+wireMask+" "+wire.invoke(null,value,null));
         }
         Class<?> color=Class.forName("cvn");
         for(Object value:color.getEnumConstants())

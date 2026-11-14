@@ -65,6 +65,17 @@ class Transform:
                 raise ValueError('Legacy metadata rotation needs a versioned state translator; disable block-state rotation to transform geometry')
             return block
         props=dict(block.properties);original_properties=dict(props)
+        if block.name in ('minecraft:nether_portal','minecraft:portal'):
+            key='axis' if edition=='Java' else 'portal_axis';axis=props.get(key)
+            if axis not in ('x','z'):raise ValueError('Unknown portal plane orientation')
+            normal=self.direction('north' if axis=='x' else 'east')
+            if normal in ('up','down'):raise ValueError('A horizontal portal plane has no native block state')
+            props[key]='x' if normal in ('north','south') else 'z'
+            return Block(block.name,tuple(props.items()),block.state_types)
+        if block.name=='minecraft:jigsaw':
+            from .transforms import jigsaw_axes,jigsaw_states
+            front,top=jigsaw_axes(props,edition)
+            return Block(block.name,tuple(jigsaw_states(self.direction(front),self.direction(top),edition).items()),block.state_types)
         up=self.direction('up')
         horizontal=all(self.direction(key) not in ('up','down') for key in ('north','east','south','west'))
         if horizontal:
@@ -72,8 +83,9 @@ class Transform:
             mirror=self.direction('east')!=order[(turns+1)%4]
             block=block.transform(turns,mirror,edition);props=dict(block.properties)
         else:
-            complex_keys={'shape','hinge','half','type','face','rotation','ground_sign_direction','rail_direction','vine_direction_bits','direction','weirdo_direction','door_hinge_bit','huge_mushroom_bits','minecraft:cardinal_direction','coral_direction'}
-            if complex_keys&props.keys() or any(k in props for k in ('north','east','south','west')):
+            complex_keys={'shape','hinge','half','type','face','rotation','ground_sign_direction','rail_direction','vine_direction_bits','direction','weirdo_direction','door_hinge_bit','huge_mushroom_bits','minecraft:cardinal_direction','coral_direction','lever_direction'}
+            if block.name=='minecraft:piston_head':complex_keys.discard('type')
+            if complex_keys&props.keys() or any(k in props for k in ('north','east','south','west')) or any(k.startswith(('wall_connection_type_','pale_moss_carpet_side_')) for k in props):
                 raise ValueError('This block cannot represent the tilted orientation: '+str(block)+'. Disable block-state rotation to transform geometry')
         if not horizontal or up=='down':
             for key in ('facing','block_face','torch_facing_direction','minecraft:facing_direction','minecraft:block_face'):
@@ -83,7 +95,8 @@ class Transform:
                     v=self.direction({'x':'east','y':'up','z':'south'}[props[key]])
                     props[key]='x' if v in ('east','west') else 'y' if v in ('up','down') else 'z'
             if 'facing_direction' in props:
-                order=('down','up','south','north','east','west') if edition=='Bedrock' and block.name=='minecraft:end_rod' else ('down','up','north','south','west','east');old=order[int(props['facing_direction'])]
+                from .transforms import native_facing_order
+                order=native_facing_order(block) if edition=='Bedrock' else ('down','up','north','south','west','east');old=order[int(props['facing_direction'])]
                 if not horizontal:props['facing_direction']=str(order.index(self.direction(old)))
                 elif old in ('up','down'):props['facing_direction']=str(order.index('down' if old=='up' else 'up'))
             if 'multi_face_direction_bits' in props:
@@ -105,6 +118,11 @@ class Transform:
             for key,axis in (('pairx',0),('pairz',2)):tag.value[key]=nbt.Tag(nbt.INT,pair[axis]+target[axis]-center[axis])
         if rotate_states and 'Rot' in tag.value:
             value=tag.value['Rot'];tag.value['Rot']=nbt.Tag(value.kind,self.rotation16(value.value))
+        if rotate_states and all(self.direction(key) in ('north','east','south','west') for key in ('north','east','south','west')):
+            order=('north','east','south','west');turn=order.index(self.direction('north'))
+            if self.direction('east')!=order[(turn+1)%4]:
+                from .entities import mirror_bookshelf
+                mirror_bookshelf(tag)
         if rotate_states and nbt.get(tag,'id')=='ShulkerBox' and 'facing' in tag.value:
             order=('down','up','north','south','west','east');value=tag.value['facing']
             if value.kind!=nbt.BYTE or not 0<=value.value<6:raise ValueError('Invalid Shulker Box facing byte')

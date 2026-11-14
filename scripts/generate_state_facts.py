@@ -43,13 +43,13 @@ with tempfile.TemporaryDirectory(prefix='facetedit-primary-facts-') as scratch:
 facts={};colors={}
 for line in run.stdout.splitlines():
     fields=line.split()
-    if fields and fields[0]=='STATE':facts[int(fields[1])]=(int(fields[2]),fields[3]=='true',fields[4],*(int(v) for v in fields[5:8]))
+    if fields and fields[0]=='STATE':facts[int(fields[1])]=(int(fields[2]),fields[3]=='true',fields[4],*(int(v) for v in fields[5:8]),*(v=='true' for v in fields[8:11]),int(fields[11]),fields[12]=='true')
     elif fields and fields[0]=='COLOR':colors[fields[1]]=int(fields[2])
 assert len(facts)==maximum+1,(len(facts),maximum)
 result={'format':1,'edition':'Java','version':[1,21,4],'data_version':4189,
         'face_order':['down','up','north','south','west','east'],
         'context':'EmptyBlockGetter at BlockPos.ZERO after Bootstrap with official client block tags bound to each registry holder. Connection masks are native fence/pane predicates against each neighbour face.',
-        'fields':['sturdy_faces','connection_exception','instrument','wooden_fence_faces','nether_fence_faces','pane_faces'],
+        'fields':['sturdy_faces','connection_exception','instrument','wooden_fence_faces','nether_fence_faces','pane_faces','redstone_conductor','signal_source','flammable','wire_connection_faces','wire_vertical_connection'],
         'server_sha256':hashlib.sha256(server.read_bytes()).hexdigest(),
         'client_sha256':hashlib.sha256(args.client.read_bytes()).hexdigest(),
         'blocks_input_sha256':hashlib.sha256(blocks_path.read_bytes()).hexdigest(),

@@ -2,7 +2,8 @@
 
 The bundled data is metadata produced by our optional reporter against the
 pinned official server, with official block tags bound. No server code runs in
-the editor. Masks describe a neighbour's face, not the edited block's face.
+the editor. Support/fence/pane masks describe the neighbour's face. Wire masks
+use the direction from the wire to its neighbour, matching the primary method.
 """
 from functools import lru_cache
 import gzip

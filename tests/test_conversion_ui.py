@@ -106,6 +106,36 @@ class ConversionDesktopTests(unittest.TestCase):
         self.assertEqual(tag.value['Items'].value.values[0]['Name'].value,'minecraft:diamond')
         self.app.undo();self.assertIsNone(self.app.document.get_entity(1,20,1))
 
+    def test_written_lectern_preview_paste_and_typed_inspection(self):
+        from facetedit import nbt
+        from tests.advanced_fixture import gallery
+        source=plain_java(self.path/'java-advanced-clipboard');positions=gallery(source)
+        source.selection=Selection(positions['lectern'],positions['lectern']);source.copy()
+        target=open_world(modern_bedrock(self.path/'bedrock-advanced-clipboard'))
+        self.app._attach(Document(target));self.app.document.clipboard=source.clipboard
+        self.app.translate_clipboard_dialog();c=self.dialog().conversion_controls
+        c['preview']();self.wait();self.assertIsNotNone(c['prepared'][0]);c['use']()
+        self.app.document.selection=Selection((1,20,1),(1,20,1));self.app.document.paste();self.app.refresh()
+        value=nbt.loads(self.app.document.get_entity(1,20,1))[1].value
+        self.assertEqual(value['book'].value['Name'].value,'minecraft:written_book');self.assertEqual(value['page'].value,1)
+        self.app.nbt_dialog();window=self.dialog();self.app.update()
+        def walk(parent):
+            for child in parent.winfo_children():
+                yield child;yield from walk(child)
+        editor=next(child for child in walk(window) if isinstance(child,tk.Text))
+        self.assertIn('Builder notes',editor.get('1.0','end'));self.assertIn('pages',editor.get('1.0','end'))
+        window.destroy();self.app.undo();self.assertIsNone(self.app.document.get_entity(1,20,1))
+
+    def test_advanced_world_preflight_through_desktop(self):
+        from tests.advanced_fixture import gallery
+        source=plain_java(self.path/'java-advanced-world');gallery(source)
+        target=modern_bedrock(self.path/'bedrock-advanced-world')
+        self.app._attach(source);self.app.convert_world_dialog();window=self.dialog();c=window.conversion_controls
+        c['template'].set(str(target));c['preview']();self.wait()
+        self.assertIsNotNone(c['plan'][0]);self.assertTrue(c['plan'][0].report.ok,c['report'].get('1.0','end'))
+        self.assertEqual(c['plan'][0].report.payloads,20)
+        c['plan'][0].close()
+
     def test_material_variables_and_traces_are_released_when_rebuilt_and_closed(self):
         self.app.material_dialog();dialog=self.dialog();c=dialog.material_controls
         c['search'].set('oak_stairs');self.app.update()

@@ -1,0 +1,23 @@
+{
+  "version": "0.7.0",
+  "module_origin": "/workspace/facetedit/dist/FacetEdit.pyz/facetedit/__init__.py",
+  "python_modules": 71,
+  "third_party_imports": [],
+  "logo_assets": [
+    "facetedit/assets/logo-128.png",
+    "facetedit/assets/logo-256.png",
+    "facetedit/assets/logo-64.png"
+  ],
+  "bundled_block_definitions": {
+    "Java 1.21.4": 1095,
+    "Bedrock 1.21.50": 1239
+  },
+  "native_bedrock_palette_version": 18163713,
+  "bundled_primary_state_facts": 27866,
+  "bundled_item_identities": {
+    "Java": 1385,
+    "Bedrock": 1369
+  },
+  "bytes": 435725,
+  "sha256": "79a7d7cf5fd7e9d3a67df7129e69b3dd51a74070c05cbdcc70f076a006203ed8"
+}

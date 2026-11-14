@@ -528,6 +528,8 @@ def translate_clipboard(clip, target, source=None, neighbour=None, cancelled=lam
                         block=blocks[pos];props=dict(block.properties);props['distance']=str(distance)
                         blocks[pos]=target.block(block.name,props)
                 except ValueError as exc:report.issue(str(exc))
+        from .advanced_context import apply_context
+        apply_context(translator,clip,blocks,extra,entities,source_at,entity_at,report,cancelled,canonical=canonical)
     if not report.ok:
         return None, report
     result = Clipboard(clip.size, blocks, target.edition, clip.offset, entities, target.data_version, extra, target.version)

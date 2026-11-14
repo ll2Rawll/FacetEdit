@@ -1,0 +1,717 @@
+{
+  "accepted_states": 22907,
+  "comparable_transform_cases": 182920,
+  "unrepresentable_transformed_states": {
+    "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation": 336
+  },
+  "mismatch_count": 4526,
+  "mismatch_blocks": {
+    "minecraft:acacia_door": 160,
+    "minecraft:acacia_hanging_sign": 48,
+    "minecraft:acacia_wall_hanging_sign": 48,
+    "minecraft:bamboo_door": 160,
+    "minecraft:bamboo_hanging_sign": 48,
+    "minecraft:bamboo_wall_hanging_sign": 48,
+    "minecraft:birch_door": 160,
+    "minecraft:birch_hanging_sign": 48,
+    "minecraft:birch_wall_hanging_sign": 48,
+    "minecraft:cherry_door": 160,
+    "minecraft:cherry_hanging_sign": 48,
+    "minecraft:cherry_wall_hanging_sign": 48,
+    "minecraft:copper_door": 160,
+    "minecraft:crimson_door": 160,
+    "minecraft:crimson_hanging_sign": 48,
+    "minecraft:crimson_wall_hanging_sign": 48,
+    "minecraft:dark_oak_door": 160,
+    "minecraft:dark_oak_hanging_sign": 48,
+    "minecraft:dark_oak_wall_hanging_sign": 48,
+    "minecraft:exposed_copper_door": 160,
+    "minecraft:iron_door": 160,
+    "minecraft:jungle_door": 160,
+    "minecraft:jungle_hanging_sign": 48,
+    "minecraft:jungle_wall_hanging_sign": 48,
+    "minecraft:mangrove_door": 160,
+    "minecraft:mangrove_hanging_sign": 48,
+    "minecraft:mangrove_wall_hanging_sign": 48,
+    "minecraft:nether_portal": 8,
+    "minecraft:oak_door": 160,
+    "minecraft:oak_hanging_sign": 48,
+    "minecraft:oak_wall_hanging_sign": 48,
+    "minecraft:oxidized_copper_door": 160,
+    "minecraft:pale_oak_door": 160,
+    "minecraft:pale_oak_hanging_sign": 48,
+    "minecraft:pale_oak_wall_hanging_sign": 48,
+    "minecraft:pumpkin": 6,
+    "minecraft:spruce_door": 160,
+    "minecraft:spruce_hanging_sign": 48,
+    "minecraft:spruce_wall_hanging_sign": 48,
+    "minecraft:warped_door": 160,
+    "minecraft:warped_hanging_sign": 48,
+    "minecraft:warped_wall_hanging_sign": 48,
+    "minecraft:waxed_copper_door": 160,
+    "minecraft:waxed_exposed_copper_door": 160,
+    "minecraft:waxed_oxidized_copper_door": 160,
+    "minecraft:waxed_weathered_copper_door": 160,
+    "minecraft:weathered_copper_door": 160
+  },
+  "examples_by_block": [
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:acacia_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:acacia_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:acacia_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:acacia_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:acacia_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:acacia_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:acacia_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:acacia_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:acacia_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:acacia_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:acacia_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:acacia_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:acacia_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:acacia_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:acacia_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:bamboo_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:bamboo_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:bamboo_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:bamboo_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:bamboo_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:bamboo_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:bamboo_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:bamboo_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:bamboo_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:bamboo_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:bamboo_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:bamboo_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:bamboo_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:bamboo_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:bamboo_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:bamboo_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:bamboo_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:bamboo_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:birch_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:birch_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:birch_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:birch_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:birch_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:birch_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:birch_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:birch_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:birch_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:birch_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:birch_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:birch_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:birch_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:birch_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:birch_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:birch_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:birch_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:birch_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:cherry_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:cherry_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:cherry_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:cherry_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:cherry_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:cherry_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:cherry_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:cherry_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:cherry_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:cherry_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:cherry_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:cherry_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:cherry_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:cherry_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:cherry_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:cherry_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:cherry_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:cherry_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:copper_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:copper_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:copper_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:copper_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:copper_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:copper_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:crimson_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:crimson_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:crimson_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:crimson_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:crimson_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:crimson_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:crimson_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:crimson_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:crimson_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:crimson_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:crimson_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:crimson_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:crimson_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:crimson_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:crimson_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:crimson_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:crimson_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:crimson_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:dark_oak_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:dark_oak_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:dark_oak_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:dark_oak_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:dark_oak_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:dark_oak_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:dark_oak_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:dark_oak_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:dark_oak_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:dark_oak_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:dark_oak_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:dark_oak_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:dark_oak_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:dark_oak_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:dark_oak_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:dark_oak_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:dark_oak_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:dark_oak_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:exposed_copper_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:exposed_copper_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:exposed_copper_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:exposed_copper_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:exposed_copper_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:exposed_copper_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:iron_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:iron_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:iron_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:iron_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:iron_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:iron_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:jungle_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:jungle_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:jungle_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:jungle_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:jungle_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:jungle_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:jungle_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:jungle_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:jungle_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:jungle_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:jungle_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:jungle_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:jungle_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:jungle_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:jungle_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:jungle_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:jungle_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:jungle_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:mangrove_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:mangrove_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:mangrove_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:mangrove_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:mangrove_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:mangrove_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:mangrove_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:mangrove_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:mangrove_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:mangrove_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:mangrove_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:mangrove_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:mangrove_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:mangrove_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:mangrove_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:mangrove_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:mangrove_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:mangrove_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:nether_portal[axis=x]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:portal[portal_axis=x]",
+      "expected": "minecraft:portal[portal_axis=z]"
+    },
+    {
+      "input": "minecraft:nether_portal[axis=x]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:portal[portal_axis=x]",
+      "expected": "minecraft:portal[portal_axis=z]"
+    },
+    {
+      "input": "minecraft:oak_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:wooden_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:wooden_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:oak_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:wooden_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:wooden_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:oak_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:oak_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:oak_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:oak_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:oak_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:oak_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:oak_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:oak_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:oak_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:oak_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:oak_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:oak_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:oxidized_copper_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:oxidized_copper_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:oxidized_copper_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:oxidized_copper_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:oxidized_copper_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:oxidized_copper_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:pale_oak_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:pale_oak_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:pale_oak_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:pale_oak_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:pale_oak_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:pale_oak_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:pale_oak_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:pale_oak_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:pale_oak_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:pale_oak_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:pale_oak_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:pale_oak_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:pale_oak_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:pale_oak_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:pale_oak_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:pale_oak_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:pale_oak_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:pale_oak_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:pumpkin",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:pumpkin[minecraft:cardinal_direction=east]",
+      "expected": "minecraft:pumpkin[minecraft:cardinal_direction=north]"
+    },
+    {
+      "input": "minecraft:pumpkin",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:pumpkin[minecraft:cardinal_direction=east]",
+      "expected": "minecraft:pumpkin[minecraft:cardinal_direction=north]"
+    },
+    {
+      "input": "minecraft:spruce_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:spruce_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:spruce_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:spruce_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:spruce_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:spruce_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:spruce_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:spruce_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:spruce_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:spruce_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:spruce_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:spruce_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:spruce_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:spruce_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:spruce_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:spruce_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:spruce_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:spruce_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:warped_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:warped_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:warped_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:warped_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:warped_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:warped_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:warped_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:warped_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:warped_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:warped_hanging_sign[attached=false,rotation=0,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:warped_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=4,hanging=true]",
+      "expected": "minecraft:warped_hanging_sign[attached_bit=false,facing_direction=4,ground_sign_direction=0,hanging=true]"
+    },
+    {
+      "input": "minecraft:warped_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:warped_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:warped_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:warped_wall_hanging_sign[facing=north,waterlogged=true]",
+      "turns": 1,
+      "mirror": true,
+      "actual": "minecraft:warped_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=4,hanging=false]",
+      "expected": "minecraft:warped_hanging_sign[attached_bit=false,facing_direction=5,ground_sign_direction=0,hanging=false]"
+    },
+    {
+      "input": "minecraft:waxed_copper_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:waxed_copper_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:waxed_copper_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:waxed_copper_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:waxed_copper_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:waxed_copper_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:waxed_exposed_copper_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:waxed_exposed_copper_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:waxed_exposed_copper_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:waxed_exposed_copper_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:waxed_exposed_copper_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:waxed_exposed_copper_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:waxed_oxidized_copper_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:waxed_oxidized_copper_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:waxed_oxidized_copper_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:waxed_oxidized_copper_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:waxed_oxidized_copper_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:waxed_oxidized_copper_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:waxed_weathered_copper_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:waxed_weathered_copper_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:waxed_weathered_copper_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:waxed_weathered_copper_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:waxed_weathered_copper_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:waxed_weathered_copper_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:weathered_copper_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 0,
+      "mirror": true,
+      "actual": "minecraft:weathered_copper_door[direction=2,door_hinge_bit=true,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:weathered_copper_door[direction=0,door_hinge_bit=true,open_bit=false,upper_block_bit=true]"
+    },
+    {
+      "input": "minecraft:weathered_copper_door[facing=north,half=upper,hinge=left,open=true,powered=false]",
+      "turns": 1,
+      "mirror": false,
+      "actual": "minecraft:weathered_copper_door[direction=1,door_hinge_bit=false,open_bit=false,upper_block_bit=true]",
+      "expected": "minecraft:weathered_copper_door[direction=0,door_hinge_bit=false,open_bit=false,upper_block_bit=true]"
+    }
+  ]
+}

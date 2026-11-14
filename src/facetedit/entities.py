@@ -3,6 +3,23 @@
 from . import nbt
 
 
+def mirror_bookshelf(tag):
+    identifier=nbt.get(tag,'id')
+    if identifier not in ('ChiseledBookshelf','minecraft:chiseled_bookshelf'):return
+    items=tag.value.get('Items')
+    if items is not None:
+        if items.kind!=nbt.LIST or items.value.values and items.value.kind!=nbt.COMPOUND:raise ValueError('Invalid bookshelf inventory list')
+        for item in items.value.values:
+            slot=item.get('Slot')
+            if slot is None or slot.kind!=nbt.BYTE or not 0<=slot.value<6:raise ValueError('Invalid bookshelf inventory slot')
+            item['Slot']=nbt.Tag(nbt.BYTE,slot.value//3*3+2-slot.value%3)
+    key='LastInteractedSlot' if identifier=='ChiseledBookshelf' else 'last_interacted_slot';last=tag.value.get(key)
+    if last is not None:
+        offset=int(identifier=='ChiseledBookshelf');value=last.value-offset
+        if last.kind!=nbt.INT or not -1<=value<6:raise ValueError('Invalid last interacted bookshelf slot')
+        if value!=-1:tag.value[key]=nbt.Tag(nbt.INT,value//3*3+2-value%3+offset)
+
+
 def relocate(data, position):
     _, tag = nbt.loads(data)
     if tag.kind != nbt.COMPOUND or not isinstance(nbt.get(tag, "id"), str):
@@ -34,6 +51,7 @@ def transform(data,size,turns=0,mirror=False,block=None):
     if not turns%4 and not mirror:return data
     from .transforms import point
     name,tag=nbt.loads(data)
+    if mirror:mirror_bookshelf(tag)
     position=tuple(nbt.get(tag,axis) for axis in 'xyz')
     if any(type(v) is not int for v in position):raise ValueError('Invalid block entity coordinates')
     if 'pairx' in tag.value or 'pairz' in tag.value:

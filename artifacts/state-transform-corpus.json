@@ -1,0 +1,54 @@
+{
+  "accepted_states": 22907,
+  "comparable_transform_cases": 182914,
+  "unrepresentable_transformed_states": {
+    "Bedrock floor/ceiling buttons cannot preserve this horizontal orientation": 336
+  },
+  "native_only_orientation_differences": [
+    {
+      "input": "minecraft:pumpkin",
+      "turns": 1,
+      "mirror": false,
+      "native_orientation": "minecraft:pumpkin[minecraft:cardinal_direction=east]",
+      "java_canonical": "minecraft:pumpkin[minecraft:cardinal_direction=north]"
+    },
+    {
+      "input": "minecraft:pumpkin",
+      "turns": 1,
+      "mirror": true,
+      "native_orientation": "minecraft:pumpkin[minecraft:cardinal_direction=east]",
+      "java_canonical": "minecraft:pumpkin[minecraft:cardinal_direction=north]"
+    },
+    {
+      "input": "minecraft:pumpkin",
+      "turns": 2,
+      "mirror": false,
+      "native_orientation": "minecraft:pumpkin[minecraft:cardinal_direction=south]",
+      "java_canonical": "minecraft:pumpkin[minecraft:cardinal_direction=north]"
+    },
+    {
+      "input": "minecraft:pumpkin",
+      "turns": 2,
+      "mirror": true,
+      "native_orientation": "minecraft:pumpkin[minecraft:cardinal_direction=south]",
+      "java_canonical": "minecraft:pumpkin[minecraft:cardinal_direction=north]"
+    },
+    {
+      "input": "minecraft:pumpkin",
+      "turns": 3,
+      "mirror": false,
+      "native_orientation": "minecraft:pumpkin[minecraft:cardinal_direction=west]",
+      "java_canonical": "minecraft:pumpkin[minecraft:cardinal_direction=north]"
+    },
+    {
+      "input": "minecraft:pumpkin",
+      "turns": 3,
+      "mirror": true,
+      "native_orientation": "minecraft:pumpkin[minecraft:cardinal_direction=west]",
+      "java_canonical": "minecraft:pumpkin[minecraft:cardinal_direction=north]"
+    }
+  ],
+  "mismatch_count": 0,
+  "mismatch_blocks": {},
+  "examples_by_block": []
+}

@@ -24,6 +24,10 @@ JAVA_RELEASES = {
     4080: (1,21,2), 4082: (1,21,3), 4189: (1,21,4),
 }
 PROFILE_FILES = {'Java 1.21.4': 'java-1.21.4.json.gz', 'Bedrock 1.21.50': 'bedrock-1.21.50.json.gz'}
+# Native internal storage blocks omitted by the public placeable-block report.
+# Their empty state compounds are cross-checked against the isolated native
+# translation oracle; in-game validation remains a separate acceptance item.
+BEDROCK_INTERNAL=('minecraft:end_gateway','minecraft:moving_block')
 
 
 @dataclass(frozen=True)
@@ -77,6 +81,8 @@ def profile(label):
     data = json.loads(gzip.decompress(raw))
     if data['format'] != 1:
         raise ValueError('Unsupported registry format')
+    if data['edition']=='Bedrock' and tuple(data['version'])==(1,21,50):
+        for name in BEDROCK_INTERNAL:data['blocks'].setdefault(name,{'default':{},'properties':{}})
     return Profile(data['edition'], tuple(data['version']), data['data_version'], data['blocks'], data.get('palette_version'))
 
 

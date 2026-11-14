@@ -9,7 +9,7 @@ class RegistryTests(unittest.TestCase):
         java = profile('Java 1.21.4')
         bedrock = profile('Bedrock 1.21.50')
         self.assertEqual(len(java.blocks), 1095)
-        self.assertEqual(len(bedrock.blocks), 1239)
+        self.assertEqual(len(bedrock.blocks), 1241)
         self.assertEqual(dict(java.initial('minecraft:oak_stairs').properties), {'facing':'north','half':'bottom','shape':'straight','waterlogged':'false'})
         self.assertIsNone(bedrock.blocks['minecraft:oak_stairs']['default'])
 

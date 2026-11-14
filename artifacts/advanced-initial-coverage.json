@@ -1,0 +1,12 @@
+{
+  "scope": "Isolated initial block cells with default or generated payloads only. This is not coverage of every state, arbitrary NBT or world context.",
+  "total_initial_types": 1095,
+  "supported_initial_types": 1094,
+  "blocked_initial_types": 1,
+  "blocked": [
+    {
+      "block": "minecraft:moving_piston",
+      "reason": "No Java \u2192 Bedrock rule for minecraft:moving_piston"
+    }
+  ]
+}

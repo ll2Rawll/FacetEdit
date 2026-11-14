@@ -27,6 +27,9 @@ def boolean(value):return str(bool(value)).lower()
 
 
 def to_bedrock(name,p,water=False):
+    from .advanced_rules import to_bedrock as advanced
+    result=advanced(name,p)
+    if result is not None:return result
     target=ALIASES.get(name,name);out={}
     if name in PLAIN_ALIASES or name in WATER_ONLY or name.endswith('copper_grate'):
         pass
@@ -135,6 +138,9 @@ def to_bedrock(name,p,water=False):
 
 
 def to_java(name,p):
+    from .advanced_rules import to_java as advanced
+    result=advanced(name,p)
+    if result is not None:return result
     target=REVERSE.get(name,name);out={}
     if target in PLAIN_ALIASES or name in WATER_ONLY or name.endswith('copper_grate'):
         pass

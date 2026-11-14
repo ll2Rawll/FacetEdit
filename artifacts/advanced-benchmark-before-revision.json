@@ -1,0 +1,18 @@
+{
+  "scope": "4,096 synthetic single chests, each with a damaged enchanted sword. Input construction excluded; three timed runs after warm-up and one traced run. This host only, not a whole-world/game performance claim.",
+  "java_to_bedrock": {
+    "blocks": 4096,
+    "median_ms": 475.431,
+    "peak_traced_bytes": 2517140,
+    "timing_runs": 3,
+    "memory_runs": 1
+  },
+  "bedrock_to_java": {
+    "blocks": 4096,
+    "median_ms": 796.266,
+    "peak_traced_bytes": 3392108,
+    "timing_runs": 3,
+    "memory_runs": 1
+  },
+  "source_blocks_roundtrip": "pass"
+}

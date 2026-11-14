@@ -119,7 +119,7 @@ class TranslationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'cannot represent'):
             self.reverse.block(Block('stone'),(self.bedrock.initial('minecraft:water'),))
 
-    def test_every_java_initial_mapping_reverses_or_reports_named_air_normalization(self):
+    def test_every_java_initial_mapping_reverses_or_has_named_context_encoding(self):
         supported=0
         for name in self.java.blocks:
             block=self.java.initial(name)
@@ -127,8 +127,9 @@ class TranslationTests(unittest.TestCase):
             except ValueError:continue
             supported+=1
             restored,_=self.reverse.block(result,layers)
-            self.assertEqual(restored,AIR if name in ('minecraft:cave_air','minecraft:void_air') else block,name)
-        self.assertGreater(supported,600)
+            expected=AIR if name in ('minecraft:cave_air','minecraft:void_air') else self.java.initial('minecraft:cave_vines') if name=='minecraft:cave_vines_plant' else block
+            self.assertEqual(restored,expected,name)
+        self.assertGreaterEqual(supported,976)
 
     def test_cancellation_and_explicit_air_normalization_note(self):
         clip=Clipboard((1,1,1),{(0,0,0):Block('cave_air')})

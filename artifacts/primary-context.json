@@ -1,0 +1,38 @@
+{
+  "reference": "Official Java 1.21.4 getConnectionState + ItemStack codec, synthetic BlockGetter; no game execution",
+  "wire_cases": 28566,
+  "mismatch_count": 0,
+  "mismatches": [],
+  "item_codec_vectors": 182,
+  "item_codec_failures": [],
+  "book_codec_results": [
+    "ITEM 0 DataResult.Success[1 minecraft:written_book]",
+    "ITEM 1 DataResult.Success[1 minecraft:writable_book]"
+  ],
+  "primary_block_entity_reserialization": [
+    "PAYLOAD lectern {Book:{components:{\"minecraft:written_book_content\":{author:\"FacetEdit\",pages:[{raw:'{\"extra\":[{\"color\":\"aqua\",\"text\":\"Keep building\"}],\"text\":\"\"}'},{raw:'\"\u4e16\u754c\"'}],resolved:1b,title:{raw:\"Builder notes\"}}},count:1,id:\"minecraft:written_book\"},Page:1}",
+    "PAYLOAD bookshelf {Items:[{Slot:0b,count:1,id:\"minecraft:book\"},{Slot:5b,components:{\"minecraft:written_book_content\":{author:\"FacetEdit\",pages:[{raw:'{\"extra\":[{\"color\":\"aqua\",\"text\":\"Keep building\"}],\"text\":\"\"}'},{raw:'\"\u4e16\u754c\"'}],resolved:1b,title:{raw:\"Builder notes\"}}},count:1,id:\"minecraft:written_book\"}],last_interacted_slot:5}",
+    "PAYLOAD jukebox {RecordItem:{count:1,id:\"minecraft:music_disc_cat\"}}",
+    "PAYLOAD pot {item:{count:9,id:\"minecraft:diamond\"},sherds:[\"minecraft:brick\",\"minecraft:archer_pottery_sherd\",\"minecraft:arms_up_pottery_sherd\",\"minecraft:prize_pottery_sherd\"]}",
+    "PAYLOAD brushable {item:{count:3,id:\"minecraft:emerald\"}}",
+    "PAYLOAD command {Command:\"say Build complete\",SuccessCount:0,TrackOutput:1b,UpdateLastExecution:1b,auto:1b,conditionMet:0b,powered:0b}",
+    "PAYLOAD gateway {Age:40L,exit_portal:[I;-19,70,32]}",
+    "PAYLOAD campfire {CookingTimes:[I;0,0,37,0],CookingTotalTimes:[I;0,0,600,0],Items:[{Slot:2b,count:1,id:\"minecraft:beef\"}]}",
+    "PAYLOAD structure {author:\"\",ignoreEntities:1b,integrity:1.0f,metadata:\"\",mirror:\"NONE\",mode:\"SAVE\",name:\"example:room\",posX:0,posY:1,posZ:0,powered:0b,rotation:\"CLOCKWISE_90\",seed:0L,showair:0b,showboundingbox:1b,sizeX:8,sizeY:5,sizeZ:9}",
+    "PAYLOAD bell {}",
+    "PAYLOAD brewing {BrewTime:123s,Fuel:7b,Items:[{Slot:0b,components:{\"minecraft:potion_contents\":{potion:\"minecraft:weakness\"}},count:1,id:\"minecraft:splash_potion\"},{Slot:3b,count:1,id:\"minecraft:redstone\"},{Slot:4b,count:1,id:\"minecraft:blaze_powder\"}]}",
+    "PAYLOAD crafter {Items:[{Slot:0b,count:3,id:\"minecraft:diamond\"}],crafting_ticks_remaining:0,disabled_slots:[I;2,5,8],triggered:0}",
+    "PAYLOAD beacon {Levels:0,primary_effect:\"minecraft:speed\",secondary_effect:\"minecraft:regeneration\"}",
+    "PAYLOAD spawner {Delay:37s,MaxNearbyEntities:6s,MaxSpawnDelay:800s,MinSpawnDelay:200s,RequiredPlayerRange:16s,SpawnCount:4s,SpawnData:{entity:{id:\"minecraft:skeleton\"}},SpawnPotentials:[{data:{entity:{id:\"minecraft:skeleton\"}},weight:1}],SpawnRange:4s}",
+    "PAYLOAD sensor {last_vibration_frequency:0,listener:{event_delay:0,selector:{tick:-1L}}}",
+    "PAYLOAD shrieker {listener:{event_delay:0,selector:{tick:-1L}},warning_level:0}",
+    "PAYLOAD catalyst {cursors:[]}",
+    "PAYLOAD heart {}",
+    "PAYLOAD gateway_ExitPortal_array {Age:0L,ExactTeleport:1b}",
+    "PAYLOAD gateway_ExitPortal_compound {Age:0L,ExactTeleport:1b}",
+    "PAYLOAD gateway_ExitPortal_lower_compound {Age:0L,ExactTeleport:1b}",
+    "PAYLOAD gateway_exit_portal_array {Age:0L,ExactTeleport:1b,exit_portal:[I;-19,70,32]}",
+    "PAYLOAD gateway_exit_portal_compound {Age:0L,ExactTeleport:1b}",
+    "PAYLOAD gateway_exit_portal_lower_compound {Age:0L,ExactTeleport:1b}"
+  ]
+}
