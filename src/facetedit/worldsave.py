@@ -7,7 +7,7 @@ from contextlib import ExitStack
 from dataclasses import dataclass
 from pathlib import Path
 import hashlib,json,os,tempfile
-from .filelock import file_lock,rename_locked_directory
+from .filelock import file_lock
 from .structures import atomic_write
 from .world import open_world,snapshot,file_hash
 
@@ -53,10 +53,20 @@ def lock_path(target):
     return target.parent/('.facetedit-lock-'+digest)
 
 
-def game_locks(stack,target):
-    for relative in ('session.lock','db/LOCK'):
+def game_locks(stack,target,alias_parent=None):
+    alias_folder=None
+    for index,relative in enumerate(('session.lock','db/LOCK')):
         file=target/relative
-        if file.exists():stack.enter_context(file_lock(file))
+        if not file.exists():continue
+        if os.name=='nt' and alias_parent is not None:
+            # NTFS cannot rename a folder while a handle was opened through a
+            # descendant path. Lock an external hard link to the SAME file ID:
+            # Minecraft opening the original path still sees the byte lock.
+            # Stack order closes native handles before removing the aliases.
+            if alias_folder is None:
+                alias_folder=Path(stack.enter_context(tempfile.TemporaryDirectory(prefix='locks-',dir=alias_parent)))
+            alias=alias_folder/str(index);os.link(file,alias);file=alias
+        stack.enter_context(file_lock(file))
 
 
 def save_original(world,edits,progress=lambda message:None,fault=lambda phase:None,**metadata):
@@ -80,22 +90,22 @@ def save_original(world,edits,progress=lambda message:None,fault=lambda phase:No
                 with (prepared/relative).open('r+b' if os.name=='nt' else 'rb') as file:os.fsync(file.fileno())
             for directory in sorted((p for p in prepared.rglob('*') if p.is_dir()),key=lambda p:len(p.parts),reverse=True):sync_directory(directory)
             sync_directory(prepared)
-            game_locks(stack,target)
-            game_locks(stack,prepared)
+            game_locks(stack,target,folder)
+            game_locks(stack,prepared,folder)
             data['state']='prepared';write_journal(folder,data);fault('prepared')
             if snapshot(target)!=world.signature:raise ValueError('Original world changed during preparation')
             progress('Installing the prepared world; retaining the original backup…')
-            rename_locked_directory(target,backup);sync_directory(target.parent);sync_directory(folder);fault('backed_up')
+            target.rename(backup);sync_directory(target.parent);sync_directory(folder);fault('backed_up')
             data['state']='backed_up';write_journal(folder,data)
-            rename_locked_directory(prepared,target);sync_directory(target.parent);sync_directory(folder);fault('installed')
+            prepared.rename(target);sync_directory(target.parent);sync_directory(folder);fault('installed')
             data['state']='committed';write_journal(folder,data)
             return SaveResult(open_world(target),backup,folder)
         except Exception:
             if backup.exists():
                 if target.exists():
                     if fingerprints(target)!=data.get('prepared_hashes'):raise OSError('Save interrupted and target changed; use world-save recovery: '+str(folder))
-                    rename_locked_directory(target,folder/'displaced')
-                rename_locked_directory(backup,target);sync_directory(target.parent)
+                    target.rename(folder/'displaced')
+                backup.rename(target);sync_directory(target.parent)
             data['state']='rolled_back';write_journal(folder,data)
             raise
 
@@ -120,7 +130,7 @@ def recover(folder,action='rollback'):
         signatures={path:snapshot(path) for path in (target,prepared,backup) if path.is_dir()}
         def protect(*paths):
             for path in paths:
-                if path.exists():game_locks(stack,path)
+                if path.exists():game_locks(stack,path,folder)
             for path in paths:
                 if path.exists() and snapshot(path)!=signatures.get(path):raise ValueError('World files changed during recovery; all copies were preserved')
         if action=='finish':
@@ -131,7 +141,7 @@ def recover(folder,action='rollback'):
                 if not backup.is_dir() or not prepared.is_dir() or fingerprints(prepared)!=data.get('prepared_hashes'):raise ValueError('Prepared save is incomplete; restore the original instead')
                 if fingerprints(backup)!=data.get('original_hashes'):raise ValueError('The backup changed; recovery was stopped')
                 protect(prepared,backup)
-                rename_locked_directory(prepared,target)
+                prepared.rename(target)
             data['state']='committed'
         elif backup.exists():
             if fingerprints(backup)!=data.get('original_hashes'):raise ValueError('The backup changed; recovery was stopped')
@@ -140,9 +150,9 @@ def recover(folder,action='rollback'):
                 displaced=folder/'displaced'
                 if displaced.exists():raise ValueError('A displaced copy already exists; all copies were preserved')
                 protect(target,backup)
-                rename_locked_directory(target,displaced)
+                target.rename(displaced)
             else:protect(backup)
-            rename_locked_directory(backup,target);data['state']='rolled_back'
+            backup.rename(target);data['state']='rolled_back'
         elif target.exists():
             expected=data.get('original_hashes')
             if expected is not None and fingerprints(target)!=expected:raise ValueError('Current world changed; it was preserved')

@@ -115,6 +115,22 @@ class WorldSaveTests(unittest.TestCase):
         self.assertEqual(child.returncode,0)
         result=save_original(doc.world,doc.edits);self.assertEqual(result.world.get_block(1,4,3),Block('glass'))
 
+    def test_save_faults_and_recovery_keep_real_game_lock_files(self):
+        for phase in ('prepared','backed_up','installed'):
+            target=java_world(self.path/phase);(target/'session.lock').write_bytes(b'game-lock-bytes')
+            doc=Document(open_world(target));doc.apply('glass',[((1,4,3),Block('glass'))]);before=hashes(target)
+            def crash(value):
+                if value==phase:raise SystemExit('interrupted with a game lock')
+            with self.assertRaises(SystemExit):save_original(doc.world,doc.edits,fault=crash)
+            entry=list_saves(self.path,phase)[0];restored=recover(entry[0])
+            self.assertEqual(hashes(restored.path),before);self.assertEqual((restored.path/'session.lock').read_bytes(),b'game-lock-bytes')
+        target=java_world(self.path/'io-failure');(target/'session.lock').write_bytes(b'game-lock-bytes')
+        doc=Document(open_world(target));doc.apply('glass',[((1,4,3),Block('glass'))]);before=hashes(target)
+        def failed(value):
+            if value=='installed':raise OSError('interrupted install')
+        with self.assertRaises(OSError):save_original(doc.world,doc.edits,fault=failed)
+        self.assertEqual(hashes(target),before)
+
     def test_journal_rejects_traversal_and_symlinks(self):
         doc=self.document();result=save_original(doc.world,doc.edits)
         file=result.transaction/'transaction.json';data=json.loads(file.read_text());data['world']='../outside';file.write_text(json.dumps(data))
