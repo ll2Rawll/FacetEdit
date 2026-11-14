@@ -4,6 +4,7 @@ from pathlib import Path
 import os
 import sys
 import threading
+import hashlib
 
 _guard=threading.Lock()
 _locks={}
@@ -39,12 +40,21 @@ def file_lock(path,create=False):
             kernel.LockFileEx.argtypes=[W.HANDLE,W.DWORD,W.DWORD,W.DWORD,W.DWORD,ctypes.POINTER(Overlapped)];kernel.LockFileEx.restype=W.BOOL
             kernel.UnlockFileEx.argtypes=[W.HANDLE,W.DWORD,W.DWORD,W.DWORD,ctypes.POINTER(Overlapped)];kernel.UnlockFileEx.restype=W.BOOL
             kernel.CloseHandle.argtypes=[W.HANDLE];kernel.CloseHandle.restype=W.BOOL
+            kernel.SetFilePointerEx.argtypes=[W.HANDLE,ctypes.c_longlong,ctypes.POINTER(ctypes.c_longlong),W.DWORD];kernel.SetFilePointerEx.restype=W.BOOL
+            kernel.ReadFile.argtypes=[W.HANDLE,ctypes.c_void_p,W.DWORD,ctypes.POINTER(W.DWORD),ctypes.c_void_p];kernel.ReadFile.restype=W.BOOL
             handle=kernel.CreateFileW(str(path),0xc0000000,7,None,4 if create else 3,128,None)
             if handle==W.HANDLE(-1).value:raise ctypes.WinError(ctypes.get_last_error())
             overlap=Overlapped()
+            def digest():
+                if not kernel.SetFilePointerEx(handle,0,None,0):raise ctypes.WinError(ctypes.get_last_error())
+                result=hashlib.sha256();buffer=ctypes.create_string_buffer(65536);count=W.DWORD()
+                while True:
+                    if not kernel.ReadFile(handle,buffer,len(buffer),ctypes.byref(count),None):raise ctypes.WinError(ctypes.get_last_error())
+                    if not count.value:return result.digest()
+                    result.update(buffer.raw[:count.value])
             try:
                 if not kernel.LockFileEx(handle,3,0,1,0,ctypes.byref(overlap)):raise OSError('World lock is held by another process')
-                try:yield
+                try:yield digest
                 finally:kernel.UnlockFileEx(handle,0,1,0,ctypes.byref(overlap))
             finally:kernel.CloseHandle(handle)
         else:
@@ -65,6 +75,10 @@ def file_lock(path,create=False):
                     release=lambda:fcntl.lockf(file,fcntl.LOCK_UN)
                 try:acquire()
                 except BlockingIOError as exc:raise OSError('World lock is held by another process') from exc
-                try:yield
+                def digest():
+                    file.seek(0);result=hashlib.sha256()
+                    for data in iter(lambda:file.read(65536),b''):result.update(data)
+                    return result.digest()
+                try:yield digest
                 finally:release()
     finally:local.release()

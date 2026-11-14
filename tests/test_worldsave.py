@@ -131,6 +131,16 @@ class WorldSaveTests(unittest.TestCase):
         with self.assertRaises(OSError):save_original(doc.world,doc.edits,fault=failed)
         self.assertEqual(hashes(target),before)
 
+    def test_locked_owner_hashes_follow_file_identity_after_directory_rename(self):
+        from contextlib import ExitStack
+        from facetedit.worldsave import fingerprints,game_locks
+        target=java_world(self.path/'locked-world');(target/'session.lock').write_bytes(b'locked-file-contents')
+        before=fingerprints(target);owners={}
+        with ExitStack() as stack:
+            game_locks(stack,target,self.path,owners)
+            moved=self.path/'locked-world-moved';target.rename(moved)
+            self.assertEqual(fingerprints(moved,owners),before)
+
     def test_journal_rejects_traversal_and_symlinks(self):
         doc=self.document();result=save_original(doc.world,doc.edits)
         file=result.transaction/'transaction.json';data=json.loads(file.read_text());data['world']='../outside';file.write_text(json.dumps(data))

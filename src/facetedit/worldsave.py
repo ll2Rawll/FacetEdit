@@ -26,8 +26,14 @@ def sync_directory(path):
         finally:os.close(descriptor)
 
 
-def fingerprints(path):
-    return {relative:file_hash(Path(path)/relative).hex() for relative in snapshot(path)}
+def fingerprints(path,locked_hashes=None):
+    result={}
+    for relative in snapshot(path):
+        file=Path(path)/relative;reader=None
+        if locked_hashes:
+            stat=file.stat();reader=locked_hashes.get((stat.st_dev,stat.st_ino))
+        result[relative]=(reader() if reader is not None else file_hash(file)).hex()
+    return result
 
 
 def write_journal(folder,data):
@@ -53,7 +59,7 @@ def lock_path(target):
     return target.parent/('.facetedit-lock-'+digest)
 
 
-def game_locks(stack,target,alias_parent=None):
+def game_locks(stack,target,alias_parent=None,locked_hashes=None):
     alias_folder=None
     for index,relative in enumerate(('session.lock','db/LOCK')):
         file=target/relative
@@ -66,7 +72,9 @@ def game_locks(stack,target,alias_parent=None):
             if alias_folder is None:
                 alias_folder=Path(stack.enter_context(tempfile.TemporaryDirectory(prefix='locks-',dir=alias_parent)))
             alias=alias_folder/str(index);os.link(file,alias);file=alias
-        stack.enter_context(file_lock(file))
+        reader=stack.enter_context(file_lock(file))
+        if locked_hashes is not None:
+            stat=file.stat();locked_hashes[stat.st_dev,stat.st_ino]=reader
 
 
 def save_original(world,edits,progress=lambda message:None,fault=lambda phase:None,**metadata):
@@ -81,6 +89,7 @@ def save_original(world,edits,progress=lambda message:None,fault=lambda phase:No
         folder=Path(tempfile.mkdtemp(prefix='.facetedit-save-',dir=target.parent))
         data={'format':'facetedit-world-save','version':1,'world':target.name,'state':'preparing'}
         write_journal(folder,data);prepared=folder/'prepared';backup=folder/'original'
+        locked_hashes={}
         try:
             fault('preparing')
             world.export(prepared,edits,progress,**metadata)
@@ -90,8 +99,8 @@ def save_original(world,edits,progress=lambda message:None,fault=lambda phase:No
                 with (prepared/relative).open('r+b' if os.name=='nt' else 'rb') as file:os.fsync(file.fileno())
             for directory in sorted((p for p in prepared.rglob('*') if p.is_dir()),key=lambda p:len(p.parts),reverse=True):sync_directory(directory)
             sync_directory(prepared)
-            game_locks(stack,target,folder)
-            game_locks(stack,prepared,folder)
+            game_locks(stack,target,folder,locked_hashes)
+            game_locks(stack,prepared,folder,locked_hashes)
             data['state']='prepared';write_journal(folder,data);fault('prepared')
             if snapshot(target)!=world.signature:raise ValueError('Original world changed during preparation')
             progress('Installing the prepared world; retaining the original backup…')
@@ -103,7 +112,7 @@ def save_original(world,edits,progress=lambda message:None,fault=lambda phase:No
         except Exception:
             if backup.exists():
                 if target.exists():
-                    if fingerprints(target)!=data.get('prepared_hashes'):raise OSError('Save interrupted and target changed; use world-save recovery: '+str(folder))
+                    if fingerprints(target,locked_hashes)!=data.get('prepared_hashes'):raise OSError('Save interrupted and target changed; use world-save recovery: '+str(folder))
                     target.rename(folder/'displaced')
                 backup.rename(target);sync_directory(target.parent)
             data['state']='rolled_back';write_journal(folder,data)
