@@ -41,7 +41,8 @@ Pass a world folder or `.facet` project as the first argument. Legacy `.luma` an
 `.facetedit` projects remain readable. Existing Luma preferences are read once
 when new FacetEdit preferences do not yet exist; originals are not overwritten.
 Linux desktop testing used Python 3.13.5 / Tk 8.6 with antialiased system fonts.
-Native Windows/macOS execution has not been verified in this environment.
+Native Windows/macOS/Linux core and packaging checks pass in CI. Windows/macOS
+GUI execution and in-game export checks remain unverified.
 
 ## The workspace
 

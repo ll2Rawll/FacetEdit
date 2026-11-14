@@ -1,0 +1,314 @@
+{
+  "repository": "https://github.com/ll2Rawll/FacetEdit",
+  "run_url": "https://github.com/ll2Rawll/FacetEdit/actions/runs/43566619434",
+  "run_id": 43566619434,
+  "tested_commit": "aa29939326325e148581653ce7e24c058a3ee48c",
+  "status": "completed",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "id": 132361771251,
+      "name": "linux-desktop",
+      "url": "https://github.com/ll2Rawll/FacetEdit/actions/runs/43566619434/job/132361771251",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install OS desktop test components",
+          "conclusion": "success"
+        },
+        {
+          "name": "Exercise native desktop widgets",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 132361771368,
+      "name": "core (macos-latest, 3.13)",
+      "url": "https://github.com/ll2Rawll/FacetEdit/actions/runs/43566619434/job/132361771368",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Unit and world workflow tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "Compile and package",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 132361771373,
+      "name": "core (ubuntu-latest, 3.11)",
+      "url": "https://github.com/ll2Rawll/FacetEdit/actions/runs/43566619434/job/132361771373",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Unit and world workflow tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "Compile and package",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 132361771392,
+      "name": "core (windows-latest, 3.11)",
+      "url": "https://github.com/ll2Rawll/FacetEdit/actions/runs/43566619434/job/132361771392",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Unit and world workflow tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "Compile and package",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 132361771418,
+      "name": "core (macos-latest, 3.11)",
+      "url": "https://github.com/ll2Rawll/FacetEdit/actions/runs/43566619434/job/132361771418",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Unit and world workflow tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "Compile and package",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 132361771463,
+      "name": "core (ubuntu-latest, 3.13)",
+      "url": "https://github.com/ll2Rawll/FacetEdit/actions/runs/43566619434/job/132361771463",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Unit and world workflow tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "Compile and package",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 132361771492,
+      "name": "core (windows-latest, 3.13)",
+      "url": "https://github.com/ll2Rawll/FacetEdit/actions/runs/43566619434/job/132361771492",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Unit and world workflow tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "Compile and package",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "scope": "Native OS core, CLI, packaging and Linux desktop checks. No Windows/macOS GUI or Minecraft game execution."
+}

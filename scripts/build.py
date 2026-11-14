@@ -77,7 +77,7 @@ with zipfile.ZipFile(portable, "w", zipfile.ZIP_DEFLATED) as archive:
 
     for name in ('docs/PARITY_VERSIONS_PLAN.md','artifacts/versions-conversion.png','artifacts/versions-materials.png',
                  'artifacts/versions-reference.json','artifacts/versions-state-reference.json','artifacts/versions-benchmark-baseline.json',
-                 'artifacts/versions-benchmark50.json','artifacts/versions-benchmark60.json','artifacts/versions-migration-benchmark.json'):
+                 'artifacts/versions-benchmark50.json','artifacts/versions-benchmark60.json','artifacts/versions-migration-benchmark.json','artifacts/native-ci.json'):
         add_file(archive,ROOT/name,'FacetEdit/'+name)
 
 source = DIST / f"FacetEdit-{VERSION}-source.zip"

@@ -194,6 +194,10 @@ before calling the project an exact feature replica.
   migration directions, Java cross-edition outputs and mcstructure exports.
 - Other versions, active assemblies/actors, remaining payload semantics,
   specialized rendering and the rest of the acceptance matrix remain open.
+- Native Windows/macOS/Linux core, CLI and packaging now pass CI on Python
+  3.11/3.13. The native runs exposed and corrected Darwin lock ABI, Windows
+  durability/path handling and locked-directory save/rollback defects. Native
+  Windows/macOS GUI and Minecraft reopening still need separate verification.
   See PARITY_VERSIONS_PLAN.md and TEST_REPORT.md for scope and evidence.
 
 ## Reference scope and remaining acceptance matrix

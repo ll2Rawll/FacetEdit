@@ -63,7 +63,7 @@ Full Amulet parity remains an unfinished project goal.
 | Projects | Version 4 .facet stores layers, chunks and multiple boxes; versions 1/2/3 and legacy .luma/.facetedit remain supported; source fingerprints checked; sample generators v1/v2 preserved |
 | Saving | Staged separate-folder export plus explicit original-world save; source checks, copied-content verification, failure cleanup and destination-collision refusal |
 | Autosave / recovery | Atomic per-session project checkpoints, background serialization, configurable interval (30 seconds by default), source checks, restore/discard, clean-save cleanup and stale-writer generation guards |
-| Original-world save | Prepare/validate/fsync a same-filesystem copy, acquire OS locks, journal, retain original backup and install prepared world; undo history rebased, including old source-chunk snapshots; restore/finish recovery and altered-file protection; two renames are not a single atomic operation |
+| Original-world save | Prepare/validate/fsync a same-filesystem copy, acquire OS locks, journal, retain original backup and install prepared world; undo history rebased, including old source-chunk snapshots; restore/finish recovery and altered-file protection; two renames are not a single atomic operation; Windows locks use external hard links and owning-handle hashes, requiring filesystem hard-link support |
 
 ## Display and packaging
 
@@ -102,7 +102,8 @@ markers. Some JSON-plus-procedural models show only their JSON component.
 
 The app needs Python 3.11+ and Tk, with no third-party Python packages. Zipapp and
 source distributions include Windows/macOS/Linux launchers. Linux interaction
-is tested. Native Windows/macOS execution, installer signing, notarization,
+is tested. Windows/macOS/Linux core, CLI and packaging pass in native CI. Windows/macOS GUI
+execution, installer signing, notarization,
 screen-reader auditing and high-DPI hardware testing are unfinished.
 
 Bedrock snapshots have a 256 MiB estimated logical-data budget and a 256 MiB

@@ -1,166 +1,168 @@
-# FacetEdit 0.8.0 — verification report
+# FacetEdit 0.9.0 — verification report
 
-Verified on 2026-11-13–14, Linux x86_64, Xvfb and Mesa llvmpipe. Full Amulet
-parity, native Windows/macOS execution and reopening exports in Minecraft
-remain unfinished. This report describes the tested boundaries.
+Verified on 2026-11-14. This release adds the Bedrock 1.21.60 conversion profile
+and explicit Bedrock 1.21.50 ↔ 1.21.60 migration. The broader Amulet parity
+worklist remains open. Minecraft game execution is not part of these checks.
 
 ## Automated results
 
-**522 tests: 438 core/workflow/graphics tests and 84 live desktop tests.**
-This release adds 30 tests to the 492-test 0.7 baseline. Individual tests also
-enumerate block directions, item variants, slot masks and typed payload cases.
+**543 tests: 457 core/workflow/graphics tests and 86 live desktop tests.**
+There are 21 new tests since 0.8. Individual tests also enumerate native state,
+paired-door, mirror, inventory and version-mismatch combinations.
 
 | Run | Result |
 | --- | --- |
-| Python 3.13.5 / Tk 8.6.16, source with desktop tests | 522 passed, no skips, 37.320 seconds |
-| Python 3.13.5 / Tk 8.6.16, packaged executable with desktop tests | 522 passed, no skips, 33.889 seconds |
-| Python 3.12.14, source core suite | 438 passed; 84 desktop tests explicitly skipped, 20.656 seconds |
-| Python 3.12.14 / Tk 9.0, packaged executable with desktop tests | 522 passed, no skips, 35.649 seconds |
-| Compilation and whitespace validation | Passed after completed logs were written |
-| Runtime package audit | 78 Python modules, no third-party imports, three logo assets; packaged schemas, state facts and item identities validated |
+| Python 3.13.5 / Tk 8.6.16, source desktop suite | 543 passed, no skips; 43.078 seconds |
+| Python 3.12.14, source core suite | 457 passed; 86 desktop tests skipped; 29.304 seconds |
+| Python 3.13.5 / Tk 8.6.16, packaged desktop suite | 543 passed, no skips; 43.241 seconds |
+| Python 3.12.14 / Tk 9.0, packaged desktop suite | 543 passed, no skips; 47.585 seconds |
+| Runtime audit | 79 Python modules; no third-party imports; three logo assets; all three block and item profiles checked |
 
-[Source log](../artifacts/test-results.txt),
-[package log](../artifacts/package-tests.txt),
+[Source log](../artifacts/test-results.txt), [package log](../artifacts/package-tests.txt),
 [Python 3.12 core log](../artifacts/python312-tests.txt),
 [Tk 9 package log](../artifacts/python312-gui-tests.txt),
 [package audit](../artifacts/package-audit.json).
-Final automated logs contain no traceback, unraisable Tk finalizer exception or
-resource warning. Desktop runs execute sequentially on the shared display.
-The source desktop/core/primary-codec runs overlapped, so their elapsed times
-are validation records, not comparable performance measurements.
+Desktop runs share Xvfb/Mesa llvmpipe and execute sequentially. Core/source/native
+reference checks overlapped; their elapsed times are not performance comparisons.
 
-The tested executable is **478,003 bytes**, SHA-256
-`6a69ffd5757cf2c35cf366e949e54ba5e9979b9f19d0f9c58c064ff98cd25b27`.
-Documentation-only rebuilds retain this hash. Stable timestamps and file modes
-make the executable, portable archive and source archive reproducible from
-unchanged inputs. Final archive hashes are in `dist/checksums.json`.
-Python 3.11+ and Tk are prerequisites; the zipapp does not bundle an interpreter
-and is not a signed native Windows/macOS installer.
+The tested executable is **505,552 bytes**, SHA-256
+`c2d8d36ce10b2a6aeb1cf9f6069a7d7c99d2d0a30deeab03445c6214c5172450`.
+Documentation-only rebuilds retain this hash. Consecutive builds with unchanged
+inputs must produce identical app, portable and source archives; final hashes
+are in `dist/checksums.json`. Python 3.11+ and Tk are prerequisites, and native
+Windows/macOS installers and release signing are not provided.
 
-## Translation and native-format checks
-
-Reference interface target: Amulet Map Editor **0.10.67**. Optional development
-oracles use Amulet-Core 1.9.41, PyMCTranslate 1.2.53, amulet-nbt 2.1.8 and native
-amulet-leveldb 1.0.7 in a separate environment. Their implementations and
-translation tables are not copied into or imported by the application.
+## New version coverage
 
 | Check | Result and scope |
 | --- | --- |
-| Palette-only Java → Bedrock rules | 976 initial block types; 22,907 accepted property combinations, zero reference mismatches after documented fluid/layer normalization |
-| Additional payload-based initial identities | 118 types from the existing cell handlers; original 881-vector payload corpus retained |
-| Combined isolated Java initial cells | 1,094 accepted; moving_piston blocked out of 1,095; default/generated payloads only |
-| Primary redstone context | 28,566 synthetic contexts queried through the actual official Java connection method; zero mismatches |
-| Cardinal rotation and mirror corpus | 182,914 comparable cases, zero mismatches; 336 unrepresentable button orientations and six native-only pumpkin directions recorded separately |
-| Official Java item codec | 182 vectors accepted: two books and 180 potion/tipped-arrow variants |
-| Official Java block-entity load/save | 18 translated records independently parsed and checked; six gateway key/type cases distinguish the one accepted coordinate representation |
-| New native world fixture | Independent LevelDB/NBT reader opens 20 Bedrock payloads; independent Anvil-sector/NBT reader opens 18 restored Java payloads |
-| Native field checks | Book pages/title/author, bookshelf interaction offset, campfire times, brewing slot order/fuel, crafter disabled-slot mask, gateway coordinates/age, bell widths, stationary piston state, spawner type/delay and passive sculk pass |
-| Desktop workflow | Preview → use translated clipboard → paste → inspect native book → undo passes through actual Tk callbacks |
-| Structure/world workflow | Payloads survive mcstructure export/import, relocation, mirror, paste, undo and native world export; unsupported book photos leave inputs unchanged and no output published |
+| Primary metadata | Separate Mojang v1.21.60.10 block/item profiles, hashed and compared to v1.21.50.7 |
+| Changed blocks | 34 definitions: 33 doors/gates replace numeric direction with cardinal strings; the creaking heart gains three states |
+| Items | New public list has 1,368 identities; `air` is absent. Explicit written_book supplement gives 1,369 runtime identities, compared with 1,370 in 1.21.50 |
+| Biomes/entities/enchantments | Pinned primary identity entries match between the two releases |
+| Java 1.21.4 → Bedrock 1.21.60 palette rules | 22,907 accepted state vectors, zero isolated-reference mismatches after documented fluid/layer normalization |
+| Bedrock 50 → 60 changed native states | 876 vectors migrate and invert exactly; 540 meaningful reference comparisons match; 336 ignored upper-door storage vectors are preserved separately |
+| Bedrock 60 → 50 changed native states | 876 shared vectors migrate and invert exactly; 540 meaningful reference comparisons match; six uprooted-heart states are explicitly blocked |
+| Native world/file checks | Independent readers reopen Java → 60, 50 → 60, 60 → 50, 60 → Java and a 60 mcstructure export |
+| Native payloads | Each checked Bedrock output contains 22 payloads; restored Java output has 19, because pots and stationary pistons have no corresponding Java block entity |
 
-[Palette corpus](../artifacts/translation-reference.json),
-[initial-cell coverage](../artifacts/advanced-initial-coverage.json),
-[transform corpus](../artifacts/state-transform-corpus.json),
-[primary context/codecs](../artifacts/primary-context.json),
-[independent native and field audit](../artifacts/advanced-reference.json).
+[Primary deltas, migration and native file audit](../artifacts/versions-reference.json),
+[new accepted-state reference corpus](../artifacts/versions-state-reference.json).
 
-These are separate measures, not a percentage of full Amulet parity. The palette
-corpus enumerates accepted combinations; rejected combinations are not successes.
-The reference requests additional context or NBT for 1,774 accepted vectors.
-Isolated initial cells do not establish every non-default state, arbitrary NBT,
-neighbor context, animation or game behavior. Only Java 1.21.4 ↔ Bedrock 1.21.50
-conversion profiles are bundled.
+The palette check has 976 accepted initial palette identities; existing cell
+handlers add 118 identities. These still accept 1,094/1,095 isolated initial
+Java cells, with moving_piston blocked. This is not coverage of all arbitrary
+states, block NBT, actors, context or all Amulet features. The reference requests
+additional context/NBT for 1,774 of the accepted palette vectors.
 
-The original payload oracle has five unavailable flower-pot field comparisons:
-crimson/warped fungus and roots declare historical descriptors that cannot
-translate those plants, and potted torchflower emits no PlantBlock. Those are
-still recorded as unavailable, not matched. Existing native round trips cover
-the pinned descriptors. See [original payload results](../artifacts/payload-reference.json)
-and [reference warnings](../artifacts/payload-reference-notes.txt).
-Previous world-storage, Construction, compression, database and resource-pack
-corpora remain in the source distribution and regression suite.
+Development oracles are isolated Amulet-Core 1.9.41, PyMCTranslate 1.2.53,
+amulet-nbt 2.1.8 and native amulet-leveldb 1.0.7. No oracle implementation or
+translation table is copied into or imported by the application. Primary URLs,
+hashes, generated schema details and palette-identifier evidence are recorded in
+[SOURCES.json](../src/facetedit/data/registries/SOURCES.json).
 
-## Primary metadata and revision evidence
+## Integration and revisions
 
-The profiles contain 1,095 Java block definitions and 1,239 public Bedrock block
-definitions plus end_gateway and moving_block internal identities. Item metadata
-contains 1,385 Java identities and 1,369 public Bedrock identities plus the native
-written_book item. Matching identities do not establish component migration.
+The new profile is used by actual material controls, clipboard preflight,
+whole-world preflight, world editing and structure export. Desktop tests select
+new cardinal states, apply translated paired doors, paste/undo and refuse an
+unrepresentable downgrade. Actual screenshots show the
+[conversion report](../artifacts/versions-conversion.png) and
+[native state controls](../artifacts/versions-materials.png).
 
-An original reporter queries support, connection, redstone and flammability
-predicates, note instruments and dye colors for all **27,866 Java states**.
-Official client tags are bound before querying the pinned official server
-classes. The expanded metadata is 110,255 compressed bytes. Separate original
-reporters call actual Java context, item and block-entity codecs. They do not
-start a Minecraft game/server, and executable game code and artwork are not
-bundled. URLs, hashes and fields are recorded in
-[SOURCES.json](../src/facetedit/data/registries/SOURCES.json) and
-[primary state results](../artifacts/primary-state-facts.json).
+- Native door cardinal strings describe a different face from Java facing.
+  The explicit native encoding and mirrored transforms are checked independently;
+  paired doors cross a vertical section boundary in the world fixture.
+- Inactive older hearts become dormant, disclosed in reports. New uprooted
+  states remain intact in their own profile and block older-target conversion.
+- Embedded inventory Block and pot PlantBlock descriptors use their own declared
+  palette version. Native migration rewrites target states/version identifiers
+  while preserving validated native fields and numeric widths, including nested
+  Shulker contents. Unsupported descriptor versions and non-boolean state bytes
+  are rejected with paths.
+- Identifier-only jigsaw final states also need a default-state check. An old
+  heart default cannot be retained by the new heart identifier alone; migration
+  now refuses that case rather than silently changing the generated block.
+- A review found that validating only source inventories could admit an old air
+  entry into the new target. Migration now checks target item identities too;
+  an atomic negative test verifies the original clipboard remains unchanged.
+- Known mixed-release world palettes normalize into the world's selected schema
+  on read while their original bytes remain unchanged. Editing the affected
+  section emits appropriate target state descriptors. Tests reopen the result.
+- Same-edition world migration preserves finer numeric biome voxels and all
+  native block storage layers. Java/Bedrock conversion still uses the documented
+  biome policy and target-template metadata policy.
 
-Multiple review/test revisions corrected issues beyond self-roundtrip agreement:
+Earlier world-format, compression, Construction, rendering, crash/recovery and
+payload coverage remains in the regression suite. The previous report and logs
+are retained as [0.8 evidence](../artifacts/0.8-test-report.md); its five unavailable
+flower-pot oracle comparisons and other stated limits remain unchanged.
 
-- Native bell toggle_bit records ringing events, not redstone power. Bell
-  Direction/Ticks use integer fields, corroborated by a published Bedrock 1.18
-  fixture. Unsupported powered/ringing states now fail explicitly.
-- The current Java gateway loader retains `exit_portal` as an INT_ARRAY and
-  silently discards older `ExitPortal`/compound shapes. The handler and negative
-  primary cases now verify the correct field and type.
-- Actual Java serialization exposed crafter `triggered` as INT and idle sculk
-  selector `tick` as LONG -1. Both are consumed and emitted with those widths.
-- Native spawner display defaults require float32 comparison; 0.8f and 1.8f
-  cannot be compared to unrounded double literals. Customized spawn data still
-  fails explicitly rather than losing fields.
-- The transform sweep corrected piston/end-rod direction order, jigsaw axes,
-  portal planes, ignored door/hanging-sign metadata and native wall/moss sides.
-  Bookshelf mirrors move state bits, item slots and the last-interacted slot
-  together. Affine transforms reject orientations a native block cannot express.
-- Primary potion identities distinguish wind_charged/infested from names used
-  by other schemas. Native metadata IDs 2/36 and Java luck are not mislabeled.
-- Written books require title/author, preserve supported static text, reject
-  different filtered text/photos and enforce Java limits in UTF-16 units.
-  Emoji boundary tests cover accepted/rejected pages and unchanged inputs.
-- Source/template fingerprints and atomic failure tests cover the richer fixture,
-  including context crossing horizontal chunk and vertical section boundaries.
+## Platform revision
 
-Intermediate evidence is retained under `artifacts/0.8-*`; previous release
-reports and baseline evidence are preserved under `artifacts/0.7-*`.
-Current desktop screenshots: [conversion preflight](../artifacts/advanced-conversion.png)
-and [native book inspector](../artifacts/advanced-book-inspector.png).
+The first GitHub run of the uploaded 0.8 project failed on macOS Python 3.13.
+The kernel rejected a Linux-layout struct flock used with Darwin's OFD lock
+command. This affected original saves and recovery checks. The implementation
+now selects Darwin's actual start/length/pid/type/whence layout, verified against
+[Apple's XNU header](https://github.com/apple-oss-distributions/xnu/blob/main/bsd/sys/fcntl.h).
+Command 90 also works when an older Python build omits the header constant.
+Linux retains its own aligned layout; native lock, concurrent-process, hash/copy
+and interrupted-save tests remain enabled. A recent-path test now expects the
+resolved path, accounting for macOS's /var → /private/var mapping.
+
+[Original failure excerpts](../artifacts/0.9-macos-ci-before-fix.txt),
+[original CI run](https://github.com/ll2Rawll/FacetEdit/actions/runs/43561547343).
+The CI matrix now disables fail-fast so one failure cannot cancel other native
+platform results. All seven jobs now pass in the [post-fix native CI run](https://github.com/ll2Rawll/FacetEdit/actions/runs/43566619434),
+including Python 3.11/3.13 core, CLI and packaging on Windows, macOS and Linux,
+and the Linux desktop suite. [Machine-readable results](../artifacts/native-ci.json)
+record the tested source commit and each job. Windows/macOS GUI execution and
+Minecraft game execution remain unverified.
+
+The native Windows runs also exposed read-only-descriptor fsync failures,
+backslashes in custom dimension identifiers and a test using the system text
+encoding. Prepared-file/ZIP syncing now uses writable descriptors on Windows,
+dimension resources use POSIX identifiers and the source audit reads UTF-8.
+Windows also prevents parent-directory swaps when lock handles were opened
+through child paths. Original saves/recovery now hold the same lock-file IDs
+through temporary external hard links, retaining OS byte locks across the swap.
+Rollback hashes locked files through the owning handle rather than a blocked
+second handle. Additional crash, rollback and identity/hash tests cover this
+path; Windows original saves need a filesystem supporting hard links. No game
+locks are released to make the swap succeed.
 
 ## Measured performance
 
-Benchmark: 4,096 synthetic single chests, each with a damaged enchanted sword.
-Three timed runs after warm-up plus one traced allocation run; input construction
-is excluded. Baseline, first implementation and optimized implementation ran
-sequentially on this host. This measures a conversion kernel, not large-world
-throughput, native OS performance or game startup.
+Fixture: 4,096 synthetic single chests with a damaged enchanted sword each.
+Three timed runs after warm-up and one traced allocation run; construction is
+excluded. The final baseline, existing-profile and new-profile runs were sequential
+on an otherwise idle local test workspace. Host load is not controlled.
 
-| Direction | 0.7 baseline median / traced peak | Before revision | Final |
-| --- | --- | --- | --- |
-| Java → Bedrock | 477.348 ms / 2,295,234 bytes | 475.431 ms / 2,517,140 bytes | 463.916 ms / 2,255,442 bytes |
-| Bedrock → Java | 767.711 ms / 3,252,548 bytes | 796.266 ms / 3,392,108 bytes | 707.968 ms / 3,284,172 bytes |
+| Conversion | Median | Peak additional traced allocations |
+| --- | --- | --- |
+| 0.8 Java → Bedrock 50 baseline | 432.992 ms | 2,255,442 bytes |
+| 0.9 Java → Bedrock 50 | 425.611 ms | 2,255,658 bytes |
+| 0.8 Bedrock 50 → Java baseline | 686.529 ms | 3,284,172 bytes |
+| 0.9 Bedrock 50 → Java | 664.209 ms | 3,284,172 bytes |
+| 0.9 Java → Bedrock 60 | 433.483 ms | 2,248,818 bytes |
+| 0.9 Bedrock 60 → Java | 746.418 ms | 3,282,532 bytes |
 
-Context work now skips irrelevant container cells, reuses canonical states and
-bounds neighbor caching. Item helper modules are imported once. The measured
-reverse conversion is about **7.8% faster than 0.7**, with roughly 1% more traced
-peak allocations; forward conversion is about 2.8% faster with 1.7% less traced
-peak memory. No whole-world optimization claim follows from this fixture.
-[Baseline](../artifacts/advanced-benchmark-baseline.json),
-[before revision](../artifacts/advanced-benchmark-before-revision.json),
-[final](../artifacts/advanced-benchmark.json).
-Bedrock's database adapter still materializes records within a 256 MiB logical-data
-budget. It is not a fully streaming large-world engine.
+A separate native-migration fixture has one plain sword per chest: 50 → 60 takes
+800.845 ms / 1,666,962 traced bytes and 60 → 50 takes 768.236 ms / 1,847,627 bytes.
+All native fields round-trip exactly in that fixture. Timing varied between
+passes; no general speed improvement or large-world performance claim is made.
+
+[Baseline](../artifacts/versions-benchmark-baseline.json),
+[existing profile](../artifacts/versions-benchmark50.json),
+[new profile](../artifacts/versions-benchmark60.json),
+[native migration](../artifacts/versions-migration-benchmark.json).
+The LevelDB adapter still materializes records within its 256 MiB logical budget.
 
 ## Remaining acceptance work
 
-Moving pistons/assemblies, occupied hives, active vibrations, complex spawn pools,
-loot/trial/vault configuration, general command rewriting, custom head profiles,
-active furnace recipes, remaining item components and variants, actors and ticks
-are not complete. Older/newer version migrations and storage layouts, additional
-biome/resource semantics, specialized rendering and large-world limits remain.
-The converter takes settings/seed/players from its target template; source
-players/maps/POI/structure metadata are not migrated. Native Windows/macOS and
-actual Minecraft reopening are unverified. See the
-[compatibility ledger](COMPATIBILITY.md), [conversion guide](CONVERSION.md),
-[completion sequence](PARITY_COMPLETION_PLAN.md) and
-[full acceptance matrix](FULL_PARITY_WORKLIST.md).
+Additional Java/Bedrock release profiles, unsupported historical descriptors,
+active assemblies, actors/ticks, complex payloads and components, specialized
+rendering and larger-world performance remain open. Original conversion limits
+and the target-template settings/seed/player policy still apply. See
+[conversion details](CONVERSION.md), [compatibility](COMPATIBILITY.md),
+[version plan](PARITY_VERSIONS_PLAN.md) and [full parity worklist](FULL_PARITY_WORKLIST.md).

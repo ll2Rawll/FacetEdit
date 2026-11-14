@@ -535,12 +535,14 @@ test_game_lock_held_by_another_process_refuses_save (tests.test_worldsave.WorldS
 test_game_lock_is_still_held_after_copy_and_hash_before_publication (tests.test_worldsave.WorldSaveTests.test_game_lock_is_still_held_after_copy_and_hash_before_publication) ... ok
 test_io_failures_roll_back_every_publication_boundary (tests.test_worldsave.WorldSaveTests.test_io_failures_roll_back_every_publication_boundary) ... ok
 test_journal_rejects_traversal_and_symlinks (tests.test_worldsave.WorldSaveTests.test_journal_rejects_traversal_and_symlinks) ... ok
+test_locked_owner_hashes_follow_file_identity_after_directory_rename (tests.test_worldsave.WorldSaveTests.test_locked_owner_hashes_follow_file_identity_after_directory_rename) ... ok
 test_native_record_lock_layouts_match_linux_and_darwin_abis (tests.test_worldsave.WorldSaveTests.test_native_record_lock_layouts_match_linux_and_darwin_abis) ... ok
 test_process_lock_prevents_concurrent_save (tests.test_worldsave.WorldSaveTests.test_process_lock_prevents_concurrent_save) ... ok
+test_save_faults_and_recovery_keep_real_game_lock_files (tests.test_worldsave.WorldSaveTests.test_save_faults_and_recovery_keep_real_game_lock_files) ... ok
 test_save_original_both_editions_retains_exact_backup (tests.test_worldsave.WorldSaveTests.test_save_original_both_editions_retains_exact_backup) ... ok
 test_source_change_blocks_original_save_before_any_rename (tests.test_worldsave.WorldSaveTests.test_source_change_blocks_original_save_before_any_rename) ... ok
 
 ----------------------------------------------------------------------
-Ran 541 tests in 31.856s
+Ran 543 tests in 29.304s
 
 OK (skipped=86)
