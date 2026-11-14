@@ -241,7 +241,7 @@ class JavaWorld(DiskWorld):
         if dimensions.is_dir():
             for region in dimensions.rglob("region"):
                 if region.is_dir():
-                    self.dimension_paths[str(region.parent.relative_to(dimensions))] = region.relative_to(self.path)
+                    self.dimension_paths[region.parent.relative_to(dimensions).as_posix()] = region.relative_to(self.path)
         self.dimensions = tuple(self.dimension_paths)
         from .dimensions import java_bounds
         self.dimension_bounds=java_bounds(self.path,data,self.version,self.dimensions)

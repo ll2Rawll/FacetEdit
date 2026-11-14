@@ -45,4 +45,3 @@ macOS Python 3.13; 0.8 code before the native-lock ABI revision.
 2026-11-14T05:26:57.4830380Z FAIL: test_game_lock_held_by_another_process_refuses_save (tests.test_worldsave.WorldSaveTests.test_game_lock_held_by_another_process_refuses_save)
 2026-11-14T05:26:57.4833500Z AssertionError: '' != 'locked'
 2026-11-14T05:26:57.4834320Z FAILED (failures=3, errors=12, skipped=89)
-

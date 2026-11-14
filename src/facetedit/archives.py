@@ -103,7 +103,8 @@ def export_mcworld(world, destination, edits, progress=lambda _: None, **metadat
         # Same-filesystem hard linking publishes a complete file atomically,
         # refusing an existing path even if another process created it mid-export.
         # Filesystems lacking hard-link support fail without publishing a partial.
-        with output.open("rb") as handle:
+        # Windows' CRT commit operation requires a writable descriptor.
+        with output.open("r+b" if os.name=='nt' else "rb") as handle:
             os.fsync(handle.fileno())
         os.link(output,destination)
     return destination

@@ -77,7 +77,7 @@ def save_original(world,edits,progress=lambda message:None,fault=lambda phase:No
             open_world(prepared)  # Validate the prepared world before moving the source.
             data['original_hashes']=fingerprints(target);data['prepared_hashes']=fingerprints(prepared)
             for relative in snapshot(prepared):
-                with (prepared/relative).open('rb') as file:os.fsync(file.fileno())
+                with (prepared/relative).open('r+b' if os.name=='nt' else 'rb') as file:os.fsync(file.fileno())
             for directory in sorted((p for p in prepared.rglob('*') if p.is_dir()),key=lambda p:len(p.parts),reverse=True):sync_directory(directory)
             sync_directory(prepared)
             game_locks(stack,target)

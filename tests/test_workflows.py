@@ -277,7 +277,7 @@ class WorkflowTests(unittest.TestCase):
         import facetedit
         imports = set()
         for file in Path(facetedit.__file__).parent.glob("*.py"):
-            tree = ast.parse(file.read_text())
+            tree = ast.parse(file.read_text(encoding='utf-8'))
             for node in ast.walk(tree):
                 if isinstance(node, ast.Import):
                     imports.update(alias.name.split(".")[0] for alias in node.names)
