@@ -178,7 +178,7 @@ def bedrock_entry(block, version=17959425):
     return Tag(COMPOUND, {"name": Tag(STRING, block.name), "states": Tag(COMPOUND, states), "version": Tag(INT, version)})
 
 
-def decode_bedrock(raw):
+def decode_bedrock(raw,palette_mapper=None):
     reader = Reader(raw, little=True)
     version = reader.number("B")
     if version not in (8, 9):
@@ -202,6 +202,7 @@ def decode_bedrock(raw):
             raise FormatError("Invalid Bedrock palette length")
         palette_tags = [reader.root()[1] for _ in range(palette_count)]
         palette = [bedrock_block(tag) for tag in palette_tags]
+        if palette_mapper is not None:palette=[palette_mapper(block,tag) for block,tag in zip(palette,palette_tags)]
         indexes = unpack_indices(words, bits, width=32)
         if max(indexes) >= len(palette):
             raise FormatError("Bedrock palette index out of range")

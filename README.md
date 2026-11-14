@@ -28,6 +28,6 @@ python3 launch.py
 
 On Windows, use `py -3 launch.py`. On Linux, you may need your distribution's `python3-tk` package.
 
-**Current version: 0.8.0.** Still in development, with Amulet feature parity in progress. Cross-edition conversion currently targets Java 1.21.4 and Bedrock 1.21.50; see the compatibility notes for the supported formats and limits.
+**Current version: 0.9.0.** Still in development, with Amulet feature parity in progress. Cross-edition conversion currently targets Java 1.21.4 and Bedrock 1.21.50/1.21.60; see the compatibility notes for the supported formats and limits.
 
 [User guide](docs/USAGE.md) · [Compatibility](docs/COMPATIBILITY.md) · [Test results](docs/TEST_REPORT.md) · [MIT license](LICENSE)

@@ -100,8 +100,11 @@ def translate_cell(translator,block,layers,data,position,neighbour=None,neighbou
     if source.label==target.label:
         base,extra=translator.block(block,layers);return base,extra,data
     if source.edition==target.edition:
-        if data is not None:raise ValueError('Block NBT: cross-version payload migration is not implemented')
-        base,extra=translator.block(block,layers);return base,extra,None
+        base,extra=translator.block(block,layers)
+        if data is not None:
+            from .bedrock_versions import migrate_payload
+            data=migrate_payload(translator,block,data,position,neighbour,neighbour_entity)
+        return base,extra,data
     name=block.name.removeprefix('minecraft:');edition=source.edition
     if advanced_handles(name):return advanced_translate(translator,block,layers,data,position,neighbour,neighbour_entity)
     identity=identity_block(block.name,edition)
@@ -226,9 +229,9 @@ def translate_cell(translator,block,layers,data,position,neighbour=None,neighbou
             if p['update_bit']!='false':raise ValueError('Flower-pot update state is not representable in Java')
             java_name='flower_pot'
             if 'PlantBlock' in f.data:
-                plant=f.pop('PlantBlock',nbt.COMPOUND);descriptor=Fields(plant,'Block NBT.PlantBlock')
-                descriptor.pop('name',nbt.STRING);descriptor.pop('states',nbt.COMPOUND);descriptor.pop('version',nbt.INT);descriptor.finish()
-                value,_=translator.block(bedrock_block(nbt.Tag(nbt.COMPOUND,plant)))
+                from .bedrock_versions import read_descriptor
+                plant=f.pop('PlantBlock',nbt.COMPOUND)
+                value,_=translator.block(read_descriptor(plant,source,'Block NBT.PlantBlock'))
                 if value!=target.initial(value.name):raise ValueError('Flower-pot plant state has no Java potted-block equivalent')
                 plant_name=value.name.removeprefix('minecraft:');plant_name={'azalea':'azalea_bush','flowering_azalea':'flowering_azalea_bush'}.get(plant_name,plant_name)
                 java_name='potted_'+plant_name

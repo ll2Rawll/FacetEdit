@@ -1,0 +1,48 @@
+Pre-fix CI: https://github.com/ll2Rawll/FacetEdit/actions/runs/43561547343
+macOS Python 3.13; 0.8 code before the native-lock ABI revision.
+2026-11-14T05:26:57.4663110Z ERROR: test_block_undo_after_original_save_and_save_again (tests.test_worldsave.WorldSaveTests.test_block_undo_after_original_save_and_save_again)
+2026-11-14T05:26:57.4688150Z     def change(kind):fcntl.fcntl(file.fileno(),fcntl.F_OFD_SETLK,bytes(Flock(kind,os.SEEK_SET,0,0,0)))
+2026-11-14T05:26:57.4688950Z OSError: [Errno 22] Invalid argument
+2026-11-14T05:26:57.4689740Z ERROR: test_changed_world_and_changed_backups_are_preserved (tests.test_worldsave.WorldSaveTests.test_changed_world_and_changed_backups_are_preserved)
+2026-11-14T05:26:57.4698060Z     def change(kind):fcntl.fcntl(file.fileno(),fcntl.F_OFD_SETLK,bytes(Flock(kind,os.SEEK_SET,0,0,0)))
+2026-11-14T05:26:57.4698900Z OSError: [Errno 22] Invalid argument
+2026-11-14T05:26:57.4699800Z ERROR: test_chunk_undo_after_original_save_resolves_old_source (tests.test_worldsave.WorldSaveTests.test_chunk_undo_after_original_save_resolves_old_source)
+2026-11-14T05:26:57.4708250Z     def change(kind):fcntl.fcntl(file.fileno(),fcntl.F_OFD_SETLK,bytes(Flock(kind,os.SEEK_SET,0,0,0)))
+2026-11-14T05:26:57.4709050Z OSError: [Errno 22] Invalid argument
+2026-11-14T05:26:57.4709880Z ERROR: test_completed_backup_is_restorable_without_deleting_edited_world (tests.test_worldsave.WorldSaveTests.test_completed_backup_is_restorable_without_deleting_edited_world)
+2026-11-14T05:26:57.4717530Z     def change(kind):fcntl.fcntl(file.fileno(),fcntl.F_OFD_SETLK,bytes(Flock(kind,os.SEEK_SET,0,0,0)))
+2026-11-14T05:26:57.4718230Z OSError: [Errno 22] Invalid argument
+2026-11-14T05:26:57.4718980Z ERROR: test_crash_after_backup_can_finish_prepared_save (tests.test_worldsave.WorldSaveTests.test_crash_after_backup_can_finish_prepared_save)
+2026-11-14T05:26:57.4726200Z     def change(kind):fcntl.fcntl(file.fileno(),fcntl.F_OFD_SETLK,bytes(Flock(kind,os.SEEK_SET,0,0,0)))
+2026-11-14T05:26:57.4726900Z OSError: [Errno 22] Invalid argument
+2026-11-14T05:26:57.4727860Z ERROR: test_crash_after_backup_is_discoverable_and_can_restore (tests.test_worldsave.WorldSaveTests.test_crash_after_backup_is_discoverable_and_can_restore)
+2026-11-14T05:26:57.4735050Z     def change(kind):fcntl.fcntl(file.fileno(),fcntl.F_OFD_SETLK,bytes(Flock(kind,os.SEEK_SET,0,0,0)))
+2026-11-14T05:26:57.4735760Z OSError: [Errno 22] Invalid argument
+2026-11-14T05:26:57.4736520Z ERROR: test_crash_after_install_can_complete_or_restore (tests.test_worldsave.WorldSaveTests.test_crash_after_install_can_complete_or_restore)
+2026-11-14T05:26:57.4743680Z     def change(kind):fcntl.fcntl(file.fileno(),fcntl.F_OFD_SETLK,bytes(Flock(kind,os.SEEK_SET,0,0,0)))
+2026-11-14T05:26:57.4744380Z OSError: [Errno 22] Invalid argument
+2026-11-14T05:26:57.4745320Z ERROR: test_game_lock_is_still_held_after_copy_and_hash_before_publication (tests.test_worldsave.WorldSaveTests.test_game_lock_is_still_held_after_copy_and_hash_before_publication)
+2026-11-14T05:26:57.4752380Z     def change(kind):fcntl.fcntl(file.fileno(),fcntl.F_OFD_SETLK,bytes(Flock(kind,os.SEEK_SET,0,0,0)))
+2026-11-14T05:26:57.4753090Z OSError: [Errno 22] Invalid argument
+2026-11-14T05:26:57.4755070Z ERROR: test_journal_rejects_traversal_and_symlinks (tests.test_worldsave.WorldSaveTests.test_journal_rejects_traversal_and_symlinks)
+2026-11-14T05:26:57.4777770Z     def change(kind):fcntl.fcntl(file.fileno(),fcntl.F_OFD_SETLK,bytes(Flock(kind,os.SEEK_SET,0,0,0)))
+2026-11-14T05:26:57.4779240Z OSError: [Errno 22] Invalid argument
+2026-11-14T05:26:57.4780090Z ERROR: test_process_lock_prevents_concurrent_save (tests.test_worldsave.WorldSaveTests.test_process_lock_prevents_concurrent_save)
+2026-11-14T05:26:57.4795780Z     def change(kind):fcntl.fcntl(file.fileno(),fcntl.F_OFD_SETLK,bytes(Flock(kind,os.SEEK_SET,0,0,0)))
+2026-11-14T05:26:57.4796480Z OSError: [Errno 22] Invalid argument
+2026-11-14T05:26:57.4798040Z ERROR: test_save_original_both_editions_retains_exact_backup (tests.test_worldsave.WorldSaveTests.test_save_original_both_editions_retains_exact_backup)
+2026-11-14T05:26:57.4805120Z     def change(kind):fcntl.fcntl(file.fileno(),fcntl.F_OFD_SETLK,bytes(Flock(kind,os.SEEK_SET,0,0,0)))
+2026-11-14T05:26:57.4805940Z OSError: [Errno 22] Invalid argument
+2026-11-14T05:26:57.4806750Z ERROR: test_source_change_blocks_original_save_before_any_rename (tests.test_worldsave.WorldSaveTests.test_source_change_blocks_original_save_before_any_rename)
+2026-11-14T05:26:57.4813660Z     def change(kind):fcntl.fcntl(file.fileno(),fcntl.F_OFD_SETLK,bytes(Flock(kind,os.SEEK_SET,0,0,0)))
+2026-11-14T05:26:57.4814360Z OSError: [Errno 22] Invalid argument
+2026-11-14T05:26:57.4815020Z FAIL: test_settings_validate_and_recover (tests.test_workflows.WorkflowTests.test_settings_validate_and_recover)
+2026-11-14T05:26:57.4817600Z AssertionError: Lists differ: ['/private/var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T/tmp7qb699pi'] != ['/var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T/tmp7qb699pi']
+2026-11-14T05:26:57.4820670Z FAIL: test_abrupt_process_exit_at_each_swap_boundary_recovers_original (tests.test_worldsave.WorldSaveTests.test_abrupt_process_exit_at_each_swap_boundary_recovers_original)
+2026-11-14T05:26:57.4823430Z AssertionError: 1 != 71 : Traceback (most recent call last):
+2026-11-14T05:26:57.4828920Z     def change(kind):fcntl.fcntl(file.fileno(),fcntl.F_OFD_SETLK,bytes(Flock(kind,os.SEEK_SET,0,0,0)))
+2026-11-14T05:26:57.4829630Z OSError: [Errno 22] Invalid argument
+2026-11-14T05:26:57.4830380Z FAIL: test_game_lock_held_by_another_process_refuses_save (tests.test_worldsave.WorldSaveTests.test_game_lock_held_by_another_process_refuses_save)
+2026-11-14T05:26:57.4833500Z AssertionError: '' != 'locked'
+2026-11-14T05:26:57.4834320Z FAILED (failures=3, errors=12, skipped=89)
+

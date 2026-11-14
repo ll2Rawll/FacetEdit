@@ -6,6 +6,7 @@ preflight error; no inventory entry is silently discarded or replaced.
 import gzip
 from importlib.resources import files
 import json
+from functools import lru_cache
 
 from . import nbt, text_components,book_items,armor_items,potion_items
 from .blocks import Block
@@ -19,6 +20,18 @@ JAVA_ITEMS=DATA['java']
 # Signed books are a native inventory item omitted by the public item report.
 BEDROCK_INTERNAL_ITEMS=frozenset(('minecraft:written_book',))
 BEDROCK_ITEMS=frozenset(DATA['bedrock'])|BEDROCK_INTERNAL_ITEMS
+ITEM_FILES={(1,21,50):'items-1.21.json.gz',(1,21,60):'items-bedrock-1.21.60.json.gz'}
+
+
+@lru_cache(maxsize=4)
+def item_catalog(version):
+    if version not in ITEM_FILES:raise ValueError('No verified Bedrock item profile for '+str(version))
+    data=DATA if version==(1,21,50) else json.loads(gzip.decompress(files('facetedit').joinpath('data','registries',ITEM_FILES[version]).read_bytes()))
+    if data['format']!=1 or tuple(data['bedrock_version'])!=version or tuple(data['java_version'])!=(1,21,4):
+        raise ValueError('Item profile metadata does not match the requested versions')
+    return data['java'],frozenset(data['bedrock'])|BEDROCK_INTERNAL_ITEMS
+
+
 ALIASES={**BLOCK_ALIASES,'dirt_path':'grass_path','magma_block':'magma','cobweb':'web','snow_block':'snow','snow':'snow_layer',
          'cobblestone_stairs':'stone_stairs','stone_stairs':'normal_stone_stairs','end_stone_brick_stairs':'end_brick_stairs',
          'prismarine_brick_stairs':'prismarine_bricks_stairs','stone_slab':'normal_stone_slab','oak_button':'wooden_button',
@@ -41,6 +54,7 @@ ENCHANTMENTS=('protection','fire_protection','feather_falling','blast_protection
 class ItemTranslator:
     def __init__(self,translator):
         self.translator=translator;self.visited=0
+        self.java_items,self.bedrock_items=item_catalog(translator.bedrock.version)
 
     def _budget(self,depth):
         self.visited+=1
@@ -59,7 +73,7 @@ class ItemTranslator:
     def to_bedrock(self,data,path='item',depth=0):
         self._budget(depth);f=Fields(data,path)
         name=f.pop('id',nbt.STRING)
-        if name not in JAVA_ITEMS:raise ValueError(path+'.id: unknown Java item '+name)
+        if name not in self.java_items:raise ValueError(path+'.id: unknown Java item '+name)
         count=f.pop('count',nbt.INT,1)
         if not 1<=count<=99:raise ValueError(path+'.count: the Java 1.21.4 item codec requires a count from 1 to 99')
         components=Fields(f.pop('components',nbt.COMPOUND,{}),path+'.components');f.finish()
@@ -70,14 +84,14 @@ class ItemTranslator:
         elif base.endswith('_banner') and base[:-7] in COLORS:target='banner';aux=15-COLORS.index(base[:-7])
         else:target=ALIASES.get(base,base)
         target='minecraft:'+target
-        if target not in BEDROCK_ITEMS:raise ValueError(path+'.id: no Bedrock item identity for '+name)
+        if target not in self.bedrock_items:raise ValueError(path+'.id: no '+self.translator.bedrock.label+' item identity for '+name)
         result={'Name':nbt.Tag(nbt.STRING,target),'Count':nbt.Tag(nbt.BYTE,count if count<128 else count-256),'Damage':nbt.Tag(nbt.SHORT,aux)}
         tag={};display={}
         for source,destination in (('minecraft:damage','Damage'),('minecraft:repair_cost','RepairCost')):
             if source in components.data:
                 value=components.pop(source,nbt.INT)
                 if value<0:raise ValueError(components.path+'.'+source+': negative value')
-                if source=='minecraft:damage' and not JAVA_ITEMS[name]['durability']:raise ValueError(path+': damage on a non-durable item is not representable')
+                if source=='minecraft:damage' and not self.java_items[name]['durability']:raise ValueError(path+': damage on a non-durable item is not representable')
                 tag[destination]=nbt.Tag(nbt.INT,value)
         if 'minecraft:custom_name' in components.data:
             display['Name']=nbt.Tag(nbt.STRING,text_components.to_bedrock(components.pop('minecraft:custom_name',nbt.STRING)))
@@ -131,7 +145,7 @@ class ItemTranslator:
     def to_java(self,data,path='item',depth=0):
         self._budget(depth);f=Fields(data,path)
         name=f.pop('Name',nbt.STRING)
-        if name not in BEDROCK_ITEMS:raise ValueError(path+'.Name: unknown Bedrock item '+name)
+        if name not in self.bedrock_items:raise ValueError(path+'.Name: unknown '+self.translator.bedrock.label+' item '+name)
         count=f.pop('Count',nbt.BYTE)&255
         if not 1<=count<=99:raise ValueError(path+'.Count: the Java 1.21.4 item codec requires a count from 1 to 99')
         aux=f.pop('Damage',nbt.SHORT,0);base=name.removeprefix('minecraft:')
@@ -147,7 +161,7 @@ class ItemTranslator:
             target=COLORS[15-aux]+'_banner';aux=0
         else:target=REVERSE.get(base,base)
         target='minecraft:'+target
-        if target not in JAVA_ITEMS:raise ValueError(path+': no Java item identity for '+name)
+        if target not in self.java_items:raise ValueError(path+': no Java item identity for '+name)
         if aux:raise ValueError(path+'.Damage: legacy item variant has no explicit conversion rule')
         f.default_only('WasPickedUp',nbt.BYTE,0)
         tag=Fields(f.pop('tag',nbt.COMPOUND,{}),path+'.tag');components={}
@@ -157,7 +171,7 @@ class ItemTranslator:
         for source,destination in (('Damage','minecraft:damage'),('RepairCost','minecraft:repair_cost')):
             if source in tag.data:
                 value=tag.pop(source,nbt.INT)
-                if value<0 or source=='Damage' and not JAVA_ITEMS[target]['durability']:raise ValueError(tag.path+'.'+source+': invalid durability/repair data')
+                if value<0 or source=='Damage' and not self.java_items[target]['durability']:raise ValueError(tag.path+'.'+source+': invalid durability/repair data')
                 components[destination]=nbt.Tag(nbt.INT,value)
         if 'display' in tag.data:
             display=Fields(tag.pop('display',nbt.COMPOUND),tag.path+'.display')
@@ -183,10 +197,8 @@ class ItemTranslator:
         if 'Unbreakable' in tag.data and tag.flag('Unbreakable'):
             components['minecraft:unbreakable']=nbt.compound()
         if 'Block' in f.data:
-            descriptor=Fields(f.pop('Block',nbt.COMPOUND),path+'.Block')
-            block_name=descriptor.pop('name',nbt.STRING);states=descriptor.pop('states',nbt.COMPOUND)
-            descriptor.pop('version',nbt.INT);descriptor.finish()
-            native=bedrock_block(nbt.compound(name=nbt.Tag(nbt.STRING,block_name),states=nbt.Tag(nbt.COMPOUND,states)))
+            from .bedrock_versions import read_descriptor
+            native=read_descriptor(f.pop('Block',nbt.COMPOUND),self.translator.bedrock,path+'.Block')
             block,_=self.translator.block(native)
             if block.name!=target:raise ValueError(path+': item identity disagrees with its native block descriptor')
             defaults=dict(self.translator.java.initial(target).properties)

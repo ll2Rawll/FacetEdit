@@ -1,6 +1,6 @@
 # Conversion and native interchange
 
-FacetEdit 0.8 extends original translation and interchange code. Its runtime uses
+FacetEdit 0.9 extends original translation and interchange code. Its runtime uses
 Python's standard library and Tk only. No Amulet implementation, plugin or
 translation table is distributed with the application.
 
@@ -8,7 +8,7 @@ translation table is distributed with the application.
 
 Open Material studio from the material tray or command palette. Search identifiers
 or words, choose a block and edit its state controls. The bundled profiles contain
-1,095 Java 1.21.4 block definitions and 1,239 public Bedrock 1.21.50 definitions,
+1,095 Java 1.21.4 block definitions and 1,239 public definitions for each of Bedrock 1.21.50 and 1.21.60,
 supplemented by the native internal `end_gateway` and `moving_block` identities. Java
 defaults come from the official server's data report. Bedrock's pinned Mojang
 metadata supplies typed global state domains; these are not a complete list of
@@ -25,7 +25,7 @@ and patterns such as `minecraft:*_log[axis=y]`. A replacement remains one undo s
 3. Run **Preview translation**. Read any blockers and normalization notes.
 4. When the report succeeds, use the translated clipboard and paste normally.
 
-Only Java 1.21.4 and Bedrock 1.21.50 translation profiles are bundled. An imported
+Java 1.21.4, Bedrock 1.21.50 and Bedrock 1.21.60 translation profiles are bundled. An imported
 `.mcstructure` lacks an unambiguous game release; explicitly select its source
 profile only if you know the release. A known version cannot be relabelled to
 bypass compatibility checks. Unknown/custom blocks and unsupported states are
@@ -63,6 +63,38 @@ neighbours too. Kelp/vine terminal and body encodings can coincide in Bedrock;
 the structure pass resolves those with available neighbours and reports the
 normalization. An inconsistent Java context blocks conversion. An isolated
 palette conversion does not provide those structure-level guarantees.
+
+## Bedrock 1.21.60 and native version migration
+
+Bedrock 1.21.60 has a separate primary block/item schema and palette storage
+identifier 18168865. Bedrock 1.21.50 retains 18163713. Both use the existing
+persistent subchunk v8/v9 layouts. A change to the release label alone is not
+sufficient: 33 door/gate definitions now store cardinal strings instead of
+numeric directions. Doors retain their native rotated facing convention;
+paired halves and mirrors are translated with that convention.
+
+Creaking hearts replace `active` with `creaking_heart_state`. The older inactive
+state maps to `dormant` and active maps to `awake`. Reports disclose the inactive
+mapping. `uprooted` has no exact older state and blocks conversion to Java 1.21.4
+or Bedrock 1.21.50. Same-version editing/interchange preserves it.
+
+Choose either Bedrock profile as source/target for native version migration.
+All storage layers survive. Represented native block NBT is validated, then its
+native fields and numeric widths are retained. Nested inventory `Block` and pot
+`PlantBlock` descriptors get target states and palette identifiers. Unknown
+payload fields still block migration. A jigsaw identifier-only final state is
+also refused when its target block default changes. Embedded descriptors use their declared
+storage version rather than inheriting the world release. Only the two pinned
+palette schemas are migrated; unsupported historical descriptor versions fail
+with a field path.
+
+Worlds can contain palettes from multiple supported releases. Reads normalize
+known older entries into the selected world schema while retaining the original
+palette bytes. Editing a section writes changed states with the target native
+palette identifier. This does not add support for unverified release schemas.
+Bedrock 1.21.60's item report omits the former `air` inventory identity; it is
+rejected in that profile. Biome/entity/enchantment identity lists match the
+pinned 1.21.50 lists, as separately checked from primary metadata.
 
 ## Block NBT and inventories
 

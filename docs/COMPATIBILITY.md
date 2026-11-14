@@ -1,4 +1,4 @@
-# FacetEdit 0.8.0 — compatibility and parity ledger
+# FacetEdit 0.9.0 — compatibility and parity ledger
 
 Implemented means code and the stated tests exist, within the listed limits.
 It does not mean every Minecraft version or in-game behavior has been verified.
@@ -18,16 +18,16 @@ Full Amulet parity remains an unfinished project goal.
 | Bedrock blocks | Persistent subchunks v8/v9; primary and up to seven extra storage layers; typed palettes retained through editing, clipboard, undo, projects and world export |
 | Other Bedrock encodings | Older/runtime/inherited/network storage unsupported; no every-version claim |
 | Java .nbt structure | Blocks and block NBT, typed inventory data, declared DataVersion retained |
-| Bedrock .mcstructure | Two storage layers and block_position_data/block_entity_data; typed states retained; known 1.21.50 exports use the verified native palette version. Imported structures have no inferred game release; arbitrary original per-entry palette version tags are not retained. More than two layers refused. |
+| Bedrock .mcstructure | Two storage layers and block_position_data/block_entity_data; typed states retained; known 1.21.50/1.21.60 exports use the verified native palette version. Imported structures have no inferred game release; arbitrary original per-entry palette version tags are not retained. More than two layers refused. |
 | Sponge .schem v2/v3 | Blocks, block entities, varint palettes, unsigned-short dimensions, offsets and DataVersion retained |
 | Structure restrictions | Moving entities, biome data and scheduled-tick payloads refused when detected; Java/Sponge reject extra layers; no silent dropping of these detected payloads |
 | Legacy .schematic | Alpha numeric Blocks/Data/AddBlocks, block NBT, offsets, rectangular selections and declared/default legacy DataVersion; alternate mod mappings and moving entities refused |
 | .construction v0 | Independent native Java/Bedrock codec; sparse boxes, signed palette arrays, offsets, block NBT and up to eight layers; known Java release tuples through 1.21.4. Moving entities/universal-edition data refused. Bidirectional interoperability checked with Amulet-Core 1.9.41. The earlier claim that this format requires universal translation was incorrect. |
 | Bedrock .mcworld | Bounded ZIP import to a new folder; edited archive export; unsafe paths, symlinks, duplicate-case names and oversized extraction refused |
 | Archive publishing | Atomic no-clobber hard-link publication on the destination filesystem; filesystems without hard-link support fail cleanly |
-| Cross-edition conversion | Explicit Java 1.21.4 ↔ Bedrock 1.21.50 rules; clipboard preflight and template-world publication. 976 initial palette mappings and 118 additional payload-based identities accept 1,094 of 1,095 isolated initial Java cells; moving_piston remains blocked. Neighbours supply redstone connections, fire/chorus/tripwire faces, plant terminals, campfire smoke, scaffolding bottom state and existing door/chest/stair/fence/pane/note/leaf context. These counts do not cover all states, arbitrary NBT or all world context. |
+| Cross-edition conversion | Explicit Java 1.21.4 ↔ Bedrock 1.21.50/1.21.60 rules and Bedrock 1.21.50 ↔ 1.21.60 migration; clipboard preflight and template-world publication. 976 initial palette mappings and 118 additional payload-based identities accept 1,094 of 1,095 isolated initial Java cells; moving_piston remains blocked. Neighbours supply redstone connections, fire/chorus/tripwire faces, plant terminals, campfire smoke, scaffolding bottom state and existing door/chest/stair/fence/pane/note/leaf context. These counts do not cover all states, arbitrary NBT or all world context. |
 | Cross-edition block NBT | Previous containers/signs/heads plus populated campfires, lecterns/bookshelves, jukeboxes, decorated pots, brewing stands, crafters, beacons, gateways, stationary pistons, eight natural-spawner identities, passive sculk/unlinked hearts and restricted technical settings. Unknown fields, active movement/vibrations, occupied hives, complex spawn pools, loot tables, locks, active furnace progress, custom head profiles, actors and ticks remain blockers. Item components remain partial. See CONVERSION.md. |
-| Cross-version conversion | No complete version migration registry; other release profiles remain unimplemented. Same-edition clipboard DataVersion/known Bedrock release must match the destination. |
+| Cross-version conversion | Explicit Bedrock 1.21.50 ↔ 1.21.60 state and represented block-NBT migration; other release migrations remain unimplemented. Uprooted hearts cannot be downgraded without state loss and are refused. Same-edition clipboard DataVersion/known Bedrock release must match the destination. |
 | Conversion metadata policy | Target template supplies settings, seed, players and untouched chunks. Source players, maps, structure starts, POI and auxiliary world/chunk metadata are not migrated. Exact biome preservation refuses incompatible resolution; sampling/default-biome alternatives are explicit. |
 
 ## Editing
@@ -44,7 +44,7 @@ Full Amulet parity remains an unfinished project goal.
 | NBT transforms | Root xyz, paired-container links, Rot states, Shulker facing and floor-head rotation; bookshelf mirrors move occupied-state bits, inventory slots and last-interacted slots together. Other typed inventories retained; paired chests cannot link vertically and tilted head mounts are refused. |
 | Embedded world references | Arbitrary nested coordinates in opaque NBT are preserved verbatim, not universally translated |
 | Bedrock secondary-layer clipboard | Copy/cut/paste/clone and transforms preserve layers; ordinary fill clears extras; explicit layered fill selects overlay/underlay/game/first/second behavior |
-| Block states | Searchable schemas for 1,095 Java 1.21.4 blocks; 1,239 public Bedrock 1.21.50 definitions plus two internal storage identities (end_gateway, moving_block). Java defaults and typed Bedrock states; primary Bedrock metadata does not enumerate all per-block restrictions/defaults. No all-version validator. |
+| Block states | Searchable schemas for 1,095 Java 1.21.4 blocks; 1,239 public definitions in each Bedrock 1.21.50/1.21.60 schema plus two internal storage identities (end_gateway, moving_block). Java defaults and typed Bedrock states; primary Bedrock metadata does not enumerate all per-block restrictions/defaults. No all-version validator. |
 | World discovery | Bounded background metadata scan of standard desktop Java/Bedrock locations, selected launcher instances, recent saves and added folders; search and manual browse |
 | Navigation settings | FOV, default speed, mouse sensitivity/inversion, boost multiplier and individual movement keys; focus-safe flight and retained settings |
 | Block-entity NBT | Typed JSON inspection/editing, type/range checks, immutable selected xyz, undo/redo, project/export persistence in both editions |

@@ -6,7 +6,7 @@ Written from scratch in Python's standard library and Tk. No Amulet code,
 translation tables, plugins, third-party Python packages, webview, account,
 telemetry, or network service is used by the application.
 
-**Version 0.8.0 is experimental. Full Amulet feature parity is unfinished.**
+**Version 0.9.0 is experimental. Full Amulet feature parity is unfinished.**
 The editor performs real Java and Bedrock edits; the exact boundaries are in
 [Compatibility](COMPATIBILITY.md). Synthetic tests and independent database
 validation do not establish that exported worlds have been validated in Minecraft.
@@ -29,7 +29,7 @@ Windows:
 py -3 launch.py
 ```
 
-Or extract `FacetEdit-0.8.0-portable.zip` and open the matching platform launcher.
+Or extract `FacetEdit-0.9.0-portable.zip` and open the matching platform launcher.
 The portable app is a Python zipapp, not a self-contained `.exe` or signed `.app`:
 
 ```sh
@@ -45,6 +45,10 @@ Native Windows/macOS execution has not been verified in this environment.
 
 ## The workspace
 
+New in 0.9: Bedrock 1.21.60 conversion and explicit migration between the two
+Bedrock profiles, including changed door/gate directions, heart states and
+nested inventory block descriptors. See the conversion guide for limits.
+
 New in 0.8: additional vegetation and technical states, neighbour-derived redstone,
 fire and plant columns; books, lecterns, bookshelves, campfire/brewing progress,
 pottery, stationary pistons, natural spawners, passive sculk, crafters, gateways
@@ -53,7 +57,7 @@ tipped-arrow variants, armor trims and leather dye. Rotation and mirror fixes
 cover pistons, jigsaws, hanging signs, portal planes and bookshelf contents.
 These extend the existing container/sign/head payloads and editing workflows.
 Translation remains partial: unsupported states, versions and payload fields stop
-conversion. Only Java 1.21.4 and Bedrock 1.21.50 are translation profiles. See the
+conversion. Java 1.21.4 and Bedrock 1.21.50/1.21.60 are translation profiles. See the
 [conversion guide](CONVERSION.md) for exact supported versions and policies.
 
 - **World stage:** full-width voxel cutaway with orbit, zoom, pan, block picking,

@@ -90,6 +90,38 @@ class ConversionDesktopTests(unittest.TestCase):
         self.assertIs(self.app.document.clipboard,original)
         self.assertIn('BLOCKED',c['report'].get('1.0','end'))
 
+    def test_bedrock60_material_profile_and_clipboard_preflight_use_real_states(self):
+        from facetedit.registry import profile
+        from tests.version_fixture import bedrock_version
+        target=open_world(bedrock_version(self.path/'bedrock60-material'))
+        self.app._attach(Document(target));self.app.material_dialog();window=self.dialog();c=window.material_controls
+        self.assertEqual(c['profile'].get(),'Bedrock 1.21.60')
+        c['search'].set('oak_fence_gate');self.app.update();self.assertIn('minecraft:cardinal_direction',c['states'])
+        self.assertNotIn('direction',c['states']);c['states']['minecraft:cardinal_direction'].set('east');c['choose']()
+        self.app.document.selection=Selection((1,17,1),(1,17,1));self.app.fill()
+        self.assertEqual(dict(self.app.document.get(1,17,1).properties)['minecraft:cardinal_direction'],'east');self.app.undo()
+        java=profile('Java 1.21.4');blocks={(0,y,0):java.block('minecraft:oak_door',{'half':half,'facing':'west','hinge':'right'},defaults=True) for y,half in enumerate(('lower','upper'))}
+        self.app.document.clipboard=Clipboard((1,2,1),blocks)
+        self.app.translate_clipboard_dialog();window=self.dialog();c=window.conversion_controls
+        self.assertEqual(c['target'].get(),'Bedrock 1.21.60');c['preview']();self.wait()
+        self.assertIn('Bedrock 1.21.60',c['report'].get('1.0','end'));self.assertIsNotNone(c['prepared'][0]);c['use']()
+        self.app.document.paste((1,17,1));self.assertEqual(dict(self.app.document.get(1,17,1).properties)['minecraft:cardinal_direction'],'north')
+        self.app.undo();self.assertTrue(self.app.document.get(1,17,1).air)
+
+    def test_bedrock60_world_preflight_and_blocked_heart_downgrade(self):
+        from facetedit.registry import profile
+        from tests.version_fixture import bedrock_version,gallery
+        source=plain_java(self.path/'java-to-bedrock60');gallery(source)
+        self.app._attach(source);self.app.convert_world_dialog();window=self.dialog();c=window.conversion_controls
+        c['template'].set(str(bedrock_version(self.path/'template60')));c['preview']();self.wait()
+        self.assertTrue(c['plan'][0].report.ok,c['report'].get('1.0','end'));self.assertIn('Bedrock 1.21.60',c['report'].get('1.0','end'))
+        window.destroy()
+        heart=profile('Bedrock 1.21.60').initial('minecraft:creaking_heart')
+        original=Clipboard((1,1,1),{(0,0,0):heart},'Bedrock',data_version=None,game_version=(1,21,60))
+        self.app.document.clipboard=original;self.app.translate_clipboard_dialog();c=self.dialog().conversion_controls
+        c['target'].set('Bedrock 1.21.50');c['preview']();self.wait();c['use']()
+        self.assertIs(self.app.document.clipboard,original);self.assertIsNone(c['prepared'][0]);self.assertIn('Uprooted',c['report'].get('1.0','end'))
+
     def test_payload_preview_apply_paste_and_undo_through_desktop(self):
         from facetedit import nbt
         from facetedit.payloads import root

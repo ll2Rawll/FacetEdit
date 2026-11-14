@@ -9,9 +9,11 @@ parser=argparse.ArgumentParser()
 parser.add_argument('java',type=Path)
 parser.add_argument('bedrock',type=Path)
 parser.add_argument('destination',type=Path)
+parser.add_argument('--java-version',default='1.21.4')
+parser.add_argument('--bedrock-version',default='1.21.50')
 args=parser.parse_args()
 java=json.loads(args.java.read_bytes());bedrock=json.loads(args.bedrock.read_bytes())
-result={'format':1,'java_version':[1,21,4],'bedrock_version':[1,21,50],
+result={'format':1,'java_version':list(map(int,args.java_version.split('.'))),'bedrock_version':list(map(int,args.bedrock_version.split('.'))),
         'java':{name:{'stack':data['components']['minecraft:max_stack_size'],
                       'durability':data['components'].get('minecraft:max_damage',0)} for name,data in sorted(java.items())},
         'bedrock':sorted(entry['serialization_name'] for entry in bedrock['data_items']),

@@ -531,7 +531,11 @@ class BedrockWorld(DiskWorld):
             raw = self.values.get(self.prefix(cx, cz, dimension) + b"/" + struct.pack("b", sy))
             if raw is None:
                 return None
-            section = decode_bedrock(raw)
+            from .registry import for_world
+            from .bedrock_versions import world_palette_mapper
+            try:mapper=world_palette_mapper(for_world(self))
+            except ValueError:mapper=None
+            section = decode_bedrock(raw,mapper)
             if section[0] == 9 and section[1] != sy:
                 raise nbt.FormatError("Bedrock subchunk Y disagrees with its key")
             return section

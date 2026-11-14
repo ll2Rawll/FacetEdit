@@ -35,9 +35,9 @@ def canonical(block):
     return Block(name,tuple(props))
 
 
-def run(all_states=False):
+def run(all_states=False,target_label='Bedrock 1.21.50'):
     manager=PyMCTranslate.new_translation_manager()
-    source=profile('Java 1.21.4');target=profile('Bedrock 1.21.50');translator=Translator(source,target)
+    source=profile('Java 1.21.4');target=profile(target_label);translator=Translator(source,target)
     reference_java=manager.get_version('java',source.version).block
     reference_bedrock=manager.get_version('bedrock',target.version).block
     supported=[];unsupported=[];mismatches=[];vectors=0;contexts=0
@@ -83,5 +83,6 @@ def run(all_states=False):
 
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('--all-states',action='store_true');args=parser.parse_args()
-    print(json.dumps(run(args.all_states),indent=2))
+    parser=argparse.ArgumentParser();parser.add_argument('--all-states',action='store_true')
+    parser.add_argument('--target',default='Bedrock 1.21.50');args=parser.parse_args()
+    print(json.dumps(run(args.all_states,args.target),indent=2))

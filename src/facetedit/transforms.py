@@ -46,7 +46,15 @@ def state_properties(block,turns=0,mirror=False,edition='Java'):
         front,top=jigsaw_axes(props,edition)
         return jigsaw_states(direction(front),direction(top),edition),dict(block.state_types)
     for key in ('facing','block_face','torch_facing_direction','minecraft:cardinal_direction','minecraft:facing_direction','minecraft:block_face'):
-        if key in props:props[key]=direction(props[key])
+        if key in props:
+            if edition=='Bedrock' and key=='minecraft:cardinal_direction' and block.name.endswith('_door'):
+                if props.get('upper_block_bit')=='true':continue
+                # 1.21.60 cardinal strings retain the legacy door's rotated
+                # direction encoding. Convert to its physical facing before
+                # reflecting, then encode the result again.
+                native=('south','west','north','east');physical=('east','south','west','north')
+                props[key]=native[physical.index(direction(physical[native.index(props[key])]))]
+            else:props[key]=direction(props[key])
     for key in ('axis','pillar_axis','portal_axis'):
         if turns%2 and props.get(key) in ('x','z'):props[key]='z' if props[key]=='x' else 'x'
     for key in ('rotation','ground_sign_direction'):

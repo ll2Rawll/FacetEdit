@@ -174,6 +174,28 @@ before calling the project an exact feature replica.
   native OS/game verification still prevent a full-parity claim. The completion
   sequence in PARITY_COMPLETION_PLAN.md remains active.
 
+## 0.9 progress — 2026-11-14
+
+- Bedrock 1.21.60 now has separate pinned primary block/item metadata. Java
+  1.21.4 converts to/from either Bedrock profile. Native Bedrock 1.21.50 ↔
+  1.21.60 migration handles changed cardinal door/gate directions, heart states,
+  all storage layers and represented payloads with nested block descriptors.
+- The metadata audit identifies 34 changed block definitions and removal of the
+  air inventory identity. Biome/entity/enchantment identities are independently
+  unchanged. Unknown versions and embedded descriptor schemas are not relabeled.
+- Both native migration directions preserve 876 shared changed-state vectors
+  exactly. Reference comparisons cover 540 meaningful cases each; ignored upper
+  door storage is retained separately. Six uprooted-heart states have no older
+  representation and block downgrades. The Java → Bedrock 1.21.60 accepted-state
+  corpus has 22,907 vectors and zero mismatches.
+- Actual desktop controls, paired doors crossing sections, nested Shulker items,
+  mixed native palettes, typed native file exports, inverse migration and
+  failure/cancellation paths have new checks. Independent readers reopen both
+  migration directions, Java cross-edition outputs and mcstructure exports.
+- Other versions, active assemblies/actors, remaining payload semantics,
+  specialized rendering and the rest of the acceptance matrix remain open.
+  See PARITY_VERSIONS_PLAN.md and TEST_REPORT.md for scope and evidence.
+
 ## Reference scope and remaining acceptance matrix
 
 The interface target is the stable **0.10.67** tag. The available checkout is
@@ -191,7 +213,7 @@ tables are application dependencies.
 | Import/export structures | Native Construction, Java NBT, Bedrock mcstructure, Sponge v2/v3, Alpha schematic | Remaining payload semantics, moving entities and version migrations |
 | Chunk delete/prune/create/import | Implemented for documented layouts | Remaining encodings and version conversion |
 | Original save, undo and recovery | Implemented with retained backups | Game/native-platform/filesystem verification |
-| World converter | Partial; two version profiles and explicit template policy | All block/state/biome/NBT mappings, remaining versions and payloads |
+| World converter | Partial; three version profiles and explicit template policy | All block/state/biome/NBT mappings, remaining versions and payloads |
 | Operation extensions | Independent documented Python API | Broader equivalent capabilities; existing wx/NumPy/Amulet plugins require their dependencies |
 | Resource display and navigation | Original local model renderer, bounded terrain, configurable controls | Broader streaming, specialized models, Bedrock resource geometry and parity review |
 

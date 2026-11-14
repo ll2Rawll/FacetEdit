@@ -1,0 +1,18 @@
+{
+  "scope": "4,096 synthetic native single chests with one sword each. Three timed runs after warm-up and one traced run; input construction excluded. This host only; no large-world/game speed claim.",
+  "50_to_60": {
+    "blocks": 4096,
+    "median_ms": 800.845,
+    "peak_traced_bytes": 1666962,
+    "timing_runs": 3,
+    "memory_runs": 1
+  },
+  "60_to_50": {
+    "blocks": 4096,
+    "median_ms": 768.236,
+    "peak_traced_bytes": 1847627,
+    "timing_runs": 3,
+    "memory_runs": 1
+  },
+  "native_fields_roundtrip": "exact"
+}

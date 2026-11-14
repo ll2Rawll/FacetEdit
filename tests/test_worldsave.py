@@ -91,6 +91,16 @@ class WorldSaveTests(unittest.TestCase):
             with self.assertRaises(OSError):save_original(doc.world,doc.edits)
         self.assertEqual(open_world(doc.world.path).get_block(1,4,3),Block('stone'))
 
+    def test_native_record_lock_layouts_match_linux_and_darwin_abis(self):
+        import struct
+        from facetedit.filelock import record_lock_data
+        # XNU declares off_t start/length, pid_t pid, short type/whence.
+        # Linux's 64-bit ABI puts the shorts first, with aligned off_t fields.
+        darwin=record_lock_data(3,'darwin');linux=record_lock_data(1,'linux')
+        self.assertEqual(darwin,struct.pack('=qqihh',0,0,0,3,0))
+        self.assertEqual(len(linux),32);self.assertEqual(struct.unpack_from('=hh',linux),(1,0))
+        self.assertEqual(struct.unpack_from('=qqi',linux,8),(0,0,0))
+
     def test_game_lock_held_by_another_process_refuses_save(self):
         doc=self.document();lock=doc.world.path/'session.lock';lock.write_bytes(b'\0'*8)
         doc=Document(open_world(doc.world.path));doc.apply('glass',[((1,4,3),Block('glass'))])

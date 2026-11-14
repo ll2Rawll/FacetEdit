@@ -13,6 +13,7 @@ from .blocks import AIR, Block
 from .model import Clipboard
 from .registry import for_clipboard, profile
 from . import native_rules
+from .bedrock_versions import from_legacy,to_legacy,migrate_block
 
 STATELESS = frozenset(json.loads(files('facetedit').joinpath('data','registries','stateless-1.21.json').read_text())['blocks'])
 TAGS=json.loads(files('facetedit').joinpath('data','registries','java-1.21.4-tags.json').read_text())
@@ -72,8 +73,12 @@ class TranslationReport:
 
 class Translator:
     def __init__(self, source, target):
+        if source!=profile(source.label) or target!=profile(target.label):
+            raise ValueError('Translation requires the bundled verified version profiles')
         self.source, self.target = source, target
-        self.java, self.bedrock = profile('Java 1.21.4'), profile('Bedrock 1.21.50')
+        self.java=source if source.edition=='Java' else target if target.edition=='Java' else profile('Java 1.21.4')
+        self.bedrock=source if source.edition=='Bedrock' else target if target.edition=='Bedrock' else profile('Bedrock 1.21.50')
+        self.migration_validator=None
         self.cache = {}
         self.chest_links = {}
         self.chest_link_bytes = 0
@@ -96,7 +101,8 @@ class Translator:
                     raise ValueError('Java blocks cannot have extra layers')
                 result = native, tuple(self.target.validate(b) for b in layers)
             elif self.source.edition == self.target.edition:
-                result = self.target.validate(native), tuple(self.target.validate(b) for b in layers)
+                if self.source.edition!='Bedrock':raise ValueError('No verified same-edition version migration')
+                result = migrate_block(native,self.source,self.target), tuple(migrate_block(b,self.source,self.target) for b in layers)
             elif self.source.edition == 'Java':
                 if layers:
                     raise ValueError('Java input has unexpected extra layers')
@@ -246,11 +252,12 @@ class Translator:
             raise ValueError(f'No Java → Bedrock rule for {block.name}')
         if p:
             raise ValueError(f'Untranslated Java states on {block.name}: {sorted(p)}')
-        result = self.bedrock.block('minecraft:'+target, out)
+        result = from_legacy(profile('Bedrock 1.21.50').block('minecraft:'+target,out),self.bedrock)
         extra = (self.bedrock.block('minecraft:water', {'liquid_depth':'0'}),) if water or name in native_rules.ALWAYS_WATER else ()
         return result, extra
 
     def to_java(self, block):
+        block=to_legacy(block,self.bedrock)
         name = block.name.removeprefix('minecraft:')
         target = REVERSE.get(name, name)
         p = dict(block.properties)
@@ -459,6 +466,9 @@ def translate_clipboard(clip, target, source=None, neighbour=None, cancelled=lam
         except (ValueError, KeyError, IndexError) as exc:
             report.issue(str(exc), pos)
     cross = source.edition != target.edition
+    if source.label!=target.label and target.label=='Bedrock 1.21.60' and any(
+            b.name=='minecraft:creaking_heart' and dict(b.properties).get('active')=='false' for b in clip.blocks.values()):
+        report.notes.add('The older inactive creaking-heart state becomes dormant in Bedrock 1.21.60.')
     if cross and any(b.name in ('minecraft:cave_air','minecraft:void_air') for b in clip.blocks.values()):
         report.notes.add('Java cave/void air becomes Bedrock air; Bedrock has no separate air subtype.')
     if cross and any(b.name in ('minecraft:flowing_water','minecraft:flowing_lava') for b in clip.blocks.values()):
@@ -497,7 +507,7 @@ def translate_clipboard(clip, target, source=None, neighbour=None, cancelled=lam
                 if bottom is None or top is None or bottom.name!=top.name:
                     report.issue('Door translation requires both matching halves',pos);continue
                 if source.edition=='Bedrock':
-                    try:a,b=dict(source.validate(bottom).properties),dict(source.validate(top).properties)
+                    try:a,b=dict(to_legacy(bottom,source).properties),dict(to_legacy(top,source).properties)
                     except ValueError as exc:report.issue('Door neighbour: '+str(exc),pos);continue
                     if a.get('upper_block_bit')!='false' or b.get('upper_block_bit')!='true':
                         report.issue('Door half metadata is inconsistent',pos);continue

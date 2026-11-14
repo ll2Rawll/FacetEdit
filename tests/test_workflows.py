@@ -270,7 +270,7 @@ class WorkflowTests(unittest.TestCase):
         settings = Settings(file)
         self.assertIsNotNone(settings.warning)
         settings.remember(self.path)
-        self.assertEqual(Settings(file).data["recent"], [str(self.path)])
+        self.assertEqual(Settings(file).data["recent"], [str(self.path.resolve())])
 
     def test_no_amulet_imports(self):
         import ast

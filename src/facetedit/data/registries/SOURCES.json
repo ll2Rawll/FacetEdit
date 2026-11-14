@@ -121,5 +121,54 @@
     "source": "https://raw.githubusercontent.com/Mojang/bedrock-samples/v1.21.50.7/metadata/vanilladata_modules/mojang-entities.json",
     "local_metadata_snapshot_sha256": "30430156079262ff6b25adf5cf44b2d44bdbd24e7f5394d042be6bc5c6aa12d4",
     "scope": "Eight native identities: pig, zombie, skeleton, spider, cave_spider, silverfish, blaze and magma_cube; no arbitrary entity-NBT or moving-actor translation."
+  },
+  "Bedrock 1.21.60": {
+    "palette_version": 18168865,
+    "palette_version_verification": "PyMCTranslate 1.2.53 get_version('bedrock', (1,21,60)).data_version; separately confirmed by independent native readers opening emitted worlds and mcstructure with that version. This is binary/reference validation, not Minecraft execution.",
+    "source": "https://raw.githubusercontent.com/Mojang/bedrock-samples/v1.21.60.10/metadata/vanilladata_modules/mojang-blocks.json",
+    "input_sha256": "0758346095fc09b8e9be6b1abc0fb9d1711fbcb018a0685e83c0eb58d00b8ec5",
+    "notes": "A separate generated schema: 1,239 public blocks plus the same two explicitly verified internal identities. The 34 changed block definitions comprise 33 doors/gates using cardinal strings and the three-state creaking heart. Global state domains are not verified default permutations.",
+    "internal_storage_supplement": {
+      "blocks": [
+        "minecraft:end_gateway",
+        "minecraft:moving_block"
+      ],
+      "states": {},
+      "evidence": "Observed native block identities and empty states from the isolated reference translation API. Public metadata omits these internal blocks; no unknown-name fallback is permitted."
+    }
+  },
+  "Bedrock 1.21.60 item profile": {
+    "source": "https://raw.githubusercontent.com/Mojang/bedrock-samples/v1.21.60.10/metadata/vanilladata_modules/mojang-items.json",
+    "input_sha256": "dda60373cb5022ddfad600fc72d9b908c9ee17ba30df393c8c44310aad5dda60",
+    "public_items": 1368,
+    "notes": "The air inventory identity present in v1.21.50.7 is absent. Runtime adds only the explicit written_book supplement (1,369 total). Java facts still use the separately pinned 1.21.4 report."
+  },
+  "Bedrock 1.21.60 unchanged identity audits": {
+    "biomes": {
+      "source": "https://raw.githubusercontent.com/Mojang/bedrock-samples/v1.21.60.10/metadata/vanilladata_modules/mojang-biomes.json",
+      "input_sha256": "53723e490bae2052130a3ff16df71f75b2a6632c5374cbe0dbbd5fb511d846b8"
+    },
+    "entities": {
+      "source": "https://raw.githubusercontent.com/Mojang/bedrock-samples/v1.21.60.10/metadata/vanilladata_modules/mojang-entities.json",
+      "input_sha256": "c1f3d12551a0be105c8ac488e75393576d21bf453ced31f85432583931a7f145"
+    },
+    "enchantments": {
+      "source": "https://raw.githubusercontent.com/Mojang/bedrock-samples/v1.21.60.10/metadata/vanilladata_modules/mojang-enchantments.json",
+      "input_sha256": "b3db2c381dc6f18870b45108ffc98d3b6d755e0ffe5f0eb586b23555e04e1994"
+    }
+  },
+  "Bedrock 1.21.60 native state migration": {
+    "notes": "Native cardinal values preserve numeric indices in SWNE order, including doors whose Java physical facing uses ESWN. Changed-state checks use an isolated reference API without importing its rules. Inactive older hearts map to dormant; uprooted cannot round-trip to older profiles and is refused. Paired doors and reflected orientations have separate contextual tests.",
+    "community_format_notes": {
+      "Bedrock_Edition_1.21.60": {
+        "url": "https://minecraft.wiki/w/Bedrock_Edition_1.21.60",
+        "raw_sha256": "72fef6976556b4a4b809e10774af499c7ca779c2f46aef78737c2269a62c51b0"
+      },
+      "Creaking_Heart": {
+        "url": "https://minecraft.wiki/w/Creaking_Heart",
+        "raw_sha256": "c393439d048fe2b974cd51b47069ecee7b6912db02bc14db41ea14e7d5bf80fa"
+      }
+    },
+    "validation": "scripts/validate_version_reference.py and scripts/validate_translation_reference.py --target \"Bedrock 1.21.60\" --all-states"
   }
 }

@@ -8,7 +8,7 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 DIST.mkdir(exist_ok=True)
-VERSION = "0.8.0"
+VERSION = "0.9.0"
 
 
 def add_file(archive,path,name):
@@ -73,6 +73,11 @@ with zipfile.ZipFile(portable, "w", zipfile.ZIP_DEFLATED) as archive:
     for name in ('docs/PARITY_COMPLETION_PLAN.md','artifacts/advanced-conversion.png','artifacts/advanced-book-inspector.png',
                  'artifacts/advanced-reference.json','artifacts/primary-context.json','artifacts/state-transform-corpus.json',
                  'artifacts/advanced-initial-coverage.json','artifacts/advanced-benchmark-baseline.json','artifacts/advanced-benchmark-before-revision.json','artifacts/advanced-benchmark.json'):
+        add_file(archive,ROOT/name,'FacetEdit/'+name)
+
+    for name in ('docs/PARITY_VERSIONS_PLAN.md','artifacts/versions-conversion.png','artifacts/versions-materials.png',
+                 'artifacts/versions-reference.json','artifacts/versions-state-reference.json','artifacts/versions-benchmark-baseline.json',
+                 'artifacts/versions-benchmark50.json','artifacts/versions-benchmark60.json','artifacts/versions-migration-benchmark.json'):
         add_file(archive,ROOT/name,'FacetEdit/'+name)
 
 source = DIST / f"FacetEdit-{VERSION}-source.zip"

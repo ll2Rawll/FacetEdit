@@ -2,10 +2,24 @@
 from contextlib import contextmanager
 from pathlib import Path
 import os
+import sys
 import threading
 
 _guard=threading.Lock()
 _locks={}
+
+
+def record_lock_data(kind,platform):
+    """Native struct flock ABI; Darwin's fields are ordered differently."""
+    import ctypes
+    if platform=='darwin':
+        fields=[('start',ctypes.c_longlong),('length',ctypes.c_longlong),('pid',ctypes.c_int),('type',ctypes.c_short),('whence',ctypes.c_short)]
+    elif platform.startswith('linux'):
+        fields=[('type',ctypes.c_short),('whence',ctypes.c_short),('start',ctypes.c_longlong),('length',ctypes.c_longlong),('pid',ctypes.c_int)]
+    else:raise OSError('No verified OFD file-lock layout for '+platform)
+    class Flock(ctypes.Structure):_fields_=fields
+    value=Flock();value.type=kind;value.whence=os.SEEK_SET
+    return bytes(value)
 
 
 @contextmanager
@@ -36,14 +50,14 @@ def file_lock(path,create=False):
         else:
             import fcntl
             with path.open('a+b' if create else 'r+b') as file:
-                # Linux open-file-description locks remain held when hashing
+                # Open-file-description locks remain held when hashing
                 # or copying opens/closes another descriptor for this file.
                 # They conflict with Minecraft's ordinary POSIX record locks.
-                if hasattr(fcntl,'F_OFD_SETLK'):
-                    import ctypes
-                    class Flock(ctypes.Structure):
-                        _fields_=[('type',ctypes.c_short),('whence',ctypes.c_short),('start',ctypes.c_longlong),('length',ctypes.c_longlong),('pid',ctypes.c_int)]
-                    def change(kind):fcntl.fcntl(file.fileno(),fcntl.F_OFD_SETLK,bytes(Flock(kind,os.SEEK_SET,0,0,0)))
+                if sys.platform=='darwin' or hasattr(fcntl,'F_OFD_SETLK'):
+                    # Darwin command 90 is defined by XNU even when an older
+                    # Python build does not expose the header constant.
+                    command=getattr(fcntl,'F_OFD_SETLK',90)
+                    def change(kind):fcntl.fcntl(file.fileno(),command,record_lock_data(kind,sys.platform))
                     acquire=lambda:change(fcntl.F_WRLCK)
                     release=lambda:change(fcntl.F_UNLCK)
                 else:

@@ -1,0 +1,128 @@
+{
+  "metadata": {
+    "primary_tag": "Mojang/bedrock-samples v1.21.60.10",
+    "profile_changes": {
+      "blocks": {
+        "added": [],
+        "removed": [],
+        "changed": [
+          "minecraft:acacia_door",
+          "minecraft:acacia_fence_gate",
+          "minecraft:bamboo_door",
+          "minecraft:bamboo_fence_gate",
+          "minecraft:birch_door",
+          "minecraft:birch_fence_gate",
+          "minecraft:cherry_door",
+          "minecraft:cherry_fence_gate",
+          "minecraft:copper_door",
+          "minecraft:creaking_heart",
+          "minecraft:crimson_door",
+          "minecraft:crimson_fence_gate",
+          "minecraft:dark_oak_door",
+          "minecraft:dark_oak_fence_gate",
+          "minecraft:exposed_copper_door",
+          "minecraft:fence_gate",
+          "minecraft:iron_door",
+          "minecraft:jungle_door",
+          "minecraft:jungle_fence_gate",
+          "minecraft:mangrove_door",
+          "minecraft:mangrove_fence_gate",
+          "minecraft:oxidized_copper_door",
+          "minecraft:pale_oak_door",
+          "minecraft:pale_oak_fence_gate",
+          "minecraft:spruce_door",
+          "minecraft:spruce_fence_gate",
+          "minecraft:warped_door",
+          "minecraft:warped_fence_gate",
+          "minecraft:waxed_copper_door",
+          "minecraft:waxed_exposed_copper_door",
+          "minecraft:waxed_oxidized_copper_door",
+          "minecraft:waxed_weathered_copper_door",
+          "minecraft:weathered_copper_door",
+          "minecraft:wooden_door"
+        ]
+      },
+      "items": {
+        "added": [],
+        "removed": [
+          "minecraft:air"
+        ],
+        "changed": []
+      },
+      "biomes": {
+        "added": [],
+        "removed": [],
+        "changed": []
+      },
+      "entities": {
+        "added": [],
+        "removed": [],
+        "changed": []
+      },
+      "enchantments": {
+        "added": [],
+        "removed": [],
+        "changed": []
+      }
+    }
+  },
+  "changed_native_states": [
+    {
+      "source": "Bedrock 1.21.50",
+      "target": "Bedrock 1.21.60",
+      "native_vectors": 876,
+      "reference_comparisons": 540,
+      "ignored_upper_storage_vectors_preserved": 336,
+      "unrepresentable_uprooted_states_blocked": 0,
+      "exact_inverse_checks": 876,
+      "mismatch_count": 0,
+      "mismatches": []
+    },
+    {
+      "source": "Bedrock 1.21.60",
+      "target": "Bedrock 1.21.50",
+      "native_vectors": 882,
+      "reference_comparisons": 540,
+      "ignored_upper_storage_vectors_preserved": 336,
+      "unrepresentable_uprooted_states_blocked": 6,
+      "exact_inverse_checks": 876,
+      "mismatch_count": 0,
+      "mismatches": []
+    }
+  ],
+  "worlds": [
+    {
+      "route": "java_to_60",
+      "native_payloads": 22,
+      "native_LevelDB_NBT_fields": "pass",
+      "Amulet_native_block_reopen": "pass",
+      "negative_chunk": "pass"
+    },
+    {
+      "route": "50_to_60",
+      "native_payloads": 22,
+      "native_LevelDB_NBT_fields": "pass",
+      "Amulet_native_block_reopen": "pass",
+      "negative_chunk": "pass"
+    },
+    {
+      "route": "60_to_50",
+      "native_payloads": 22,
+      "native_LevelDB_NBT_fields": "pass",
+      "Amulet_native_block_reopen": "pass",
+      "negative_chunk": "pass"
+    },
+    {
+      "route": "60_to_java",
+      "native_payloads": 19,
+      "independent_Anvil_NBT_fields": "pass",
+      "all_gallery_blocks": "pass"
+    },
+    {
+      "route": "60_mcstructure",
+      "independent_native_reopen": "pass",
+      "cardinal_door": "pass"
+    }
+  ],
+  "minecraft_game_execution": false
+}
