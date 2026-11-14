@@ -9,6 +9,33 @@ _guard=threading.Lock()
 _locks={}
 
 
+def rename_locked_directory(source,target):
+    """Rename without replacing a destination while keeping child locks held."""
+    source,target=Path(source),Path(target)
+    if os.name!='nt':
+        source.rename(target);return
+    import ctypes
+    from ctypes import wintypes as W
+    class RenameInfo(ctypes.Structure):
+        _fields_=[('flags',W.DWORD),('root',W.HANDLE),('length',W.DWORD),('name',W.WCHAR*1)]
+    kernel=ctypes.WinDLL('kernel32',use_last_error=True)
+    kernel.CreateFileW.argtypes=[W.LPCWSTR,W.DWORD,W.DWORD,ctypes.c_void_p,W.DWORD,W.DWORD,W.HANDLE];kernel.CreateFileW.restype=W.HANDLE
+    kernel.SetFileInformationByHandle.argtypes=[W.HANDLE,ctypes.c_int,ctypes.c_void_p,W.DWORD];kernel.SetFileInformationByHandle.restype=W.BOOL
+    kernel.CloseHandle.argtypes=[W.HANDLE];kernel.CloseHandle.restype=W.BOOL
+    # DELETE access, all sharing, OPEN_EXISTING, BACKUP_SEMANTICS for a folder.
+    handle=kernel.CreateFileW(str(source),0x10000,7,None,3,0x02000000,None)
+    if handle==W.HANDLE(-1).value:raise ctypes.WinError(ctypes.get_last_error())
+    try:
+        encoded=str(target.resolve()).encode('utf-16-le');offset=RenameInfo.name.offset
+        buffer=ctypes.create_string_buffer(offset+len(encoded)+2)
+        W.DWORD.from_buffer(buffer,RenameInfo.flags.offset).value=2  # POSIX_SEMANTICS; no REPLACE_IF_EXISTS.
+        W.DWORD.from_buffer(buffer,RenameInfo.length.offset).value=len(encoded)
+        ctypes.memmove(ctypes.addressof(buffer)+offset,encoded,len(encoded))
+        if not kernel.SetFileInformationByHandle(handle,22,buffer,len(buffer)):
+            raise ctypes.WinError(ctypes.get_last_error())
+    finally:kernel.CloseHandle(handle)
+
+
 def record_lock_data(kind,platform):
     """Native struct flock ABI; Darwin's fields are ordered differently."""
     import ctypes
