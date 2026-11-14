@@ -53,7 +53,7 @@ portable = DIST / f"FacetEdit-{VERSION}-portable.zip"
 with zipfile.ZipFile(portable, "w", zipfile.ZIP_DEFLATED) as archive:
     for name in ["FacetEdit.pyz", *launchers]:
         add_file(archive,DIST / name, "FacetEdit/" + name)
-    for name in ("README.md", "LICENSE", "docs/COMPATIBILITY.md", "docs/IMPLEMENTATION_PLAN.md", "docs/REDESIGN_PLAN.md", "docs/TEST_REPORT.md", "artifacts/workspace.png", "artifacts/selection.png", "artifacts/compact.png", "artifacts/world-tools.png", "artifacts/history.png", "artifacts/facetedit-logo-master.png", "artifacts/benchmarks.json", "artifacts/renderer-benchmark.json", "artifacts/renderer-before-optimization.json", "artifacts/independent-validation.json", "artifacts/test-results.txt", "artifacts/package-tests.txt"):
+    for name in ("README.md", "LICENSE", "docs/COMPATIBILITY.md", "docs/USAGE.md", "docs/IMPLEMENTATION_PLAN.md", "docs/REDESIGN_PLAN.md", "docs/TEST_REPORT.md", "artifacts/workspace.png", "artifacts/selection.png", "artifacts/compact.png", "artifacts/world-tools.png", "artifacts/history.png", "artifacts/facetedit-logo-master.png", "artifacts/benchmarks.json", "artifacts/renderer-benchmark.json", "artifacts/renderer-before-optimization.json", "artifacts/independent-validation.json", "artifacts/test-results.txt", "artifacts/package-tests.txt"):
         add_file(archive,ROOT / name, "FacetEdit/" + name)
 
     for name in ('docs/PARITY_0_3_PLAN.md','artifacts/flight.png','artifacts/chunks.png','artifacts/regions.png','artifacts/recovery.png','artifacts/flight-compact.png','artifacts/0.3-flight-before-optimization.json','artifacts/0.3-flight-after-optimization.json','artifacts/chunk-benchmark.json','artifacts/independent-lz4.txt','artifacts/package-audit.json','artifacts/python312-tests.txt'):
